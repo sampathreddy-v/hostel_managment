@@ -546,11 +546,20 @@
             display: none;
             z-index: 1000;
         }
-        #hostel-detail-modal.on { display: flex; animation: slideUpFull 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        #hostel-detail-modal.on {
+            display: flex;
+            animation: slideUpFull 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
         @keyframes slideUpFull {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
         }
 
         .detail-modal {
@@ -641,7 +650,7 @@
             background: white;
             padding: 40px 24px;
             border-radius: 28px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
             border: 1px solid var(--border);
             text-align: center;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -653,9 +662,25 @@
             box-shadow: 0 20px 50px rgba(200, 75, 49, 0.1);
         }
 
-        .sc-icon { font-size: 36px; margin-bottom: 16px; }
-        .sc-label { font-size: 12px; color: var(--ink3); font-weight: 700; margin-bottom: 6px; letter-spacing: 1px; }
-        .sc-val { font-family: var(--font-display); font-size: 42px; font-weight: 800; color: var(--ink); }
+        .sc-icon {
+            font-size: 36px;
+            margin-bottom: 16px;
+        }
+
+        .sc-label {
+            font-size: 12px;
+            color: var(--ink3);
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .sc-val {
+            font-family: var(--font-display);
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--ink);
+        }
 
         .location-box {
             background: var(--ink);
@@ -686,22 +711,70 @@
         }
 
         @media (max-width: 1024px) {
-            .detail-modal { height: auto; min-height: 100vh; overflow-y: auto; }
-            .detail-split { grid-template-columns: 1fr; height: auto; overflow: visible; }
-            .detail-gallery { height: 400px; flex-shrink: 0; }
-            .detail-info { padding: 40px 24px; height: auto; }
-            #hd-desc { font-size: 20px; margin-bottom: 32px; }
-            .sharing-grid { gap: 16px; margin-bottom: 40px; }
-            .location-box { padding: 32px 24px; border-radius: 24px; }
+            .detail-modal {
+                height: auto;
+                min-height: 100vh;
+                overflow-y: auto;
+            }
+
+            .detail-split {
+                grid-template-columns: 1fr;
+                height: auto;
+                overflow: visible;
+            }
+
+            .detail-gallery {
+                height: 400px;
+                flex-shrink: 0;
+            }
+
+            .detail-info {
+                padding: 40px 24px;
+                height: auto;
+            }
+
+            #hd-desc {
+                font-size: 20px;
+                margin-bottom: 32px;
+            }
+
+            .sharing-grid {
+                gap: 16px;
+                margin-bottom: 40px;
+            }
+
+            .location-box {
+                padding: 32px 24px;
+                border-radius: 24px;
+            }
         }
 
         @media (max-width: 768px) {
-            .detail-header-fixed { padding: 16px 20px; position: sticky; top: 0; }
-            .detail-header-fixed h2 { font-size: 20px; }
-            .detail-gallery { height: 300px; }
-            .sharing-grid { grid-template-columns: 1fr; }
-            .detail-info { padding: 32px 20px; }
-            #hd-desc { font-size: 18px; }
+            .detail-header-fixed {
+                padding: 16px 20px;
+                position: sticky;
+                top: 0;
+            }
+
+            .detail-header-fixed h2 {
+                font-size: 20px;
+            }
+
+            .detail-gallery {
+                height: 300px;
+            }
+
+            .sharing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-info {
+                padding: 32px 20px;
+            }
+
+            #hd-desc {
+                font-size: 18px;
+            }
         }
 
         /* ===== LANDING PAGE ===== */
@@ -1954,11 +2027,14 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(26,24,20,0.55);
+            background: rgba(26, 24, 20, 0.55);
             z-index: 340;
             backdrop-filter: blur(2px);
         }
-        .sidebar-overlay.on { display: block; }
+
+        .sidebar-overlay.on {
+            display: block;
+        }
 
         /* ===== MOBILE TOP BAR ===== */
         .mobile-topbar {
@@ -1972,18 +2048,23 @@
             height: 54px;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
+
         .mob-brand {
             font-family: var(--font-display);
             font-size: 18px;
             font-weight: 800;
             color: var(--white);
         }
-        .mob-brand span { color: var(--accent2); }
+
+        .mob-brand span {
+            color: var(--accent2);
+        }
+
         .mob-menu-btn {
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: var(--white);
             width: 38px;
             height: 38px;
@@ -1995,14 +2076,22 @@
             justify-content: center;
             transition: background 0.2s;
         }
-        .mob-menu-btn:hover { background: rgba(255,255,255,0.2); }
+
+        .mob-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
 
         /* ===== RESPONSIVE — 768px ===== */
         @media(max-width:768px) {
 
             /* LANDING NAV */
-            .landing-nav { padding: 0 16px; }
-            .landing-nav .btn-outline { display: none; }
+            .landing-nav {
+                padding: 0 16px;
+            }
+
+            .landing-nav .btn-outline {
+                display: none;
+            }
 
             /* HERO */
             .hero {
@@ -2010,31 +2099,82 @@
                 padding: 80px 20px 40px;
                 gap: 28px;
             }
-            .hero h1 { font-size: 38px; letter-spacing: -1px; }
-            .hero-desc { font-size: 14px; margin-bottom: 24px; }
-            .hero-btns { flex-direction: column; gap: 10px; }
-            .hero-btns .btn { width: 100%; text-align: center; padding: 14px 20px; }
-            .login-cards { gap: 12px; }
-            .login-card { padding: 18px 16px; }
+
+            .hero h1 {
+                font-size: 38px;
+                letter-spacing: -1px;
+            }
+
+            .hero-desc {
+                font-size: 14px;
+                margin-bottom: 24px;
+            }
+
+            .hero-btns {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .hero-btns .btn {
+                width: 100%;
+                text-align: center;
+                padding: 14px 20px;
+            }
+
+            .login-cards {
+                gap: 12px;
+            }
+
+            .login-card {
+                padding: 18px 16px;
+            }
 
 
 
             /* STATS STRIP */
-            .stats-strip { grid-template-columns: repeat(2, 1fr); }
-            .ss-item { padding: 20px 20px; }
-            .ss-num { font-size: 34px; }
+            .stats-strip {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .ss-item {
+                padding: 20px 20px;
+            }
+
+            .ss-num {
+                font-size: 34px;
+            }
 
             /* HOSTEL INFO */
-            .hostel-info-section { padding: 48px 20px; }
-            .sec-title { font-size: 26px; }
-            .hostel-branches { grid-template-columns: 1fr; gap: 16px; }
-            .branch-stats { flex-wrap: wrap; gap: 10px; }
+            .hostel-info-section {
+                padding: 48px 20px;
+            }
+
+            .sec-title {
+                font-size: 26px;
+            }
+
+            .hostel-branches {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .branch-stats {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
 
             /* MODAL */
-            .modal { padding: 24px 20px; margin: 0 12px; border-radius: 16px; max-height: 95vh; }
+            .modal {
+                padding: 24px 20px;
+                margin: 0 12px;
+                border-radius: 16px;
+                max-height: 95vh;
+            }
 
             /* DASHBOARD LAYOUT */
-            .dash-layout { grid-template-columns: 1fr; }
+            .dash-layout {
+                grid-template-columns: 1fr;
+            }
 
             /* SIDEBAR — slide-in overlay */
             .sidebar {
@@ -2044,15 +2184,22 @@
                 height: 100vh;
                 width: 260px;
                 z-index: 350;
-                transition: left 0.3s cubic-bezier(0.4,0,0.2,1);
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
-            .sidebar.mob-open { left: 0; }
+
+            .sidebar.mob-open {
+                left: 0;
+            }
 
             /* MOBILE TOPBAR */
-            .mobile-topbar { display: flex; }
+            .mobile-topbar {
+                display: flex;
+            }
 
             /* DASH MAIN */
-            .dash-main { padding: 16px; }
+            .dash-main {
+                padding: 16px;
+            }
 
             /* DASH HEADER */
             .dash-header {
@@ -2061,89 +2208,262 @@
                 gap: 12px;
                 margin-bottom: 20px;
             }
-            .dash-header > .flex { width: 100%; flex-wrap: wrap; }
-            .dash-title { font-size: 22px; }
+
+            .dash-header>.flex {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .dash-title {
+                font-size: 22px;
+            }
 
             /* STATS GRIDS */
-            .stats-grid { grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 16px; }
-            .stats-grid-3 { grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 16px; }
-            .stats-grid-2 { grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px; }
-            .stat-num { font-size: 28px; }
-            .stat-card { padding: 16px 18px; }
-            .card { padding: 16px; }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .stats-grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .stats-grid-2 {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .stat-num {
+                font-size: 28px;
+            }
+
+            .stat-card {
+                padding: 16px 18px;
+            }
+
+            .card {
+                padding: 16px;
+            }
 
             /* TABLES — horizontal scroll */
-            .rent-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            .monthly-table { overflow-x: auto; }
-            .monthly-table table { min-width: 560px; }
-            table { min-width: 520px; }
-            th, td { padding: 10px 12px; font-size: 13px; white-space: nowrap; }
+            .rent-table-wrap {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .monthly-table {
+                overflow-x: auto;
+            }
+
+            .monthly-table table {
+                min-width: 560px;
+            }
+
+            table {
+                min-width: 520px;
+            }
+
+            th,
+            td {
+                padding: 10px 12px;
+                font-size: 13px;
+                white-space: nowrap;
+            }
 
             /* ROOM GRID */
-            .room-box { width: 76px; padding: 8px; }
-            .rb-num { font-size: 11px; }
-            .rb-name { font-size: 10px; }
-            .occ-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .occ-legend { flex-wrap: wrap; gap: 10px; }
-            .hob-header { flex-direction: column; align-items: flex-start; gap: 6px; }
-            .hob-stats { flex-wrap: wrap; gap: 8px; }
+            .room-box {
+                width: 76px;
+                padding: 8px;
+            }
+
+            .rb-num {
+                font-size: 11px;
+            }
+
+            .rb-name {
+                font-size: 10px;
+            }
+
+            .occ-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .occ-legend {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .hob-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .hob-stats {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
 
             /* ROOM POPUP */
-            .room-popup { width: calc(100vw - 32px); left: 16px !important; }
+            .room-popup {
+                width: calc(100vw - 32px);
+                left: 16px !important;
+            }
 
             /* FILTER BAR */
-            .filter-bar { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
-            .filter-bar::-webkit-scrollbar { display: none; }
+            .filter-bar {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 6px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .filter-bar::-webkit-scrollbar {
+                display: none;
+            }
 
             /* COMPLAINT CARD */
-            .cc-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
-            .cc-actions { flex-wrap: wrap; }
+            .cc-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .cc-actions {
+                flex-wrap: wrap;
+            }
 
             /* MANAGER CARD */
-            .mgr-card { flex-wrap: wrap; gap: 12px; }
-            .mgr-stats { flex-wrap: wrap; gap: 10px; }
+            .mgr-card {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .mgr-stats {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
 
             /* VACANT BANNER */
-            .vacant-banner { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .vacant-banner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
 
             /* PAY HERO */
-            .pay-hero { padding: 20px; }
-            .pay-amount { font-size: 42px; }
+            .pay-hero {
+                padding: 20px;
+            }
+
+            .pay-amount {
+                font-size: 42px;
+            }
 
             /* NOTICE BOARD 3-col → 1-col */
-            [style*="grid-template-columns: repeat(3"] { grid-template-columns: 1fr !important; }
+            [style*="grid-template-columns: repeat(3"] {
+                grid-template-columns: 1fr !important;
+            }
 
             /* INFO ROW */
-            .info-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
 
             /* TOAST */
-            #toast { left: 12px; right: 12px; bottom: 14px; max-width: none; width: auto; }
+            #toast {
+                left: 12px;
+                right: 12px;
+                bottom: 14px;
+                max-width: none;
+                width: auto;
+            }
 
             /* AMENITY GRID */
-            .amenity-grid { grid-template-columns: repeat(2,1fr); }
+            .amenity-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
 
             /* FLEX LAYOUT PANELS */
-            .flex.gap16[style*="margin-top"] { flex-direction: column; }
-            [style*="width:280px"] { width: 100% !important; }
+            .flex.gap16[style*="margin-top"] {
+                flex-direction: column;
+            }
+
+            [style*="width:280px"] {
+                width: 100% !important;
+            }
         }
 
         /* ===== RESPONSIVE — 480px (small phones) ===== */
         @media(max-width:480px) {
-            .hero h1 { font-size: 30px; }
-            .hero-eyebrow { font-size: 10px; }
-            .stats-strip { grid-template-columns: repeat(2,1fr); }
-            .ss-num { font-size: 28px; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .stats-grid-3 { grid-template-columns: 1fr; }
-            .login-card { padding: 14px 12px; }
-            .lc-title { font-size: 15px; }
-            .lc-desc { font-size: 12px; }
-            .pay-amount { font-size: 34px; }
-            .dash-title { font-size: 19px; }
-            .room-box { width: 64px; }
-            .amenity-grid { grid-template-columns: 1fr; }
-            .modal { margin: 0 8px; padding: 20px 16px; }
-            .btn { font-size: 13px; }
+            .hero h1 {
+                font-size: 30px;
+            }
+
+            .hero-eyebrow {
+                font-size: 10px;
+            }
+
+            .stats-strip {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .ss-num {
+                font-size: 28px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .login-card {
+                padding: 14px 12px;
+            }
+
+            .lc-title {
+                font-size: 15px;
+            }
+
+            .lc-desc {
+                font-size: 12px;
+            }
+
+            .pay-amount {
+                font-size: 34px;
+            }
+
+            .dash-title {
+                font-size: 19px;
+            }
+
+            .room-box {
+                width: 64px;
+            }
+
+            .amenity-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                margin: 0 8px;
+                padding: 20px 16px;
+            }
+
+            .btn {
+                font-size: 13px;
+            }
         }
 
         /* MANAGER REPORT CARD */
@@ -2285,6 +2605,10 @@
             font-weight: 600;
             color: var(--ink)
         }
+        .daily-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+        @media (min-width: 768px) { .daily-grid { grid-template-columns: 1fr 1fr; } }
+        .digest-group { margin-bottom: 24px; }
+        .digest-group h4 { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
     </style>
 </head>
 
@@ -2305,7 +2629,9 @@
                     <div id="hd-loc-sub" style="font-size: 13px; color: var(--ink3);">Location Details</div>
                 </div>
                 <div class="flex gap12">
-                    <button class="btn btn-accent btn-sm" onclick="closeModal('hostel-detail-modal'); selectHostelForBooking(currentDetailId);">Book Room</button>
+                    <button class="btn btn-accent btn-sm"
+                        onclick="closeModal('hostel-detail-modal'); selectHostelForBooking(currentDetailId);">Book
+                        Room</button>
                     <button class="modal-close" onclick="closeModal('hostel-detail-modal')">×</button>
                 </div>
             </div>
@@ -2343,7 +2669,8 @@
 
                     <div class="location-box">
                         <div class="loc-tag">📍 <span id="hd-loc-full">Location Name</span></div>
-                        <p style="font-size: 13px; color: var(--ink2); opacity: 0.8;">Premium location with easy access to transport, IT parks, and major city hubs. High security and peaceful environment.</p>
+                        <p style="font-size: 13px; color: var(--ink2); opacity: 0.8;">Premium location with easy access
+                            to transport, IT parks, and major city hubs. High security and peaceful environment.</p>
                     </div>
                 </div>
             </div>
@@ -2372,7 +2699,8 @@
             <div class="flex gap12">
                 <button class="btn btn-outline" onclick="scrollToInfo()">About Hostel</button>
                 <button class="btn btn-primary" onclick="openModal('book-room-modal')">Book a Room</button>
-                <button class="btn btn-primary" style="background:var(--ink2)" onclick="openModal('login-modal')">Login</button>
+                <button class="btn btn-primary" style="background:var(--ink2)"
+                    onclick="openModal('login-modal')">Login</button>
             </div>
         </nav>
 
@@ -2387,38 +2715,11 @@
                     <button class="btn btn-outline" onclick="openModal('book-room-modal')">Book a Room</button>
                 </div>
             </div>
-            <div class="login-cards">
-                <div class="login-card owner" onclick="loginAs('owner')">
-                    <div class="flex between">
-                        <div>
-                            <div class="lc-icon owner">👑</div>
-                            <div class="lc-title">Owner Portal</div>
-                            <div class="lc-desc">Full overview of all 3 hostels — rent, maintenance, occupancy</div>
-                        </div>
-                        <div class="lc-arrow">→</div>
-                    </div>
-                </div>
-                <div class="login-card manager" onclick="loginAs('manager')">
-                    <div class="flex between">
-                        <div>
-                            <div class="lc-icon manager">🗂️</div>
-                            <div class="lc-title">Manager Portal</div>
-                            <div class="lc-desc">Manage tenants, rooms, rent collection and complaints</div>
-                        </div>
-                        <div class="lc-arrow">→</div>
-                    </div>
-                </div>
-                <div class="login-card tenant" onclick="loginAs('tenant')">
-                    <div class="flex between">
-                        <div>
-                            <div class="lc-icon tenant">🏠</div>
-                            <div class="lc-title">Tenant Portal</div>
-                            <div class="lc-desc">Pay rent, view receipts and raise complaints</div>
-                        </div>
-                        <div class="lc-arrow">→</div>
-                    </div>
-                </div>
+
+            <div class="hero-image-container" style="animation: fadeUp 0.7s ease both 0.2s;">
+                <img src="hero_hostel.png" alt="Premium PG Hostel Room" style="width: 100%; height: auto; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); object-fit: cover; max-height: 600px; display: block;">
             </div>
+
         </section>
 
         <!-- STATS STRIP -->
@@ -2450,7 +2751,7 @@
 
             <div class="hostel-branches">
                 <div class="branch-card" onclick="openHostelDetail(1)">
-                    <div class="branch-img">🏢<span class="branch-num-badge">Hostel 1</span></div>
+                    <div class="branch-img" style="background-image: url('hostel1.png'); background-size: cover; background-position: center;"><span class="branch-num-badge">Hostel 1</span></div>
                     <div class="branch-body">
                         <div class="branch-name">VUSTELA Kokapet</div>
                         <div class="branch-loc">📍 Kokapet, Financial District</div>
@@ -2462,7 +2763,7 @@
                     </div>
                 </div>
                 <div class="branch-card" onclick="openHostelDetail(2)">
-                    <div class="branch-img">🏗️<span class="branch-num-badge">Hostel 2</span></div>
+                    <div class="branch-img" style="background-image: url('hostel2.png'); background-size: cover; background-position: center;"><span class="branch-num-badge">Hostel 2</span></div>
                     <div class="branch-body">
                         <div class="branch-name">VUSTELA Gachibowli</div>
                         <div class="branch-loc">📍 Gachibowli, IT Hub</div>
@@ -2474,7 +2775,7 @@
                     </div>
                 </div>
                 <div class="branch-card" onclick="openHostelDetail(3)">
-                    <div class="branch-img">🏬<span class="branch-num-badge">Hostel 3</span></div>
+                    <div class="branch-img" style="background-image: url('hostel3.png'); background-size: cover; background-position: center;"><span class="branch-num-badge">Hostel 3</span></div>
                     <div class="branch-body">
                         <div class="branch-name">VUSTELA Madhapur</div>
                         <div class="branch-loc">📍 Madhapur, HITEC City</div>
@@ -2537,6 +2838,89 @@
         </div>
     </div>
 
+    <!-- DAILY DIGEST MODAL -->
+    <div class="modal-overlay" id="daily-digest-modal">
+        <div class="modal" style="max-width: 800px; width: 90vw;">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">24-Hour Activity Report</div>
+                    <div style="font-size: 12px; color: var(--ink3); margin-top: 4px;">Summary of activities from the last 24 hours</div>
+                </div>
+                <button class="modal-close" onclick="closeModal('daily-digest-modal')">×</button>
+            </div>
+            
+            <div style="background: var(--green-bg); border: 1px solid rgba(46,160,67,0.2); padding: 16px; border-radius: 12px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; color: var(--green);">Total Rent Collected (24h)</span>
+                <span style="font-size: 20px; font-weight: 800; color: var(--green);" id="dd-total-rent">₹0</span>
+            </div>
+
+            <div class="daily-grid">
+                <!-- Left Col: Rent -->
+                <div>
+                    <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 16px; color: var(--ink);">💰 Rent Collected</h3>
+                    <div id="dd-rent-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Right Col: Complaints -->
+                <div>
+                    <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 16px; color: var(--ink);">🛠️ Maintenance & Complaints</h3>
+                    <div id="dd-complaints-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOG EXPENSE MODAL -->
+    <div class="modal-overlay" id="log-expense-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Log New Expense</div>
+                <button class="modal-close" onclick="closeModal('log-expense-modal')">×</button>
+            </div>
+            <div class="input-group">
+                <label>Category</label>
+                <select id="exp-category" class="input">
+                    <option value="Maintenance">Maintenance & Repairs</option>
+                    <option value="Groceries">Groceries & Provisions</option>
+                    <option value="Utilities">Utilities (Water, Electricity)</option>
+                    <option value="Miscellaneous">Miscellaneous</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Amount (₹)</label>
+                <input type="number" id="exp-amount" placeholder="Enter amount spent" class="input">
+            </div>
+            <div class="input-group">
+                <label>Description</label>
+                <input type="text" id="exp-desc" placeholder="e.g. Bought vegetables for the week" class="input">
+            </div>
+            <div class="input-group">
+                <label>Upload Bill / Receipt</label>
+                <input type="file" id="exp-bill" accept="image/*" class="input" style="padding: 10px;">
+                <p style="font-size: 11px; color: var(--ink3); margin-top: 4px;">Upload a photo of the receipt.</p>
+            </div>
+            <button class="btn btn-primary" style="width:100%" onclick="logExpense()">Submit Expense</button>
+        </div>
+    </div>
+
+    <!-- VIEW BILL MODAL -->
+    <div class="modal-overlay" id="view-bill-modal">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title">Bill / Receipt</div>
+                <button class="modal-close" onclick="closeModal('view-bill-modal')">×</button>
+            </div>
+            <div style="text-align: center; padding: 20px 0;">
+                <img id="bill-img-preview" src="" style="max-width: 100%; max-height: 70vh; border-radius: 8px; box-shadow: var(--shadow);">
+                <div id="bill-no-img" style="display: none; color: var(--ink3); padding: 40px; font-style: italic;">No bill image attached.</div>
+            </div>
+        </div>
+    </div>
+
     <!-- LOGIN MODAL -->
     <div class="modal-overlay" id="login-modal">
         <div class="modal">
@@ -2544,29 +2928,16 @@
                 <div class="modal-title">Login to VUSTELA</div>
                 <button class="modal-close" onclick="closeModal('login-modal')">×</button>
             </div>
-            <div class="flex gap8" style="margin-bottom:20px">
-                <button class="fb on" id="lt-owner" onclick="switchLoginTab('owner')">Owner</button>
-                <button class="fb" id="lt-manager" onclick="switchLoginTab('manager')">Manager</button>
-                <button class="fb" id="lt-tenant" onclick="switchLoginTab('tenant')">Tenant</button>
-            </div>
             <div id="login-form-area">
-                <div class="input-group"><label>Email</label><input type="email" placeholder="your@email.com" id="l-email">
+                <div class="input-group"><label>Email</label><input type="email" placeholder="your@email.com"
+                        id="l-email">
                 </div>
-                <div class="input-group"><label>Password</label><input type="password" placeholder="Your Password" id="l-pass">
-                </div>
-                <div id="l-hostel-field" style="display:none">
-                    <div class="input-group"><label>Your Hostel</label>
-                        <select id="l-hostel">
-                            <option value="1">Hostel 1 — Kokapet</option>
-                            <option value="2">Hostel 2 — Gachibowli</option>
-                            <option value="3">Hostel 3 — Madhapur</option>
-                        </select>
-                    </div>
+                <div class="input-group"><label>Password</label><input type="password" placeholder="Your Password"
+                        id="l-pass">
                 </div>
             </div>
-            <button class="btn-full" id="l-btn" onclick="doLogin()">Login as Owner</button>
-            <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--ink3)">Demo app — click Login to
-                enter</div>
+            <button class="btn-full" id="l-btn" onclick="doLogin()">Login</button>
+            <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--ink3)">Enter your credentials to access your portal</div>
         </div>
     </div>
 
@@ -2598,8 +2969,8 @@
                 <div class="sb-section">Finance</div>
                 <div class="sb-link" onclick="ownerTab(this,'o-rent')"><span class="sb-icon">💰</span> Rent Tracker
                 </div>
-                <div class="sb-link" onclick="ownerTab(this,'o-maintenance')"><span class="sb-icon">🔧</span>
-                    Maintenance Log</div>
+                <div class="sb-link" onclick="ownerTab(this,'o-expenses')"><span class="sb-icon">🧾</span>
+                    Expense Log</div>
                 <div class="sb-section">Operations</div>
                 <div class="sb-link" onclick="ownerTab(this,'o-complaints')"><span class="sb-icon">📋</span> Complaints
                 </div>
@@ -2726,9 +3097,9 @@
                     <!-- RECENT ACTIVITY -->
                     <div class="flex gap16" style="margin-top:4px">
                         <div style="flex:1">
-                            <div class="card">
+                            <div class="card" onclick="openDailyDigestModal()" style="cursor:pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='none'; this.style.boxShadow='var(--shadow)';">
                                 <div class="flex between" style="margin-bottom:16px">
-                                    <h3 style="font-size:15px">Recent Activity</h3><span class="badge badge-grey">Last
+                                    <h3 style="font-size:15px">Recent Activity <span style="font-size:11px; color:var(--accent); margin-left:8px; font-weight:500;">View Full Report ↗</span></h3><span class="badge badge-grey">Last
                                         48 hrs</span>
                                 </div>
                                 <div class="timeline">
@@ -2864,10 +3235,13 @@
                         </div>
                         <div class="flex gap16" style="align-items:center">
                             <div class="table-search">
-                                <input type="text" placeholder="Search tenant name..." onkeyup="filterTable(this, 'owner-rent-table')">
+                                <input type="text" placeholder="Search tenant name..."
+                                    onkeyup="filterTable(this, 'owner-rent-table')">
                                 <span class="search-icon">🔍</span>
                             </div>
-                            <button class="btn btn-outline btn-sm" onclick="showToast('Reminder Sent','Reminder sent to all unpaid tenants.')">📣 Remind All Unpaid</button>
+                            <button class="btn btn-outline btn-sm"
+                                onclick="showToast('Reminder Sent','Reminder sent to all unpaid tenants.')">📣 Remind
+                                All Unpaid</button>
                         </div>
                     </div>
 
@@ -2926,31 +3300,31 @@
                     </div>
                 </div>
 
-                <!-- O: MAINTENANCE LOG -->
-                <div class="dash-section" id="o-maintenance">
+                <!-- O: EXPENSES LOG -->
+                <div class="dash-section" id="o-expenses">
                     <div class="dash-header">
                         <div>
-                            <div class="dash-title">Maintenance Log</div>
-                            <div class="dash-subtitle">All resolved complaints with costs and bill evidence</div>
+                            <div class="dash-title">Expense Log</div>
+                            <div class="dash-subtitle">All logged expenses and maintenance costs with bill evidence</div>
                         </div>
-                        <div class="badge badge-yellow">₹17,500 spent this month</div>
+                        <div class="badge badge-yellow" id="o-exp-total-spent">₹0 spent this month</div>
                     </div>
 
                     <div class="stats-grid-3" style="margin-bottom:20px">
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)">₹8,500</div>
-                            <div class="stat-label">Hostel 1 Maintenance</div>
-                            <div class="stat-sub">4 jobs</div>
+                            <div class="stat-num" style="color:var(--yellow)" id="o-exp-h1-cost">₹0</div>
+                            <div class="stat-label">Hostel 1 Expenses</div>
+                            <div class="stat-sub" id="o-exp-h1-jobs">0 jobs</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)">₹3,200</div>
-                            <div class="stat-label">Hostel 2 Maintenance</div>
-                            <div class="stat-sub">2 jobs</div>
+                            <div class="stat-num" style="color:var(--yellow)" id="o-exp-h2-cost">₹0</div>
+                            <div class="stat-label">Hostel 2 Expenses</div>
+                            <div class="stat-sub" id="o-exp-h2-jobs">0 jobs</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)">₹5,800</div>
-                            <div class="stat-label">Hostel 3 Maintenance</div>
-                            <div class="stat-sub">2 jobs</div>
+                            <div class="stat-num" style="color:var(--yellow)" id="o-exp-h3-cost">₹0</div>
+                            <div class="stat-label">Hostel 3 Expenses</div>
+                            <div class="stat-sub" id="o-exp-h3-jobs">0 jobs</div>
                         </div>
                     </div>
 
@@ -2960,68 +3334,14 @@
                                 <tr>
                                     <th>Description</th>
                                     <th>Hostel</th>
-                                    <th>Room</th>
+                                    <th>Category</th>
                                     <th>Cost</th>
-                                    <th>Resolved By</th>
+                                    <th>Logged By</th>
                                     <th>Date</th>
                                     <th>Bill</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>AC unit repair</td>
-                                    <td><span class="badge badge-blue">H1</span></td>
-                                    <td class="mono">102</td>
-                                    <td style="font-weight:700;color:var(--yellow)">₹2,500</td>
-                                    <td>Anil Kumar</td>
-                                    <td>Jun 3</td>
-                                    <td><button class="btn-ghost"
-                                            onclick="showToast('Bill Photo','Viewing bill image...')">📎 View
-                                            Bill</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Plumbing — bathroom tap</td>
-                                    <td><span class="badge badge-blue">H1</span></td>
-                                    <td class="mono">204</td>
-                                    <td style="font-weight:700;color:var(--yellow)">₹450</td>
-                                    <td>Anil Kumar</td>
-                                    <td>Jun 1</td>
-                                    <td><button class="btn-ghost"
-                                            onclick="showToast('Bill Photo','Viewing bill image...')">📎 View
-                                            Bill</button></td>
-                                </tr>
-                                <tr>
-                                    <td>WiFi router replacement</td>
-                                    <td><span class="badge badge-green">H2</span></td>
-                                    <td class="mono">Common</td>
-                                    <td style="font-weight:700;color:var(--yellow)">₹1,800</td>
-                                    <td>Suresh Babu</td>
-                                    <td>Jun 2</td>
-                                    <td><span style="font-size:12px;color:var(--ink3)">No bill</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Door lock broken</td>
-                                    <td><span class="badge badge-green">H2</span></td>
-                                    <td class="mono">115</td>
-                                    <td style="font-weight:700;color:var(--yellow)">₹650</td>
-                                    <td>Suresh Babu</td>
-                                    <td>May 30</td>
-                                    <td><button class="btn-ghost"
-                                            onclick="showToast('Bill Photo','Viewing bill image...')">📎 View
-                                            Bill</button></td>
-                                </tr>
-                                <tr>
-                                    <td>Electrical wiring fix</td>
-                                    <td><span class="badge badge-yellow">H3</span></td>
-                                    <td class="mono">301</td>
-                                    <td style="font-weight:700;color:var(--yellow)">₹3,200</td>
-                                    <td>Kavita R.</td>
-                                    <td>May 28</td>
-                                    <td><button class="btn-ghost"
-                                            onclick="showToast('Bill Photo','Viewing bill image...')">📎 View
-                                            Bill</button></td>
-                                </tr>
-                            </tbody>
+                            <tbody id="owner-expenses-table"></tbody>
                         </table>
                     </div>
                 </div>
@@ -3047,7 +3367,7 @@
                         <div class="dash-title">Master Notice Board</div>
                         <div class="dash-subtitle">Send announcements globally or view hostel-specific notices</div>
                     </div>
-                    
+
                     <div class="card" style="padding: 24px; margin-bottom: 24px;">
                         <h3 style="font-size: 16px; margin-bottom: 16px;">Post an Announcement</h3>
                         <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
@@ -3062,11 +3382,13 @@
                             </div>
                             <div class="input-group">
                                 <label>Notice Title</label>
-                                <input type="text" id="owner-notice-title" placeholder="e.g. Important Maintenance Update">
+                                <input type="text" id="owner-notice-title"
+                                    placeholder="e.g. Important Maintenance Update">
                             </div>
                             <div class="input-group">
                                 <label>Message</label>
-                                <textarea id="owner-notice-body" placeholder="Write your announcement here..." rows="4"></textarea>
+                                <textarea id="owner-notice-body" placeholder="Write your announcement here..."
+                                    rows="4"></textarea>
                             </div>
                             <div style="text-align: right;">
                                 <button class="btn btn-primary" onclick="postOwnerNotice()">Post Notice 📢</button>
@@ -3076,17 +3398,27 @@
 
                     <div id="owner-global-notices" style="margin-bottom: 24px;"></div>
 
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;" id="owner-hostel-notices-grid">
-                        <div style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
-                            <h3 style="font-size: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 16px; color: var(--ink1);">Hostel 1 (Kokapet)</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;"
+                        id="owner-hostel-notices-grid">
+                        <div
+                            style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                            <h3
+                                style="font-size: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 16px; color: var(--ink1);">
+                                Hostel 1 (Kokapet)</h3>
                             <div id="o-notices-h1" style="display:flex; flex-direction:column; gap:12px;"></div>
                         </div>
-                        <div style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
-                            <h3 style="font-size: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 16px; color: var(--ink1);">Hostel 2 (Gachibowli)</h3>
+                        <div
+                            style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                            <h3
+                                style="font-size: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 16px; color: var(--ink1);">
+                                Hostel 2 (Gachibowli)</h3>
                             <div id="o-notices-h2" style="display:flex; flex-direction:column; gap:12px;"></div>
                         </div>
-                        <div style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
-                            <h3 style="font-size: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 16px; color: var(--ink1);">Hostel 3 (Madhapur)</h3>
+                        <div
+                            style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                            <h3
+                                style="font-size: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 16px; color: var(--ink1);">
+                                Hostel 3 (Madhapur)</h3>
                             <div id="o-notices-h3" style="display:flex; flex-direction:column; gap:12px;"></div>
                         </div>
                     </div>
@@ -3160,10 +3492,13 @@
                             <span class="badge badge-red">Inactive</span>
                         </div>
                     </div>
-                    
-                    <div class="dash-header" style="margin-top: 40px; margin-bottom: 16px;">
-                        <div class="dash-title">Manager Access & Logins</div>
-                        <div class="dash-subtitle">Manage login credentials for your hostel managers</div>
+
+                    <div class="dash-header" style="margin-top: 40px; margin-bottom: 16px; display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <div class="dash-title">Manager Access & Logins</div>
+                            <div class="dash-subtitle">Manage login credentials for your hostel managers</div>
+                        </div>
+                        <button class="btn btn-primary" onclick="openModal('add-manager-modal')">+ Add Manager</button>
                     </div>
                     <div class="rent-table-wrap">
                         <table>
@@ -3237,11 +3572,15 @@
                 <div class="sb-link" onclick="mgrTab(this,'m-occupancy')"><span class="sb-icon">🏠</span> Room Grid
                 </div>
                 <div class="sb-section">Management</div>
+                <div class="sb-link" onclick="mgrTab(this,'m-bookings')"><span class="sb-icon">📅</span> Bookings <span
+                        id="mgr-booking-badge" class="badge badge-red"
+                        style="display:none; padding: 2px 6px; font-size: 10px; margin-left: 4px;">0</span></div>
                 <div class="sb-link" onclick="mgrTab(this,'m-rent')"><span class="sb-icon">💰</span> Rent</div>
                 <div class="sb-link" onclick="mgrTab(this,'m-tenants')"><span class="sb-icon">👥</span> Tenants</div>
                 <div class="sb-link" onclick="mgrTab(this,'m-complaints')"><span class="sb-icon">📋</span> Complaints
                 </div>
                 <div class="sb-link" onclick="mgrTab(this,'m-food')"><span class="sb-icon">🍽️</span> Food Menu</div>
+                <div class="sb-link" onclick="mgrTab(this,'m-expenses')"><span class="sb-icon">🧾</span> Expenses</div>
                 <div class="sb-section">Communication</div>
                 <div class="sb-link" onclick="mgrTab(this,'m-notices')"><span class="sb-icon">📢</span> Notices</div>
                 <div class="sb-section" style="margin-top:auto"></div>
@@ -3253,9 +3592,12 @@
                 <div class="dash-section on" id="m-overview">
                     <div class="dash-header">
                         <div>
-                            <div class="dash-title" id="m-dash-title" style="display:flex; align-items:center; gap:12px;">
-                                Hostel 1 — Kokapet 
-                                <button class="btn-sm btn-ghost" style="padding:4px; font-size:16px;" onclick="loadData([currentHostel]).then(() => { renderManagerOccupancy(); renderMgrTenants(); updateDashboardStats(); })" title="Sync Data">🔄</button>
+                            <div class="dash-title" id="m-dash-title"
+                                style="display:flex; align-items:center; gap:12px;">
+                                Hostel 1 — Kokapet
+                                <button class="btn-sm btn-ghost" style="padding:4px; font-size:16px;"
+                                    onclick="loadData([currentHostel]).then(() => { renderManagerOccupancy(); renderMgrTenants(); updateDashboardStats(); })"
+                                    title="Sync Data">🔄</button>
                             </div>
                             <div class="dash-subtitle">Manager Dashboard · June 2025</div>
                         </div>
@@ -3365,6 +3707,38 @@
                     <div class="occupancy-slide" id="manager-occ-grid"><!-- rendered by JS --></div>
                 </div>
 
+                <!-- M: BOOKINGS -->
+                <div class="dash-section" id="m-bookings">
+                    <div class="dash-header">
+                        <div>
+                            <div class="dash-title">New Booking Requests</div>
+                            <div class="dash-subtitle">Review and accept room booking requests from potential tenants
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rent-table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tenant Name</th>
+                                    <th>Contact Info</th>
+                                    <th>Room & Bed</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mgr-bookings-table">
+                                <!-- Requests will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="no-bookings-msg"
+                        style="display:none; text-align:center; padding: 40px; color: var(--ink3);">
+                        <div style="font-size: 40px; margin-bottom: 12px;">📭</div>
+                        <p>No pending booking requests at the moment.</p>
+                    </div>
+                </div>
+
                 <!-- M: RENT -->
                 <div class="dash-section" id="m-rent">
                     <div class="dash-header">
@@ -3410,7 +3784,8 @@
                         </div>
                         <div class="flex gap16" style="align-items:center">
                             <div class="table-search">
-                                <input type="text" placeholder="Search tenant name..." onkeyup="filterTable(this, 'mgr-tenants-table')">
+                                <input type="text" placeholder="Search tenant name..."
+                                    onkeyup="filterTable(this, 'mgr-tenants-table')">
                                 <span class="search-icon">🔍</span>
                             </div>
                             <button class="btn btn-accent" onclick="openAddTenantModal()">+ Add Tenant</button>
@@ -3476,6 +3851,34 @@
                         <div style="margin-top: 24px; text-align: right;">
                             <button class="btn btn-primary" onclick="saveMgrFoodMenu()">Save Menu Changes</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- M: EXPENSES -->
+                <div class="dash-section" id="m-expenses">
+                    <div class="dash-header">
+                        <div>
+                            <div class="dash-title">Hostel Expenses</div>
+                            <div class="dash-subtitle">Log new expenses and view past records</div>
+                        </div>
+                        <button class="btn btn-primary" onclick="openModal('log-expense-modal')">+ Log New Expense</button>
+                    </div>
+
+                    <div class="rent-table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Cost</th>
+                                    <th>Date</th>
+                                    <th>Bill</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mgr-expenses-table">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -3576,9 +3979,11 @@
                 <div class="sb-section">Support</div>
                 <div class="sb-link" onclick="tenantTab(this,'t-complaints')"><span class="sb-icon">📋</span> My
                     Complaints</div>
-                <div class="sb-link" onclick="tenantTab(this,'t-notices')" style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="sb-link" onclick="tenantTab(this,'t-notices')"
+                    style="display:flex; justify-content:space-between; align-items:center;">
                     <div><span class="sb-icon">📢</span> Notices</div>
-                    <span id="tenant-notice-badge" style="display:none; background:var(--accent); color:white; font-size:11px; font-weight:600; padding:2px 6px; border-radius:10px;">0</span>
+                    <span id="tenant-notice-badge"
+                        style="display:none; background:var(--accent); color:white; font-size:11px; font-weight:600; padding:2px 6px; border-radius:10px;">0</span>
                 </div>
                 <div class="sb-section">Account</div>
                 <div class="sb-link" onclick="tenantTab(this,'t-profile')"><span class="sb-icon">👤</span> My Profile
@@ -3719,10 +4124,12 @@
                                     style="font-size:14px;font-weight:600">₹0</span></div>
                             <div class="flex between" style="padding-top:10px;border-top:1px solid var(--border)"><span
                                     style="font-size:14px;font-weight:700">Total</span><span
-                                    style="font-size:18px;font-weight:800;font-family:var(--font-display)" id="tp-pay-total">₹5,500</span>
+                                    style="font-size:18px;font-weight:800;font-family:var(--font-display)"
+                                    id="tp-pay-total">₹5,500</span>
                             </div>
                         </div>
-                        <button class="btn-full" style="margin-top:16px" onclick="payRent()" id="tp-pay-btn">Pay ₹5,500 →</button>
+                        <button class="btn-full" style="margin-top:16px" onclick="payRent()" id="tp-pay-btn">Pay ₹5,500
+                            →</button>
                     </div>
                 </div>
 
@@ -3815,7 +4222,7 @@
                         <div class="dash-title">Weekly Food Menu</div>
                         <div class="dash-subtitle">Your hostel's meal schedule for the week</div>
                     </div>
-                    
+
                     <div class="card" style="padding: 24px; margin-bottom: 24px; overflow-x: auto;">
                         <table class="table" style="min-width: 800px;">
                             <thead>
@@ -3833,25 +4240,35 @@
                         </table>
                     </div>
 
-                    <div class="card" style="padding: 24px; background: linear-gradient(145deg, #f8f9fa, #ffffff); border-left: 4px solid var(--accent); box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                    <div class="card"
+                        style="padding: 24px; background: linear-gradient(145deg, #f8f9fa, #ffffff); border-left: 4px solid var(--accent); box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
                         <h3 style="font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
                             <span style="font-size: 24px;">🍽️</span> Today's Menu (<span id="today-name"></span>)
                         </h3>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-                            <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-                                <div style="font-size: 12px; color: var(--ink3); margin-bottom: 4px;">🌅 Tiffin (8:00 AM)</div>
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                            <div
+                                style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
+                                <div style="font-size: 12px; color: var(--ink3); margin-bottom: 4px;">🌅 Tiffin (8:00
+                                    AM)</div>
                                 <div style="font-weight: 600; font-size: 15px;" id="today-tiffin"></div>
                             </div>
-                            <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-                                <div style="font-size: 12px; color: var(--ink3); margin-bottom: 4px;">🍛 Lunch (1:00 PM)</div>
+                            <div
+                                style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
+                                <div style="font-size: 12px; color: var(--ink3); margin-bottom: 4px;">🍛 Lunch (1:00 PM)
+                                </div>
                                 <div style="font-weight: 600; font-size: 15px;" id="today-lunch"></div>
                             </div>
-                            <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-                                <div style="font-size: 12px; color: var(--ink3); margin-bottom: 4px;">☕ Snacks (5:00 PM)</div>
+                            <div
+                                style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
+                                <div style="font-size: 12px; color: var(--ink3); margin-bottom: 4px;">☕ Snacks (5:00 PM)
+                                </div>
                                 <div style="font-weight: 600; font-size: 15px;" id="today-snacks"></div>
                             </div>
-                            <div style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-                                <div style="font-size: 12px; color: var(--ink3); margin-bottom: 4px;">🍲 Dinner (8:30 PM)</div>
+                            <div
+                                style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
+                                <div style="font-size: 12px; color: var(--ink3); margin-bottom: 4px;">🍲 Dinner (8:30
+                                    PM)</div>
                                 <div style="font-weight: 600; font-size: 15px;" id="today-dinner"></div>
                             </div>
                         </div>
@@ -3993,8 +4410,9 @@
         // rooms and complaints are loaded from Supabase on login
         let rooms = { 1: [], 2: [], 3: [] };
         let complaints = [];
+        let expenses = [];
         let notices = [];
-        
+
         // Data populated from Supabase on login
         let foodMenu = { 1: {}, 2: {}, 3: {} };
         let managers = [];
@@ -4022,10 +4440,14 @@
             }
             const { data: compData } = await db.from('complaints').select('*').in('hostel_id', hostelIds);
             if (compData) complaints = compData.map(c => ({ id: c.id, hostel: c.hostel_id, room: c.room_num, tenant: c.tenant_name, category: c.category, subject: c.subject, desc: c.description, status: c.status, date: c.created_date, cost: c.cost, bill: c.bill }));
-            
+
+            const { data: expData, error: expErr } = await db.from('expenses').select('*').in('hostel_id', hostelIds).order('created_at', { ascending: false });
+            if (expData) expenses = expData;
+            else expenses = [];
+
             const { data: usersData } = await db.from('users').select('*').eq('role', 'manager');
             if (usersData) managers = usersData;
-            
+
             const { data: noticeData, error: noticeErr } = await db.from('notices').select('*').in('hostel_id', [...hostelIds, 0]).order('created_at', { ascending: false });
             if (noticeErr) console.error("Error loading notices:", noticeErr);
             if (noticeData) notices = noticeData;
@@ -4048,7 +4470,7 @@
         let currentRole = null;
         let currentHostel = 1;
         let currentTenant = null;
-        let loginTab = 'owner';
+
         let tenantComplaints = [
             { id: 10, category: 'Room Issue', subject: 'Wardrobe door broken', desc: 'The wardrobe door hinge is broken and it wont close properly.', status: 'resolved', date: 'May 15, 2025', resolution: 'Hinge replaced.', cost: 200, bill: true },
             { id: 11, category: 'WiFi', subject: 'WiFi disconnecting at night', desc: 'WiFi keeps disconnecting between 11pm–2am every night.', status: 'progress', date: 'Jun 2, 2025', resolution: null, cost: null, bill: null },
@@ -4061,7 +4483,7 @@
             const select = document.getElementById('at-room');
             select.innerHTML = '';
             let hasVacant = false;
-            
+
             rooms[currentHostel].forEach(r => {
                 const filledCount = r.beds.filter(b => b.tenant).length;
                 const freeCount = r.capacity - filledCount;
@@ -4079,7 +4501,7 @@
                 showToast('Error', 'There are no vacant beds in this hostel!');
                 return;
             }
-            
+
             openModal('add-tenant-modal');
         }
         function goTo(id) {
@@ -4104,9 +4526,9 @@
             }
         }
 
-        function openModal(id) { 
+        function openModal(id) {
             if (id === 'book-room-modal') backToStep(1);
-            document.getElementById(id).classList.add('on'); 
+            document.getElementById(id).classList.add('on');
         }
         function closeModal(id) { document.getElementById(id).classList.remove('on'); }
 
@@ -4136,26 +4558,26 @@
             currentDetailId = id;
             const h = hostels[id];
             const d = hostelDetails[id];
-            
+
             document.getElementById('hd-name').textContent = h.name;
             document.getElementById('hd-loc-sub').textContent = d.locFull.split(',')[0];
             document.getElementById('hd-loc-full').textContent = d.locFull;
             document.getElementById('hd-desc').textContent = d.desc;
-            
+
             // Set initial image
             const photos = hostelPhotos[id];
             document.getElementById('hd-img').src = photos[0];
-            
+
             // Create gallery dots
             const nav = document.getElementById('hd-gal-nav');
-            nav.innerHTML = photos.map((p, i) => `<div class="gal-dot ${i===0?'on':''}" onclick="changeDetailPhoto(this, '${p}')"></div>`).join('');
-            
+            nav.innerHTML = photos.map((p, i) => `<div class="gal-dot ${i === 0 ? 'on' : ''}" onclick="changeDetailPhoto(this, '${p}')"></div>`).join('');
+
             // Calculate live stats
             if (!rooms[id] || rooms[id].length === 0) {
                 showToast('Loading...', `Fetching inventory for ${h.name}`);
                 await loadData([id]);
             }
-            
+
             const stats = { 1: 0, 2: 0, 3: 0 };
             rooms[id].forEach(r => {
                 const vacantBeds = r.beds.filter(b => !b.tenant).length;
@@ -4163,11 +4585,11 @@
                     stats[r.capacity] += vacantBeds;
                 }
             });
-            
+
             document.getElementById('hd-stat-1').textContent = stats[1] || 0;
             document.getElementById('hd-stat-2').textContent = stats[2] || 0;
             document.getElementById('hd-stat-3').textContent = stats[3] || 0;
-            
+
             openModal('hostel-detail-modal');
         }
 
@@ -4186,22 +4608,6 @@
         // ============================================================
         // LOGIN
         // ============================================================
-        function switchLoginTab(tab) {
-            loginTab = tab;
-            ['owner', 'manager', 'tenant'].forEach(t => document.getElementById('lt-' + t).classList.remove('on'));
-            document.getElementById('lt-' + tab).classList.add('on');
-            document.getElementById('l-hostel-field').style.display = 'none'; // Hostel is now fetched from DB for managers
-            document.getElementById('l-btn').textContent = `Login as ${tab.charAt(0).toUpperCase() + tab.slice(1)}`;
-            
-            // Clear credentials when switching tabs
-            document.getElementById('l-email').value = '';
-            document.getElementById('l-pass').value = '';
-        }
-
-        function loginAs(role) {
-            switchLoginTab(role);
-            openModal('login-modal');
-        }
 
         function togglePwd(btn) {
             const span = btn.previousElementSibling;
@@ -4225,90 +4631,81 @@
                     return;
                 }
 
-                console.log('Attempting login:', { email, loginTab });
+                console.log('Attempting login:', { email });
                 showToast('Authenticating...', 'Verifying credentials...');
 
-                if (loginTab === 'owner' || loginTab === 'manager') {
-                    const { data: user, error } = await db.from('users')
-                        .select('*')
-                        .eq('email', email)
-                        .eq('password', password)
-                        .eq('role', loginTab)
-                        .single();
+                // 1. Check Owner/Manager in users table
+                const { data: user, error: userError } = await db.from('users')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password)
+                    .single();
 
-                    if (error) {
-                        console.error('Database Error:', error);
-                        showToast('Login Failed', 'Invalid email or password');
-                        return;
-                    }
-                    if (!user) {
-                        showToast('Login Failed', 'Invalid email or password');
-                        return;
-                    }
-
+                if (user) {
                     closeModal('login-modal');
-
-                    if (loginTab === 'owner') {
+                    if (user.role === 'owner') {
                         currentRole = 'owner';
                         await loadData([1, 2, 3]);
                         renderOwnerOccupancy();
                         renderOwnerRentTable('all');
+                        renderOwnerExpenses();
                         renderOwnerComplaints();
                         renderOwnerAllTenants();
                         renderOwnerNotices();
                         renderManagersTable();
                         goTo('pg-owner');
                         showToast('Welcome back, Owner! 👑', 'Dashboard loaded.');
-                    } else {
+                        return;
+                    } else if (user.role === 'manager') {
                         currentRole = 'manager';
                         currentHostel = user.hostel_id || 1;
                         const h = hostels[currentHostel] || hostels[1];
                         document.getElementById('mgr-name-sb').textContent = h.mgr;
                         document.getElementById('mgr-hostel-sb').textContent = `Hostel ${currentHostel} — ${h.name.replace('VUSTELA ', '')}`;
                         document.getElementById('m-dash-title').textContent = h.name;
-                        
+
                         await loadData([currentHostel]);
                         renderManagerOccupancy();
                         renderMgrRentTable('all');
+                        renderMgrExpenses();
                         renderMgrTenants();
                         renderMgrComplaints('all');
                         renderMgrFoodMenu();
                         goTo('pg-manager');
                         showToast(`Welcome, ${h.mgr}! 🗂️`, `Managing ${h.name}`);
-                    }
-                } else {
-                    // Tenant Login
-                    let foundBed = null;
-                    // Check local data
-                    for (let hid of [1, 2, 3]) {
-                        rooms[hid].forEach(r => {
-                            r.beds.forEach(b => {
-                                if (b.tenant_email?.toLowerCase() === email.toLowerCase() && b.tenant_password === password) {
-                                    foundBed = { ...b, tenant_name: b.tenant, rooms: { num: r.num, hostel_id: hid } };
-                                }
-                            });
-                        });
-                    }
-                    // Check DB
-                    if (!foundBed) {
-                        const { data: bed } = await db.from('beds')
-                            .select('*, rooms(hostel_id, num)')
-                            .ilike('tenant_email', email)
-                            .eq('tenant_password', password)
-                            .single();
-                        if (bed) foundBed = bed;
-                    }
-
-                    if (!foundBed) {
-                        showToast('Login Failed', 'Invalid email or password');
                         return;
                     }
+                }
 
+                // 2. If not found in users, check Tenant in beds table
+                let foundBed = null;
+                // Check local data first
+                for (let hid of [1, 2, 3]) {
+                    rooms[hid].forEach(r => {
+                        r.beds.forEach(b => {
+                            if (b.tenant_email?.toLowerCase() === email.toLowerCase() && b.tenant_password === password) {
+                                foundBed = { ...b, tenant_name: b.tenant, rooms: { num: r.num, hostel_id: hid } };
+                            }
+                        });
+                    });
+                }
+                
+                // Check DB
+                if (!foundBed) {
+                    const { data: bed } = await db.from('beds')
+                        .select('*, rooms(hostel_id, num)')
+                        .ilike('tenant_email', email)
+                        .eq('tenant_password', password)
+                        .single();
+                    if (bed) foundBed = bed;
+                }
+
+                if (foundBed) {
                     closeModal('login-modal');
                     currentRole = 'tenant';
                     currentTenant = foundBed;
                     currentHostel = foundBed.rooms?.hostel_id || 1;
-                    
+
                     await loadData([currentHostel]);
                     renderTenantPortal();
                     renderTenantComplaints();
@@ -4316,7 +4713,12 @@
                     renderTenantFoodMenu();
                     goTo('pg-tenant');
                     showToast(`Welcome, ${foundBed.tenant_name}! 🏠`, `Room ${foundBed.rooms?.num || 'N/A'}`);
+                    return;
                 }
+
+                // 3. If neither, it's an error
+                showToast('Login Failed', 'Invalid email or password');
+
             } catch (err) {
                 console.error('LOGIN_ERROR:', err);
                 alert('Login System Error: ' + err.message);
@@ -4327,33 +4729,33 @@
             if (!currentTenant) return;
             const name = currentTenant.tenant_name;
             const first = name.split(' ')[0];
-            const inits = name.split(' ').map(x => x[0]).join('').substring(0,2).toUpperCase();
+            const inits = name.split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase();
             const rnum = currentTenant.rooms.num;
             const hname = hostels[currentHostel].name;
             const roomStr = `Room ${rnum} · ${hname}`;
             const rentStr = `₹${(currentTenant.rent || 5500).toLocaleString()}`;
             const depStr = `₹${((currentTenant.rent || 5500) * 2).toLocaleString()}`;
-            
+
             document.getElementById('tp-sb-name').textContent = name;
             document.getElementById('tp-sb-room').textContent = `Room ${rnum} · Hostel ${currentHostel}`;
             document.getElementById('tp-title').textContent = `Hi ${first}! 👋`;
             document.getElementById('tp-subtitle').textContent = roomStr;
-            
+
             document.getElementById('tp-stay-hostel').textContent = hname;
             document.getElementById('tp-stay-room').textContent = `${rnum} — Occupied`;
             document.getElementById('tp-stay-deposit').textContent = `${depStr} (refundable)`;
-            
+
             document.getElementById('tp-hero-rent').textContent = rentStr;
             document.getElementById('tp-pay-amt').textContent = rentStr;
             document.getElementById('tp-pay-sub').textContent = rentStr;
             document.getElementById('tp-pay-total').textContent = rentStr;
             document.getElementById('tp-pay-btn').textContent = `Pay ${rentStr} →`;
             document.getElementById('tp-pay-due').textContent = `${roomStr} · Due June 5, 2025`;
-            
+
             document.getElementById('tp-prof-ava').textContent = inits;
             document.getElementById('tp-prof-name').textContent = name;
             document.getElementById('tp-prof-sub').textContent = `${roomStr} · Tenant`;
-            
+
             document.getElementById('tp-info-name').textContent = name;
             document.getElementById('tp-info-email').textContent = currentTenant.tenant_email;
             document.getElementById('tp-info-hostel').textContent = hname;
@@ -4376,6 +4778,10 @@
             el.classList.add('act');
             document.querySelectorAll('#pg-manager .dash-section').forEach(s => s.classList.remove('on'));
             document.getElementById(secId).classList.add('on');
+
+            if (secId === 'm-bookings') {
+                renderMgrBookings();
+            }
         }
 
         function tenantTab(el, secId) {
@@ -4467,7 +4873,7 @@
                         };
                     });
                 }
-                
+
                 // Update dashboard stats after loading
                 updateDashboardStats();
             } catch (err) {
@@ -4480,9 +4886,17 @@
             const hrooms = rooms[currentHostel] || [];
             const totalRooms = hrooms.length;
             const totalBeds = hrooms.reduce((sum, r) => sum + r.capacity, 0);
-            const occBeds = hrooms.reduce((sum, r) => sum + r.beds.filter(b => b.tenant).length, 0);
+            const occBeds = hrooms.reduce((sum, r) => sum + r.beds.filter(b => b.tenant && !b.tenant.startsWith('PENDING:')).length, 0);
             const vacBeds = totalBeds - occBeds;
             const openComp = complaints.filter(c => c.hostel === currentHostel && c.status !== 'resolved').length;
+
+            // Booking Requests count
+            let bookingReqs = 0;
+            hrooms.forEach(rm => {
+                if (rm.beds) {
+                    bookingReqs += rm.beds.filter(b => b.rentStatus === 'Request' || (b.tenant && b.tenant.startsWith('PENDING:'))).length;
+                }
+            });
 
             const stats = document.querySelectorAll('#m-overview .stat-num');
             if (stats.length >= 4) {
@@ -4490,6 +4904,16 @@
                 stats[1].textContent = occBeds;
                 stats[2].textContent = vacBeds;
                 stats[3].textContent = openComp;
+            }
+
+            const badge = document.getElementById('mgr-booking-badge');
+            if (badge) {
+                if (bookingReqs > 0) {
+                    badge.textContent = bookingReqs;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
             }
         }
 
@@ -4506,7 +4930,7 @@
                 const totalBeds = hrooms.reduce((sum, r) => sum + r.capacity, 0);
                 const occBeds = hrooms.reduce((sum, r) => sum + (r.beds ? r.beds.filter(b => b.tenant).length : 0), 0);
                 const pct = totalBeds > 0 ? Math.round(occBeds / totalBeds * 100) : 0;
-                
+
                 html += `<div class="hostel-occ-block">
                     <div class="hob-header">
                         <div><div class="hob-name">${hostels[hid] ? hostels[hid].name : 'Hostel ' + hid}</div></div>
@@ -4516,33 +4940,43 @@
                             <div class="hob-stat"><strong>${pct}%</strong>&nbsp;Occupancy</div>
                         </div>
                     </div>`;
-                
+
                 const floors = [...new Set(hrooms.map(r => r.floor))].sort();
                 floors.forEach(fl => {
                     const flrRooms = hrooms.filter(r => r.floor === fl);
                     html += `<div class="floor-block"><div class="floor-label">Floor ${fl}</div><div class="room-grid">`;
                     flrRooms.forEach(r => {
                         const beds = r.beds || [];
-                        const occupiedBeds = beds.filter(b => b.tenant).length;
-                        const isFull = occupiedBeds === r.capacity;
-                        const isEmpty = occupiedBeds === 0;
+                        const occupiedBeds = beds.filter(b => b.tenant && !b.tenant.startsWith('PENDING:')).length;
+                        const pendingBookings = beds.filter(b => b.rentStatus === 'Request' || (b.tenant && b.tenant.startsWith('PENDING:'))).length;
+
+                        const isFull = (occupiedBeds + pendingBookings) === r.capacity;
+                        const isEmpty = (occupiedBeds + pendingBookings) === 0;
                         const hasOverdue = beds.some(b => b.rentStatus === 'overdue');
-                        const hasPending = beds.some(b => b.rentStatus === 'pending');
-                        
-                        let cls = isEmpty ? 'vacant' : (hasOverdue || hasPending) ? 'warning' : 'occupied';
+                        const hasPendingPayment = beds.some(b => b.rentStatus === 'pending');
+
+                        let cls = isEmpty ? 'vacant' : (hasOverdue || hasPendingPayment) ? 'warning' : pendingBookings > 0 ? 'warning' : 'occupied';
+
                         let statusText = isEmpty ? '<span class="rb-status" style="color:var(--red)">VACANT</span>' :
                             hasOverdue ? '<span class="rb-status" style="color:var(--yellow)">OVERDUE</span>' :
-                            hasPending ? '<span class="rb-status" style="color:var(--yellow)">PENDING</span>' :
-                            (!isFull) ? '<span class="rb-status" style="color:var(--green)">PARTIAL</span>' :
-                            '<span class="rb-status" style="color:var(--green)">FULL</span>';
-                            
+                                pendingBookings > 0 ? '<span class="rb-status" style="color:var(--yellow)">BOOKING REQ</span>' :
+                                    hasPendingPayment ? '<span class="rb-status" style="color:var(--yellow)">RENT PENDING</span>' :
+                                        (!isFull) ? '<span class="rb-status" style="color:var(--green)">PARTIAL</span>' :
+                                            '<span class="rb-status" style="color:var(--green)">FULL</span>';
+
                         const hasComplaint = complaints.some(c => c.hostel === hid && c.room === r.num && c.status !== 'resolved');
-                        let bedDots = beds.map(b => `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:2px;border:1px solid ${b.tenant ? 'var(--green)' : 'var(--border)'};background:${b.tenant ? 'var(--green)' : 'transparent'}"></span>`).join('');
-                        
+                        let bedDots = beds.map(b => {
+                            const isReq = b.rentStatus === 'Request' || (b.tenant && b.tenant.startsWith('PENDING:'));
+                            const isOcc = b.tenant && !isReq;
+                            let color = isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'var(--border)';
+                            let bg = isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'transparent';
+                            return `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:2px;border:1px solid ${color};background:${bg}"></span>`;
+                        }).join('');
+
                         html += `<div class="room-box ${cls}" onclick="showRoomPopup(event,${hid},'${r.num}','${role}')">
                             <div class="rb-indicators">${hasComplaint ? '<div class="rb-dot" style="background:var(--red)" title="Open complaint"></div>' : ''}</div>
                             <div class="rb-num">${r.num}</div>
-                            <div class="rb-name">${occupiedBeds} / ${r.capacity} Beds</div>
+                            <div class="rb-name">${occupiedBeds + pendingBookings} / ${r.capacity} Beds</div>
                             <div style="margin:4px 0">${bedDots}</div>
                             ${statusText}
                         </div>`;
@@ -4564,27 +4998,39 @@
             if (!room) return;
             const popup = document.getElementById('room-popup');
             if (!popup) return;
-            
+
             document.getElementById('rp-room-num').textContent = `Room ${roomNum} — Hostel ${hostelId}`;
             const hasComplaint = complaints.find(c => c.hostel === hostelId && c.room === roomNum && c.status !== 'resolved');
-            
-            let bedDetails = (room.beds || []).map((b, idx) => `
+
+            let bedDetails = (room.beds || []).map((b, idx) => {
+                const isReq = b.rentStatus === 'Request' || (b.tenant && b.tenant.startsWith('PENDING:'));
+                const cleanName = b.tenant ? b.tenant.replace('PENDING: ', '') : '';
+
+                return `
                 <div style="padding:10px; border:1px solid var(--border); border-radius:8px; margin-bottom:8px; background:${b.tenant ? 'var(--white)' : 'var(--bg)'}">
-                    <div style="font-size:11px; font-weight:700; color:var(--ink3); margin-bottom:4px">BED ${idx + 1}</div>
+                    <div style="flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <div style="font-size:11px; font-weight:700; color:var(--ink3);">BED ${idx + 1}</div>
+                        ${isReq ? `<span class="badge badge-yellow" style="font-size:9px; padding:2px 6px;">Booking Request</span>` : ''}
+                    </div>
                     ${b.tenant ? `
-                        <div style="font-weight:600; color:var(--ink); margin-bottom:2px">${b.tenant}</div>
-                        <div style="font-size:12px; color:var(--ink2)">Rent: ₹${(b.rent || 0).toLocaleString()}/mo</div>
-                        <div style="font-size:12px; margin-top:4px">${b.rentStatus === 'paid' ? '✅ Paid' : b.rentStatus === 'overdue' ? '🔴 Overdue' : '⏳ Pending'}</div>
+                        <div style="font-weight:600; color:var(--ink); margin-bottom:2px">${cleanName}</div>
+                        ${!isReq ? `
+                            <div style="font-size:12px; color:var(--ink2)">Rent: ₹${(b.rent || 0).toLocaleString()}/mo</div>
+                            <div style="font-size:12px; margin-top:4px">${b.rentStatus === 'paid' ? '✅ Paid' : b.rentStatus === 'overdue' ? '🔴 Overdue' : '⏳ Pending'}</div>
+                        ` : `
+                            <div style="font-size:12px; color:var(--accent); font-weight:600; margin-top:4px;">Waiting for approval</div>
+                        `}
                         <div style="display:flex; gap:6px; margin-top:6px;">
-                            ${(role === 'manager' && b.rentStatus !== 'paid') ? `<button class="btn-sm btn-green" style="padding:4px 8px" onclick="markPaid(${hostelId},'${roomNum}', ${idx})">Mark Paid</button>` : ''}
-                            ${(role === 'manager') ? `<button class="btn-sm" style="background:var(--red); padding:4px 8px; border:none; color:var(--white)" onclick="removeTenant(${hostelId},'${roomNum}', ${idx})">Remove</button>` : ''}
+                            ${(role === 'manager' && !isReq && b.rentStatus !== 'paid') ? `<button class="btn-sm btn-green" style="padding:4px 8px" onclick="markPaid(${hostelId},'${roomNum}', ${idx})">Mark Paid</button>` : ''}
+                            ${(role === 'manager' && isReq) ? `<button class="btn-sm btn-green" style="padding:4px 8px" onclick="closeRoomPopup(); mgrTab(null, 'm-bookings')">Review Request</button>` : ''}
+                            ${(role === 'manager') ? `<button class="btn-sm" style="background:var(--red); padding:4px 8px; border:none; color:var(--white)" onclick="removeTenant(${hostelId},'${roomNum}', ${idx})">${isReq ? 'Reject' : 'Remove'}</button>` : ''}
                         </div>
                     ` : `
                         <div style="font-weight:500; color:var(--ink3); font-style:italic">Empty Bed</div>
                         ${role === 'manager' ? `<button class="btn-sm btn-ghost" style="margin-top:6px; padding:4px 8px" onclick="closeRoomPopup(); openAddTenantModal('${room.num}')">+ Add Student</button>` : ''}
                     `}
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
 
             document.getElementById('rp-content').innerHTML = `
                 <div class="rp-row"><span class="rp-key">Room Type</span><span class="rp-val">${room.type} (${room.capacity}-Sharing)</span></div>
@@ -4631,6 +5077,108 @@
 
         function closeRoomPopup() { document.getElementById('room-popup').classList.remove('on'); }
         document.addEventListener('click', (e) => { if (!e.target.closest('.room-popup') && !e.target.closest('.room-box')) closeRoomPopup(); });
+
+        // ============================================================
+        // DAILY DIGEST LOGIC
+        // ============================================================
+        function openDailyDigestModal() {
+            let totalRent = 0;
+            let rentHtml = '';
+            
+            // Generate Rent HTML Grouped by Hostel
+            [1, 2, 3].forEach(hid => {
+                const hostelName = hostels[hid] ? hostels[hid].name : `Hostel ${hid}`;
+                let hostelRentHtml = '';
+                let hostelTotalRent = 0;
+                
+                if(rooms[hid]) {
+                    rooms[hid].forEach(r => {
+                        r.beds.forEach(b => {
+                            if (b.tenant && b.rentStatus === 'paid') {
+                                totalRent += b.rent;
+                                hostelTotalRent += b.rent;
+                                hostelRentHtml += `
+                                    <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; padding:8px; background:var(--bg); border-radius:6px;">
+                                        <div><span style="font-weight:600">${b.tenant}</span> (Room ${r.num})</div>
+                                        <div style="font-weight:700; color:var(--green)">+₹${b.rent.toLocaleString()}</div>
+                                    </div>
+                                `;
+                            }
+                        });
+                    });
+                }
+                
+                if (hostelRentHtml) {
+                    hostelRentHtml += `
+                        <div style="display:flex; justify-content:space-between; font-size:13px; margin-top:12px; margin-bottom:16px; padding-top:12px; border-top:1px dashed var(--border);">
+                            <div style="font-weight:700; color:var(--ink2)">Subtotal</div>
+                            <div style="font-weight:800; color:var(--ink)">₹${hostelTotalRent.toLocaleString()}</div>
+                        </div>
+                    `;
+                    
+                    rentHtml += `
+                        <div class="digest-group">
+                            <h4>${hostelName}</h4>
+                            ${hostelRentHtml}
+                        </div>
+                    `;
+                } else {
+                    rentHtml += `
+                        <div class="digest-group">
+                            <h4>${hostelName}</h4>
+                            <div style="font-size:13px; color:var(--ink3); font-style:italic; padding:8px;">No payments today.</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            document.getElementById('dd-total-rent').textContent = `₹${totalRent.toLocaleString()}`;
+            document.getElementById('dd-rent-list').innerHTML = rentHtml;
+            
+            // Generate Complaints HTML
+            let raisedHtml = '';
+            let resolvedHtml = '';
+            
+            complaints.forEach(c => {
+                const hostelName = hostels[c.hostel] ? hostels[c.hostel].name.replace('VUSTELA ', '') : `H${c.hostel}`;
+                if (c.status === 'resolved') {
+                    resolvedHtml += `
+                        <div style="font-size:13px; margin-bottom:8px; padding:10px; background:var(--green-bg); border-left:3px solid var(--green); border-radius:4px;">
+                            <div style="font-weight:600; color:var(--ink); margin-bottom:2px;">${c.subject}</div>
+                            <div style="color:var(--ink2);">${hostelName}, Room ${c.room} ${c.cost ? `· Cost: ₹${c.cost}` : ''}</div>
+                        </div>
+                    `;
+                } else {
+                    raisedHtml += `
+                        <div style="font-size:13px; margin-bottom:8px; padding:10px; background:var(--red-bg); border-left:3px solid var(--red); border-radius:4px;">
+                            <div style="font-weight:600; color:var(--ink); margin-bottom:2px;">${c.subject}</div>
+                            <div style="color:var(--ink2);">${hostelName}, Room ${c.room} (Reported recently)</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            let complaintsHtml = '';
+            if (raisedHtml) {
+                complaintsHtml += `<div class="digest-group">
+                    <h4>🔴 Raised (New Issues)</h4>
+                    ${raisedHtml}
+                </div>`;
+            }
+            if (resolvedHtml) {
+                complaintsHtml += `<div class="digest-group">
+                    <h4>🟢 Solved (Resolved Issues)</h4>
+                    ${resolvedHtml}
+                </div>`;
+            }
+            if (!complaintsHtml) {
+                complaintsHtml = '<div style="color:var(--ink3); font-size:13px; font-style:italic">No recent maintenance activity.</div>';
+            }
+            
+            document.getElementById('dd-complaints-list').innerHTML = complaintsHtml;
+            
+            openModal('daily-digest-modal');
+        }
 
         // ============================================================
         // RENT TABLES
@@ -4705,18 +5253,18 @@
             const hrooms = rooms[currentHostel] || [];
             hrooms.forEach(r => {
                 if (r.beds) {
-                    r.beds.forEach((b, idx) => { 
-                        // Only show beds that have a tenant assigned (either by name, email, or id)
-                        if (b.tenant || b.tenant_email || b._id) {
-                            allBeds.push({ ...b, num: r.num, bedId: b._id, bedIdx: idx }); 
+                    r.beds.forEach((b, idx) => {
+                        // Only show beds that have a tenant assigned (and NOT a pending request)
+                        if (b.tenant && !b.tenant.startsWith('PENDING:')) {
+                            allBeds.push({ ...b, num: r.num, bedId: b._id, bedIdx: idx });
                         }
                     });
                 }
             });
-            
+
             const table = document.getElementById('mgr-tenants-table');
             if (!table) return;
-            
+
             if (allBeds.length === 0) {
                 table.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--ink3)">No active tenants found in this hostel.</td></tr>';
                 return;
@@ -4744,23 +5292,23 @@
 
         async function resetTenantPwd(email, name, roomNum, bedIdx) {
             if (!confirm(`Are you sure you want to reset the password for ${name}?`)) return;
-            
+
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let newPwd = 'Vustela#';
-            for (let i=0; i<4; i++) newPwd += chars[Math.floor(Math.random() * chars.length)];
-            
+            for (let i = 0; i < 4; i++) newPwd += chars[Math.floor(Math.random() * chars.length)];
+
             showToast('Resetting...', `Updating password for ${name}...`);
-            
+
             try {
                 const { error } = await db.from('beds').update({ tenant_password: newPwd }).eq('tenant_email', email);
                 if (error) throw error;
-                
+
                 // Update local state
                 const r = rooms[currentHostel].find(rm => rm.num === roomNum);
                 if (r) r.beds[bedIdx].tenant_password = newPwd;
-                
+
                 renderMgrTenants();
-                
+
                 // Send notification
                 fetch('http://localhost:3000/send-email', {
                     method: 'POST',
@@ -4779,7 +5327,7 @@
                         </div>`
                     })
                 });
-                
+
                 showToast('Success ✅', `New password sent to ${email}`);
             } catch (err) {
                 console.error(err);
@@ -4789,32 +5337,205 @@
 
         async function removeTenantFromDB(bedId, name, roomNum, bedIdx) {
             if (!confirm(`Are you sure you want to REMOVE ${name} from the hostel roster? This will clear their bed.`)) return;
-            
+
             showToast('Removing...', `Clearing data for ${name}...`);
-            
+
             try {
-                const { error } = await db.from('beds').update({ 
-                    tenant_name: null, 
-                    tenant_email: null, 
-                    tenant_password: null, 
+                const { error } = await db.from('beds').update({
+                    tenant_name: null,
+                    tenant_email: null,
+                    tenant_password: null,
                     tenant_phone: null,
                     rent_status: null
                 }).eq('id', bedId);
-                
+
                 if (error) throw error;
-                
+
                 // Update local state
                 const r = rooms[currentHostel].find(rm => rm.num === roomNum);
                 if (r) {
                     r.beds[bedIdx] = { tenant: '', rent: 5500, rentStatus: null };
                 }
-                
+
                 renderMgrTenants();
                 renderManagerOccupancy();
                 showToast('Removed ✅', `${name} has been removed.`);
             } catch (err) {
                 console.error(err);
                 showToast('Error', 'Failed to remove tenant.');
+            }
+        }
+
+        // --- BOOKING MANAGEMENT ---
+        function renderMgrBookings() {
+            const container = document.getElementById('mgr-bookings-table');
+            const noMsg = document.getElementById('no-bookings-msg');
+            if (!container) return;
+
+            const hrooms = rooms[currentHostel] || [];
+            let requests = [];
+
+            hrooms.forEach(rm => {
+                if (rm.beds) {
+                    rm.beds.forEach(bed => {
+                        if (bed.rentStatus === 'Request' || (bed.tenant && bed.tenant.startsWith('PENDING:'))) {
+                            requests.push({
+                                roomId: rm.num,
+                                roomType: rm.type,
+                                ...bed
+                            });
+                        }
+                    });
+                }
+            });
+
+            if (requests.length === 0) {
+                container.innerHTML = '';
+                noMsg.style.display = 'block';
+                return;
+            }
+
+            noMsg.style.display = 'none';
+            container.innerHTML = requests.map(req => {
+                const cleanName = req.tenant.replace('PENDING: ', '');
+                return `
+                    <tr>
+                        <td style="font-weight:700">${cleanName}</td>
+                        <td>
+                            <div style="font-size:13px">${req.tenant_email || 'No email'}</div>
+                            <div style="font-size:11px; color:var(--ink3)">${req.tenant_phone || 'No phone'}</div>
+                        </td>
+                        <td>
+                            <div style="font-size:13px">Room ${req.roomId}</div>
+                            <div style="font-size:11px; color:var(--ink3)">${req.roomType}</div>
+                        </td>
+                        <td><span class="badge badge-yellow">Booking Request</span></td>
+                        <td>
+                            <div class="flex gap8">
+                                <button class="btn-sm btn-green" onclick="acceptBooking('${req._id}', '${cleanName}', '${req.roomId}', '${req.tenant_email || ''}', '${req.tenant_phone || ''}')">Accept</button>
+                                <button class="btn-sm btn-red" onclick="rejectBooking('${req._id}')">Reject</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function acceptBooking(bedId, name, roomNum, tenantEmail, tenantPhone) {
+            if (!confirm(`Are you sure you want to accept ${name}'s booking for Room ${roomNum}?`)) return;
+
+            showToast('Processing...', 'Accepting booking request...');
+
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let tenantPwd = 'Vustela#';
+            for (let i = 0; i < 4; i++) tenantPwd += chars[Math.floor(Math.random() * chars.length)];
+
+            const hostelName = hostels[currentHostel]?.name || 'VUSTELA PG Hostel';
+
+            try {
+                const { data: freshBed } = await db
+                    .from('beds')
+                    .select('tenant_email, tenant_phone')
+                    .eq('id', bedId)
+                    .single();
+
+                const emailToSend = (freshBed?.tenant_email || tenantEmail || '').trim();
+                const phoneToSend = (freshBed?.tenant_phone || tenantPhone || '').trim();
+
+                const { error } = await db.from('beds').update({
+                    tenant_name:     name,
+                    rent_status:     'pending',
+                    tenant_password: tenantPwd
+                }).eq('id', bedId);
+
+                if (error) throw error;
+
+                if (emailToSend && emailToSend !== 'undefined') {
+                    try {
+                        const emailBody = `
+                            <h2>🎉 Booking Confirmed!</h2>
+                            <p>Hi <strong>${name}</strong>,</p>
+                            <p>Your booking at <strong>${hostelName}</strong> (Room <strong>${roomNum}</strong>) has been <strong>accepted</strong> by the manager.</p>
+                            <hr style="border:1px solid #eee; margin:15px 0;">
+                            <h3>🔑 Your Login Credentials</h3>
+                            <p><strong>Email:</strong> ${emailToSend}</p>
+                            <p><strong>Password:</strong> ${tenantPwd}</p>
+                            <p><em>Please use these details to log in to your tenant dashboard.</em></p>
+                            <br>
+                            <p>— VUSTELA PG Hostel</p>
+                        `;
+
+                        fetch('http://localhost:3000/send-email', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                to:      emailToSend,
+                                subject: `✅ Booking Confirmed — ${hostelName}`,
+                                html:    emailBody
+                            })
+                        }).then(res => res.json()).then(result => {
+                            if (result.success) {
+                                showToast('Accepted & Email Sent ✅', `Confirmation sent to ${emailToSend}`);
+                            } else {
+                                showToast('Accepted ✅ — Email Failed', result.error || 'Booking done, email failed.');
+                            }
+                        }).catch(e => {
+                            showToast('Accepted ✅ — Server Error', 'Booking done. Could not reach mail server.');
+                        });
+                    } catch (emailErr) {
+                        showToast('Accepted ✅ — Server Error', 'Booking done. Could not reach mail server.');
+                    }
+                } else {
+                    showToast('Accepted ✅ — No Email', 'Booking done. Ask tenant to re-submit booking request.');
+                }
+
+                if (phoneToSend && phoneToSend !== 'undefined') {
+                    fetch('http://localhost:3000/send-whatsapp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            to:      phoneToSend,
+                            message: `🎉 *Booking Confirmed!*\n\nHi ${name}, your booking at *${hostelName}* (Room ${roomNum}) has been accepted.\n\n🔑 Login: ${emailToSend}\n🔑 Password: ${tenantPwd}\n\n— VUSTELA`
+                        })
+                    }).catch(() => {});
+                }
+
+                loadData([currentHostel]).then(() => {
+                    renderMgrBookings();
+                    updateDashboardStats();
+                    renderManagerOccupancy();
+                    renderMgrTenants();
+                });
+
+            } catch (err) {
+                console.error('[acceptBooking] Error:', err);
+                showToast('Error ❌', err.message || 'Could not accept booking.');
+            }
+        }
+
+        async function rejectBooking(bedId) {
+            if (!confirm('Are you sure you want to REJECT this booking request? This will clear the bed.')) return;
+
+            showToast('Processing...', 'Rejecting booking...');
+            try {
+                const { error } = await db.from('beds').update({
+                    tenant_name: null,
+                    tenant_email: null,
+                    tenant_phone: null,
+                    rent_status: null
+                }).eq('id', bedId);
+
+                if (error) throw error;
+
+                showToast('Booking Rejected', 'The bed is now available again.');
+                loadData([currentHostel]).then(() => {
+                    renderMgrBookings();
+                    updateDashboardStats();
+                    renderManagerOccupancy();
+                });
+            } catch (err) {
+                console.error(err);
+                showToast('Error', 'Could not reject booking.');
             }
         }
 
@@ -4854,7 +5575,10 @@
                             </div>
                         </td>
                         <td>
-                            <button class="btn btn-outline" style="padding:4px 10px; font-size:12px;" onclick="resetManagerPwd('${m.email}', '${mgrName}')">🔄 Reset</button>
+                            <div class="flex gap8">
+                                <button class="btn btn-outline" style="padding:4px 10px; font-size:12px;" onclick="resetManagerPwd('${m.email}', '${mgrName}')">🔄 Reset</button>
+                                <button class="btn btn-red" style="padding:4px 10px; font-size:12px;" onclick="removeManager('${m.email}', '${mgrName}')">Remove</button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -4863,23 +5587,23 @@
 
         async function resetManagerPwd(email, name) {
             if (!confirm(`Are you sure you want to reset the password for Manager ${name}?`)) return;
-            
+
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let newPwd = 'MgrVustela#';
-            for (let i=0; i<4; i++) newPwd += chars[Math.floor(Math.random() * chars.length)];
-            
+            for (let i = 0; i < 4; i++) newPwd += chars[Math.floor(Math.random() * chars.length)];
+
             showToast('Resetting...', `Updating password for ${name}...`);
-            
+
             try {
                 const { error } = await db.from('users').update({ password: newPwd }).eq('email', email);
                 if (error) throw error;
-                
+
                 // Update local state
                 const m = managers.find(u => u.email === email);
                 if (m) m.password = newPwd;
-                
+
                 renderManagersTable();
-                
+
                 // Send notification
                 fetch('http://localhost:3000/send-email', {
                     method: 'POST',
@@ -4899,11 +5623,107 @@
                         </div>`
                     })
                 });
-                
+
                 showToast('Success ✅', `New credentials sent to ${email}`);
             } catch (err) {
                 console.error(err);
                 showToast('Error', 'Failed to reset manager password.');
+            }
+        }
+
+        async function removeManager(email, name) {
+            if (!confirm(`Are you sure you want to permanently remove Manager ${name} (${email})?`)) return;
+            
+            showToast('Removing...', `Removing manager ${name}...`);
+            try {
+                const { error } = await db.from('users').delete().eq('email', email);
+                if (error) throw error;
+                
+                // Update local state
+                managers = managers.filter(u => u.email !== email);
+                renderManagersTable();
+                
+                showToast('Removed ✅', `Manager ${name} has been removed.`);
+            } catch (err) {
+                console.error(err);
+                showToast('Error', 'Failed to remove manager.');
+            }
+        }
+
+        async function addNewManager() {
+            const name = document.getElementById('new-mgr-name').value.trim() || 'Manager';
+            const email = document.getElementById('new-mgr-email').value.trim().toLowerCase();
+            const hostelId = parseInt(document.getElementById('new-mgr-hostel').value);
+            
+            if (!email || !email.endsWith('@gmail.com')) {
+                showToast('Error', 'Please enter a valid @gmail.com address.');
+                return;
+            }
+            if (!hostelId) {
+                showToast('Error', 'Please select a hostel to assign the manager to.');
+                return;
+            }
+
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let newPwd = 'MgrVustela#';
+            for (let i = 0; i < 4; i++) newPwd += chars[Math.floor(Math.random() * chars.length)];
+
+            showToast('Saving...', 'Adding new manager...');
+            try {
+                const { data, error } = await db.from('users').insert({
+                    email: email,
+                    password: newPwd,
+                    role: 'manager',
+                    hostel_id: hostelId
+                }).select().single();
+                
+                if (error) {
+                    if (error.code === '23505') {
+                        showToast('Error', 'A user with this email already exists.');
+                        return;
+                    }
+                    throw error;
+                }
+
+                await db.from('hostels').update({ manager_name: name }).eq('id', hostelId);
+                hostels[hostelId].mgr = name;
+
+                managers.push({ email, password: newPwd, role: 'manager', hostel_id: hostelId });
+                renderManagersTable();
+                closeModal('add-manager-modal');
+                document.getElementById('new-mgr-name').value = '';
+                document.getElementById('new-mgr-email').value = '';
+                document.getElementById('new-mgr-hostel').value = '';
+
+                // Send email
+                fetch('http://localhost:3000/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: email,
+                        subject: "Welcome to VUSTELA Manager Portal!",
+                        html: `<div style="font-family: sans-serif; padding: 20px; color: #333; max-width: 600px; border: 1px solid #eee; border-radius: 12px;">
+                            <h2 style="color: #C84B31;">Welcome to VUSTELA! 👔</h2>
+                            <p>Hi <strong>${name}</strong>,</p>
+                            <p>You have been assigned as the Manager for <strong>Hostel ${hostelId}</strong> by the Owner.</p>
+                            <div style="background: #f9f9f9; padding: 16px; border-radius: 8px; margin: 20px 0;">
+                                <h3 style="margin-top: 0;">🔑 Your Login Details:</h3>
+                                <p style="margin-bottom: 8px;"><strong>Email:</strong> ${email}</p>
+                                <p style="margin-bottom: 0;"><strong>Password:</strong> <code style="background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd;">${newPwd}</code></p>
+                            </div>
+                            <p>You can login here to access the Manager Dashboard and oversee your hostel operations:</p>
+                            <a href="http://localhost:8080/hostel_management002.html" style="display: inline-block; background: #1A1814; color: white; padding: 12px 24px; text-decoration: none; border-radius: 40px; font-weight: 600;">Login to Manager Portal</a>
+                            <br><br>
+                            <hr style="border: 0; border-top: 1px solid #eee; margin: 24px 0;">
+                            <p style="font-size: 12px; color: #999;">— VUSTELA PG Hostel Management</p>
+                        </div>`
+                    })
+                }).catch(e => console.error(e));
+
+                showToast('Success ✅', `Manager added and credentials emailed.`);
+            } catch (err) {
+                console.error(err);
+                showToast('Error', 'Failed to add manager.');
             }
         }
 
@@ -5001,10 +5821,10 @@
             const desc = document.getElementById('c-desc').value.trim();
             if (!subject || !desc) { showToast('Error', 'Please fill in subject and description.'); return; }
             const today = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-            
+
             const name = currentTenant ? currentTenant.tenant_name : 'Unknown';
             const room = currentTenant ? currentTenant.rooms.num : '000';
-            
+
             const { data } = await db.from('complaints').insert({ hostel_id: currentHostel, room_num: room, tenant_name: name, category: cat, subject, description: desc, status: 'open', created_date: today }).select().single();
             const newC = { id: data?.id || Date.now(), hostel: currentHostel, room: room, tenant: name, category: cat, subject, desc, status: 'open', date: today, cost: null, bill: null };
             complaints.push(newC);
@@ -5034,7 +5854,7 @@
             const phone = phoneRaw.replace(/\D/g, '');
             const roomNum = document.getElementById('at-room').value;
             const rent = parseInt(document.getElementById('at-rent').value) || 5500;
-            
+
             if (!email || !email.endsWith('@gmail.com')) {
                 showToast('Error', 'Tenant Email must be a valid @gmail.com address.');
                 return;
@@ -5051,7 +5871,7 @@
                 if (emptyBed) {
                     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
                     genPwd = 'Vustela#';
-                    for (let i=0; i<4; i++) genPwd += chars[Math.floor(Math.random() * chars.length)];
+                    for (let i = 0; i < 4; i++) genPwd += chars[Math.floor(Math.random() * chars.length)];
 
                     emptyBed.tenant = name;
                     emptyBed.tenant_email = email;
@@ -5076,9 +5896,9 @@
             renderManagerOccupancy();
             renderMgrRentTable('all');
             renderMgrTenants();
-            
+
             showToast('Tenant Added ✅', `Sending welcome email with credentials...`);
-            
+
             const pwd = genPwd;
             const emailBody = `
                 <div style="font-family: sans-serif; padding: 20px; color: #333; max-width: 600px; border: 1px solid #eee; border-radius: 12px;">
@@ -5136,7 +5956,7 @@
                     </div>
                 `;
             }).join('') || '<div class="card" style="text-align:center;padding:32px;color:var(--ink3)">No notices posted yet</div>';
-            
+
             const mgrList = document.getElementById('notices-list');
             const tenantList = document.getElementById('tenant-notices-list');
             if (mgrList) mgrList.innerHTML = html;
@@ -5161,32 +5981,35 @@
             const title = document.getElementById('notice-title').value.trim();
             const body = document.getElementById('notice-body').value.trim();
             if (!title || !body) { showToast('Error', 'Fill in title and message.'); return; }
-            
+
             const author = hostels[currentHostel].mgr;
-            const { data, error } = await db.from('notices').insert({
-                hostel_id: currentHostel,
-                title: title,
-                body: body,
-                author: author
-            }).select().single();
+            const newNotice = { hostel_id: currentHostel, title: title, body: body, author: author };
+            const { data, error } = await db.from('notices').insert(newNotice).select().single();
+
+            if (error) { 
+                console.warn('DB Error:', error.message);
+                // Fallback to local state if DB fails
+                newNotice.id = Date.now();
+                newNotice.created_at = new Date().toISOString();
+                notices.unshift(newNotice);
+            } else {
+                notices.unshift(data);
+            }
             
-            if (error) { showToast('Error', error.message); return; }
-            
-            notices.unshift(data);
             renderNotices();
-            
+
             document.getElementById('notice-title').value = '';
             document.getElementById('notice-body').value = '';
-            
+
             // SIMULATE NOTIFICATIONS & LIVE WHATSAPP
             // 1. Fetch all tenants in this hostel
             const { data: tenantBeds } = await db.from('beds')
                 .select('tenant_name, tenant_email, tenant_phone')
                 .not('tenant_name', 'is', null);
-                
+
             let emailsSent = 0;
             let whatsappSent = 0;
-            
+
             if (tenantBeds) {
                 for (const bed of tenantBeds) {
                     if (bed.tenant_phone) {
@@ -5221,7 +6044,7 @@
                                         <h2 style="color: #C84B31;">${title}</h2>
                                         <p style="font-size: 16px; white-space: pre-wrap;">${body}</p>
                                         <br/>
-                                        <p style="color: #777; font-size: 12px;">This is an automated announcement from VUSTELA Hostel Management.</p>
+                                        <p style="color: #777; font-size: 12px;">This is an automated announcement from VUSTELA Hostel Management. Posted by: ${author}</p>
                                     </div>`
                                 })
                             });
@@ -5237,7 +6060,7 @@
                     }
                 }
             }
-            
+
             showToast('Notice Posted 📢', `Sent via WhatsApp (${whatsappSent}) and Email (${emailsSent}).`);
         }
 
@@ -5246,7 +6069,7 @@
             const globalNotices = notices.filter(n => n.hostel_id === 0);
             let globalHtml = '';
             if (globalNotices.length > 0) {
-                globalHtml = `<h3 style="font-size: 15px; margin-bottom: 16px; color: var(--accent); display:flex; align-items:center; gap:8px;"><span>🌐</span> Global Announcements</h3>` + 
+                globalHtml = `<h3 style="font-size: 15px; margin-bottom: 16px; color: var(--accent); display:flex; align-items:center; gap:8px;"><span>🌐</span> Global Announcements</h3>` +
                     globalNotices.map(n => `
                     <div class="notice-card" style="border-left: 4px solid var(--accent); box-shadow: 0 4px 15px rgba(200,75,49,0.1); margin-bottom: 12px; background: white;">
                         <div class="nc-title" style="color:var(--accent);">📌 ${n.title}</div>
@@ -5270,7 +6093,7 @@
                     </div>
                 `).join('') || '<div style="font-size:13px; color:var(--ink3); text-align:center; padding:16px;">No notices posted</div>';
                 const el = document.getElementById(`o-notices-h${hid}`);
-                if(el) el.innerHTML = html;
+                if (el) el.innerHTML = html;
             });
         }
 
@@ -5279,22 +6102,26 @@
             const title = document.getElementById('owner-notice-title').value.trim();
             const body = document.getElementById('owner-notice-body').value.trim();
             if (!title || !body) { showToast('Error', 'Fill in title and message.'); return; }
-            
-            const author = "Owner";
-            const { data, error } = await db.from('notices').insert({
-                hostel_id: targetId,
-                title, body, author
-            }).select();
 
-            if (error) { showToast('Error', 'Failed to post notice.'); return; }
+            const author = "Owner";
+            const newNotice = { hostel_id: targetId, title, body, author };
+            const { data, error } = await db.from('notices').insert(newNotice).select();
+
+            if (error) { 
+                console.warn('DB Error:', error.message);
+                // Fallback to local state if Supabase rejects (e.g. FK constraint on targetId 0)
+                newNotice.id = Date.now();
+                newNotice.created_at = new Date().toISOString();
+                notices.unshift(newNotice);
+            } else {
+                notices.unshift(data[0]);
+            }
             
-            notices.unshift(data[0]);
             renderOwnerNotices();
-            
+
             document.getElementById('owner-notice-title').value = '';
             document.getElementById('owner-notice-body').value = '';
-            showToast('Success ✅', 'Announcement posted successfully.');
-            
+
             // SIMULATE NOTIFICATIONS & LIVE WHATSAPP
             let query = db.from('beds').select('tenant_name, tenant_email, tenant_phone').not('tenant_name', 'is', null);
             if (targetId !== 0) {
@@ -5309,7 +6136,7 @@
                 sendNotifications(tenantBeds, title, body, author);
             }
         }
-        
+
         async function sendNotifications(tenantBeds, title, body, author) {
             let emailsSent = 0;
             let whatsappSent = 0;
@@ -5323,7 +6150,7 @@
                                 body: JSON.stringify({ to: bed.tenant_phone, message: `📢 *VUSTELA Notice: ${title}*\n\n${body}` })
                             });
                             if ((await res.json()).success) whatsappSent++;
-                        } catch(e) {}
+                        } catch (e) { }
                     }
                     if (bed.tenant_email) {
                         try {
@@ -5337,13 +6164,157 @@
                                 })
                             });
                             if ((await emailRes.json()).success) emailsSent++;
-                        } catch(e) {}
+                        } catch (e) { }
                     }
                 }
             }
             showToast('Notice Posted 📢', `Sent via WhatsApp (${whatsappSent}) and Email (${emailsSent}).`);
         }
 
+        // ============================================================
+        // EXPENSES LOGIC
+        // ============================================================
+        async function logExpense() {
+            const cat = document.getElementById('exp-category').value;
+            const amt = document.getElementById('exp-amount').value;
+            const desc = document.getElementById('exp-desc').value;
+            const billFile = document.getElementById('exp-bill').files[0];
+            
+            if (!amt || !desc) {
+                showToast('Error', 'Please enter amount and description');
+                return;
+            }
+            
+            showToast('Saving...', 'Logging new expense');
+            
+            // For now, simulate file upload by using a placeholder or creating a local blob URL
+            let billUrl = '';
+            if (billFile) {
+                billUrl = URL.createObjectURL(billFile);
+            }
+            
+            const newExp = {
+                hostel_id: currentHostel,
+                category: cat,
+                amount: parseFloat(amt),
+                description: desc,
+                bill_url: billUrl,
+                created_by: document.getElementById('mgr-name-sb').textContent,
+                created_at: new Date().toISOString()
+            };
+            
+            // Save to Supabase if table exists
+            const { error } = await db.from('expenses').insert([newExp]);
+            if (error) {
+                console.warn('Could not save to Supabase. Using local state only.', error.message);
+            }
+            
+            // Prepend to local array for instant UI update
+            expenses.unshift(newExp);
+            
+            renderMgrExpenses();
+            closeModal('log-expense-modal');
+            
+            // Clear form
+            document.getElementById('exp-amount').value = '';
+            document.getElementById('exp-desc').value = '';
+            document.getElementById('exp-bill').value = '';
+            
+            showToast('Success ✅', 'Expense logged successfully');
+        }
+
+        function viewBill(url) {
+            const img = document.getElementById('bill-img-preview');
+            const noImg = document.getElementById('bill-no-img');
+            if (url) {
+                img.src = url;
+                img.style.display = 'block';
+                noImg.style.display = 'none';
+            } else {
+                img.style.display = 'none';
+                noImg.style.display = 'block';
+            }
+            openModal('view-bill-modal');
+        }
+
+        function renderMgrExpenses() {
+            const tbody = document.getElementById('mgr-expenses-table');
+            if (!tbody) return;
+            
+            const myExpenses = expenses.filter(e => e.hostel_id === currentHostel);
+            
+            if (myExpenses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink3);padding:20px;">No expenses logged yet.</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = myExpenses.map(e => {
+                const d = new Date(e.created_at);
+                const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                return `
+                <tr>
+                    <td>${e.description}</td>
+                    <td><span class="badge badge-grey">${e.category}</span></td>
+                    <td style="font-weight:700;color:var(--ink)">₹${e.amount.toLocaleString()}</td>
+                    <td>${dateStr}</td>
+                    <td>${e.bill_url ? `<button class="btn-sm btn-ghost" onclick="viewBill('${e.bill_url}')">📎 View Bill</button>` : '<span style="font-size:12px;color:var(--ink3)">No bill</span>'}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderOwnerExpenses() {
+            const tbody = document.getElementById('owner-expenses-table');
+            if (!tbody) return;
+            
+            let totalSpent = 0;
+            let h1Cost = 0, h2Cost = 0, h3Cost = 0;
+            let h1Jobs = 0, h2Jobs = 0, h3Jobs = 0;
+            
+            const html = expenses.map(e => {
+                const d = new Date(e.created_at);
+                const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                
+                totalSpent += e.amount;
+                if(e.hostel_id === 1) { h1Cost += e.amount; h1Jobs++; }
+                if(e.hostel_id === 2) { h2Cost += e.amount; h2Jobs++; }
+                if(e.hostel_id === 3) { h3Cost += e.amount; h3Jobs++; }
+                
+                let hBadge = '';
+                if(e.hostel_id === 1) hBadge = '<span class="badge badge-blue">H1</span>';
+                if(e.hostel_id === 2) hBadge = '<span class="badge badge-green">H2</span>';
+                if(e.hostel_id === 3) hBadge = '<span class="badge badge-yellow">H3</span>';
+                
+                return `
+                <tr>
+                    <td>${e.description}</td>
+                    <td>${hBadge}</td>
+                    <td><span class="badge badge-grey">${e.category}</span></td>
+                    <td style="font-weight:700;color:var(--yellow)">₹${e.amount.toLocaleString()}</td>
+                    <td>${e.created_by || 'Manager'}</td>
+                    <td>${dateStr}</td>
+                    <td>${e.bill_url ? `<button class="btn-sm btn-ghost" onclick="viewBill('${e.bill_url}')">📎 View Bill</button>` : '<span style="font-size:12px;color:var(--ink3)">No bill</span>'}</td>
+                </tr>`;
+            }).join('');
+            
+            if (expenses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:20px;">No expenses logged yet.</td></tr>';
+            } else {
+                tbody.innerHTML = html;
+            }
+            
+            // Update stats
+            document.getElementById('o-exp-total-spent').textContent = `₹${totalSpent.toLocaleString()} spent this month`;
+            document.getElementById('o-exp-h1-cost').textContent = `₹${h1Cost.toLocaleString()}`;
+            document.getElementById('o-exp-h1-jobs').textContent = `${h1Jobs} jobs`;
+            document.getElementById('o-exp-h2-cost').textContent = `₹${h2Cost.toLocaleString()}`;
+            document.getElementById('o-exp-h2-jobs').textContent = `${h2Jobs} jobs`;
+            document.getElementById('o-exp-h3-cost').textContent = `₹${h3Cost.toLocaleString()}`;
+            document.getElementById('o-exp-h3-jobs').textContent = `${h3Jobs} jobs`;
+        }
+
+        // ============================================================
+        // VACATING LOGIC
+        // ============================================================
         function submitVacate() {
             const date = document.getElementById('vac-date').value;
             if (!date) { showToast('Error', 'Please select a vacate date.'); return; }
@@ -5358,8 +6329,8 @@
             const menu = foodMenu[currentHostel] || {};
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const tbody = document.getElementById('mgr-food-table');
-            if(!tbody) return;
-            
+            if (!tbody) return;
+
             let html = '';
             days.forEach(day => {
                 const dayMenu = menu[day] || { tiffin: '', lunch: '', snacks: '', dinner: '' };
@@ -5377,15 +6348,15 @@
         async function saveMgrFoodMenu() {
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const updates = [];
-            
+
             days.forEach(day => {
                 const t = document.getElementById(`fm-${day}-tiffin`).value;
                 const l = document.getElementById(`fm-${day}-lunch`).value;
                 const s = document.getElementById(`fm-${day}-snacks`).value;
                 const d = document.getElementById(`fm-${day}-dinner`).value;
-                
+
                 foodMenu[currentHostel][day] = { tiffin: t, lunch: l, snacks: s, dinner: d };
-                
+
                 updates.push({
                     hostel_id: currentHostel,
                     day: day,
@@ -5395,30 +6366,30 @@
                     dinner: d
                 });
             });
-            
+
             showToast('Saving...', 'Updating food menu in database...');
             const { error } = await db.from('food_menu').upsert(updates, { onConflict: 'hostel_id,day' });
-            
+
             if (error) {
                 console.error("Error saving menu:", error);
                 showToast('Error', 'Failed to save menu to database.');
                 return;
             }
-            
+
             showToast('Menu Saved ✅', 'The food menu for your hostel has been updated.');
             notifyTenantsAboutMenuChange();
         }
 
         async function notifyTenantsAboutMenuChange() {
             showToast('Notifying Tenants 📢', 'Sending WhatsApp & Email updates...');
-            
+
             // Get today's menu to include in the message
             const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             const todayStr = days[new Date().getDay()];
             const todayMenu = foodMenu[currentHostel][todayStr] || {};
-            
+
             const waBody = `📢 *VUSTELA Notice*\n\nThe food menu for Hostel ${currentHostel} has just been updated by the manager. Check your VUSTELA dashboard to see the latest meals for this week!\n\n🍽️ *Today's Menu (${todayStr}):*\n🌅 Tiffin: ${todayMenu.tiffin || 'N/A'}\n🍛 Lunch: ${todayMenu.lunch || 'N/A'}\n☕ Snacks: ${todayMenu.snacks || 'N/A'}\n🍲 Dinner: ${todayMenu.dinner || 'N/A'}`;
-            
+
             const emailBody = `<div style="font-family: sans-serif; padding: 20px; color: #333;">
                 <h2 style="color: #C84B31;">Food Menu Updated 🍽️</h2>
                 <p style="font-size: 16px;">The food menu for your hostel has just been updated by the manager.</p>
@@ -5439,7 +6410,7 @@
             const activeTenants = rooms[currentHostel]
                 .flatMap(r => r.beds)
                 .filter(b => b.tenant && b.rentStatus !== null);
-                
+
             let count = 0;
             for (const bed of activeTenants) {
                 if (bed.tenant_phone) {
@@ -5452,7 +6423,7 @@
                                 message: waBody
                             })
                         });
-                    } catch (e) {}
+                    } catch (e) { }
                 }
                 if (bed.tenant_email) {
                     try {
@@ -5465,7 +6436,7 @@
                                 html: emailBody
                             })
                         });
-                    } catch (e) {}
+                    } catch (e) { }
                 }
                 count++;
             }
@@ -5479,7 +6450,7 @@
             const menu = foodMenu[hid] || {};
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
             const tbody = document.getElementById('tenant-food-table');
-            if(!tbody) return;
+            if (!tbody) return;
 
             // Render full table
             let html = '';
@@ -5498,14 +6469,25 @@
             // Render Today's Menu
             const todayIndex = new Date().getDay(); // 0 is Sunday, 1 is Monday
             const todayStr = todayIndex === 0 ? 'Sunday' : days[todayIndex - 1];
-            
+
             const todayMenu = menu[todayStr] || { tiffin: 'Not set', lunch: 'Not set', snacks: 'Not set', dinner: 'Not set' };
-            
+
             document.getElementById('today-name').textContent = todayStr;
             document.getElementById('today-tiffin').textContent = todayMenu.tiffin;
             document.getElementById('today-lunch').textContent = todayMenu.lunch;
             document.getElementById('today-snacks').textContent = todayMenu.snacks;
             document.getElementById('today-dinner').textContent = todayMenu.dinner;
+        }
+
+        // ============================================================
+        // UTILS
+        // ============================================================
+        function setActive(element, parentSelector) {
+            const parent = element.closest(parentSelector);
+            if (parent) {
+                parent.querySelectorAll('.fb').forEach(btn => btn.classList.remove('on'));
+                element.classList.add('on');
+            }
         }
 
         // ============================================================
@@ -5564,13 +6546,13 @@
             openModal('book-room-modal');
             bookingState.hostelId = id;
             const h = hostels[id];
-            
+
             const nameEl = document.getElementById('br-hostel-name');
             if (nameEl) nameEl.textContent = h.name;
-            
+
             const gridEl = document.getElementById('br-live-grid');
             if (gridEl) gridEl.innerHTML = '<div style="text-align:center; padding:40px; color:var(--ink3);">Loading available beds...</div>';
-            
+
             goToStep(2);
 
             if (!rooms[id] || rooms[id].length === 0) {
@@ -5583,12 +6565,12 @@
             const hostelRooms = rooms[id] || [];
             const container = document.getElementById('br-live-grid');
             if (!container) return;
-            
+
             if (hostelRooms.length === 0) {
                 container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--ink3);">No rooms found.</div>';
                 return;
             }
-            
+
             container.innerHTML = hostelRooms.map(rm => {
                 const availableBeds = rm.beds.filter(b => !b.tenant).length;
                 return `
@@ -5604,8 +6586,8 @@
                             </div>
                             <div style="display: flex; gap: 6px;">
                                 ${rm.beds.map((b, idx) => {
-                                    const isOccupied = !!b.tenant;
-                                    return `
+                    const isOccupied = !!b.tenant;
+                    return `
                                     <div class="bed-box" 
                                          onclick="${isOccupied ? '' : `selectBedForBooking('${rm.num}', ${idx})`}"
                                          style="width: 32px; height: 32px; border-radius: 6px; cursor: ${isOccupied ? 'not-allowed' : 'pointer'}; 
@@ -5614,19 +6596,20 @@
                                                 ${isOccupied ? 'background: var(--green); color: white;' : 'border: 1.5px dashed var(--accent); color: var(--accent);'}">
                                         ${idx + 1}
                                     </div>`;
-                                }).join('')}
+                }).join('')}
                             </div>
                         </div>
                     </div>
                 </div>
-            `;}).join('');
+            `;
+            }).join('');
         }
 
         function selectBedForBooking(roomNum, bedIdx) {
             const rm = rooms[bookingState.hostelId].find(r => r.num === roomNum);
             bookingState.selectedRoom = rm;
             bookingState.selectedBedIndex = bedIdx;
-            
+
             const textEl = document.getElementById('br-selection-text');
             if (textEl) {
                 textEl.textContent = `Room ${roomNum} (Bed ${bedIdx + 1}) — ${rm.type}`;
@@ -5651,10 +6634,9 @@
         function backToStep(step) { goToStep(step); }
 
         async function submitRoomRequest() {
-            const name = document.getElementById('br-name').value.trim();
+            const name  = document.getElementById('br-name').value.trim();
             const email = document.getElementById('br-email').value.trim();
             const phone = document.getElementById('br-phone').value.trim();
-            const msg = document.getElementById('br-message').value.trim();
 
             if (!name || !email || !phone) {
                 showToast('Error', 'Please fill in all required fields.');
@@ -5662,22 +6644,45 @@
             }
 
             showToast('Sending...', 'Submitting your request...');
-            
-            try {
-                const { error } = await db.from('beds').update({
-                    tenant_name: `PENDING: ${name}`,
-                    tenant_email: email,
-                    tenant_phone: phone,
-                    rent_status: 'Request'
-                }).eq('id', bookingState.selectedRoom.beds[bookingState.selectedBedIndex]._id);
 
-                if (error) throw error;
+            try {
+                const selectedBed  = bookingState.selectedRoom.beds[bookingState.selectedBedIndex];
+                const bedId        = selectedBed?._id;
+                const roomId       = bookingState.selectedRoom._roomId;
+
+                let dbError = null;
+
+                if (bedId) {
+                    // Bed row already exists in DB — just update it
+                    const { error } = await db.from('beds').update({
+                        tenant_name:  `PENDING: ${name}`,
+                        tenant_email: email,
+                        tenant_phone: phone,
+                        rent_status:  'Request'
+                    }).eq('id', bedId);
+                    dbError = error;
+                } else {
+                    // Empty placeholder bed — INSERT a new row
+                    const defaultRent = bookingState.selectedRoom.beds[0]?.rent || 5500;
+                    const { error } = await db.from('beds').insert({
+                        room_id:      roomId,
+                        tenant_name:  `PENDING: ${name}`,
+                        tenant_email: email,
+                        tenant_phone: phone,
+                        rent:         defaultRent,
+                        rent_status:  'Request'
+                    });
+                    dbError = error;
+                }
+
+                if (dbError) throw dbError;
 
                 closeModal('book-room-modal');
-                showToast('Success! 🎉', 'Your booking request has been sent.');
+                showToast('Request Sent! 🎉', 'Your booking request has been submitted. The manager will review it shortly.');
+
             } catch (err) {
-                console.error(err);
-                showToast('Error', 'Could not submit request. Please try again.');
+                console.error('[submitRoomRequest] Error:', err);
+                showToast('Error', err.message || 'Could not submit request. Please try again.');
             }
         }
     </script>
@@ -5688,20 +6693,24 @@
                 <div class="modal-title" id="book-modal-title">Select Your Branch</div>
                 <button class="modal-close" onclick="closeModal('book-room-modal')">×</button>
             </div>
-            
+
             <!-- STEP 1: HOSTEL SELECTION -->
             <div id="br-step-1">
                 <p style="color: var(--ink3); margin-bottom: 20px;">Choose a location to see available rooms:</p>
-                <div class="hostel-selector-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
-                    <div class="hs-item" onclick="selectHostelForBooking(1)" style="background: var(--bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                <div class="hostel-selector-grid"
+                    style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="hs-item" onclick="selectHostelForBooking(1)"
+                        style="background: var(--bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
                         <div class="hs-icon" style="font-size: 32px; margin-bottom: 8px;">🏢</div>
                         <div class="hs-name" style="font-weight: 700; font-size: 14px;">Kokapet</div>
                     </div>
-                    <div class="hs-item" onclick="selectHostelForBooking(2)" style="background: var(--bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                    <div class="hs-item" onclick="selectHostelForBooking(2)"
+                        style="background: var(--bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
                         <div class="hs-icon" style="font-size: 32px; margin-bottom: 8px;">🏗️</div>
                         <div class="hs-name" style="font-weight: 700; font-size: 14px;">Gachibowli</div>
                     </div>
-                    <div class="hs-item" onclick="selectHostelForBooking(3)" style="background: var(--bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
+                    <div class="hs-item" onclick="selectHostelForBooking(3)"
+                        style="background: var(--bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
                         <div class="hs-icon" style="font-size: 32px; margin-bottom: 8px;">🏨</div>
                         <div class="hs-name" style="font-weight: 700; font-size: 14px;">Madhapur</div>
                     </div>
@@ -5711,13 +6720,20 @@
             <!-- STEP 2: LIVE GRID SELECTION -->
             <div id="br-step-2" style="display: none;">
                 <div class="flex between" style="margin-bottom: 16px;">
-                    <div id="br-hostel-name" style="font-weight: 700; color: var(--accent); font-family: var(--font-display);">VUSTELA Kokapet</div>
+                    <div id="br-hostel-name"
+                        style="font-weight: 700; color: var(--accent); font-family: var(--font-display);">VUSTELA
+                        Kokapet</div>
                     <button class="btn-sm btn-ghost" onclick="backToStep(1)">← Change Hostel</button>
                 </div>
-                
-                <div class="occ-legend" style="margin-bottom: 20px; display: flex; gap: 16px; font-size: 12px; color: var(--ink3);">
-                    <div class="legend-item"><span class="legend-box legend-red" style="display:inline-block; width:12px; height:12px; border:1px dashed var(--accent); border-radius:3px; vertical-align: middle;"></span> Available</div>
-                    <div class="legend-item"><span class="legend-box legend-green" style="display:inline-block; width:12px; height:12px; background:var(--green); border-radius:3px; vertical-align: middle;"></span> Occupied</div>
+
+                <div class="occ-legend"
+                    style="margin-bottom: 20px; display: flex; gap: 16px; font-size: 12px; color: var(--ink3);">
+                    <div class="legend-item"><span class="legend-box legend-red"
+                            style="display:inline-block; width:12px; height:12px; border:1px dashed var(--accent); border-radius:3px; vertical-align: middle;"></span>
+                        Available</div>
+                    <div class="legend-item"><span class="legend-box legend-green"
+                            style="display:inline-block; width:12px; height:12px; background:var(--green); border-radius:3px; vertical-align: middle;"></span>
+                        Occupied</div>
                 </div>
 
                 <div id="br-live-grid" style="max-height: 400px; overflow-y: auto; padding-right: 8px;">
@@ -5727,19 +6743,29 @@
 
             <!-- STEP 3: SUBMIT DETAILS -->
             <div id="br-step-3" style="display: none;">
-                <div class="selected-bed-banner" style="background: var(--bg2); padding: 16px; border-radius: 12px; margin-bottom: 24px; border: 1px solid var(--border);">
-                    <div style="font-size: 11px; color: var(--ink3); text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Selected Bed</div>
-                    <div id="br-selection-text" style="font-weight: 800; font-size: 20px; color: var(--ink); font-family: var(--font-display);">Room 102 (Double Sharing)</div>
+                <div class="selected-bed-banner"
+                    style="background: var(--bg2); padding: 16px; border-radius: 12px; margin-bottom: 24px; border: 1px solid var(--border);">
+                    <div
+                        style="font-size: 11px; color: var(--ink3); text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">
+                        Selected Bed</div>
+                    <div id="br-selection-text"
+                        style="font-weight: 800; font-size: 20px; color: var(--ink); font-family: var(--font-display);">
+                        Room 102 (Double Sharing)</div>
                 </div>
 
-                <div class="input-group"><label>Full Name</label><input type="text" id="br-name" placeholder="Your full name"></div>
-                <div class="input-group"><label>Email Address</label><input type="email" id="br-email" placeholder="your@email.com"></div>
-                <div class="input-group"><label>Phone Number</label><input type="tel" id="br-phone" placeholder="+91 00000 00000"></div>
-                <div class="input-group"><label>Message (optional)</label><textarea id="br-message" placeholder="Any special requests?"></textarea></div>
-                
+                <div class="input-group"><label>Full Name</label><input type="text" id="br-name"
+                        placeholder="Your full name"></div>
+                <div class="input-group"><label>Email Address</label><input type="email" id="br-email"
+                        placeholder="your@email.com"></div>
+                <div class="input-group"><label>Phone Number</label><input type="tel" id="br-phone"
+                        placeholder="+91 00000 00000"></div>
+                <div class="input-group"><label>Message (optional)</label><textarea id="br-message"
+                        placeholder="Any special requests?"></textarea></div>
+
                 <div class="flex gap12" style="margin-top: 24px;">
                     <button class="btn btn-outline" style="flex: 1;" onclick="backToStep(2)">← Change Bed</button>
-                    <button class="btn btn-primary" style="flex: 2;" onclick="submitRoomRequest()">Confirm Booking</button>
+                    <button class="btn btn-primary" style="flex: 2;" onclick="submitRoomRequest()">Confirm
+                        Booking</button>
                 </div>
             </div>
         </div>
@@ -5758,8 +6784,36 @@
         </div>
     </div>
 
+    <!-- ADD MANAGER MODAL -->
+    <div class="modal-overlay" id="add-manager-modal">
+        <div class="modal" style="max-width: 450px;">
+            <div class="modal-header">
+                <div class="modal-title">Add New Manager</div>
+                <button class="modal-close" onclick="closeModal('add-manager-modal')">×</button>
+            </div>
+            <div class="input-group">
+                <label>Manager Name</label>
+                <input type="text" id="new-mgr-name" placeholder="John Doe">
+            </div>
+            <div class="input-group">
+                <label>Manager Email (Login ID)</label>
+                <input type="email" id="new-mgr-email" placeholder="manager@gmail.com">
+            </div>
+            <div class="input-group">
+                <label>Assign to Hostel</label>
+                <select id="new-mgr-hostel">
+                    <option value="" disabled selected>Select Hostel...</option>
+                    <option value="1">Hostel 1 — Kokapet</option>
+                    <option value="2">Hostel 2 — Gachibowli</option>
+                    <option value="3">Hostel 3 — Madhapur</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" style="width:100%; margin-top:16px" onclick="addNewManager()">Add Manager</button>
+        </div>
+    </div>
+
     <script>
-        window.onerror = function(msg, url, lineNo, columnNo, error) {
+        window.onerror = function (msg, url, lineNo, columnNo, error) {
             console.error('GLOBAL_ERROR:', msg, 'at', lineNo, ':', columnNo);
             showToast('System Error', 'Something went wrong. Please check console.');
             return false;

@@ -77,6 +77,16 @@ async function loadData(hostelIds) {
                 };
             });
         }
+        const { data: dbHostels } = await db.from('hostels').select('*');
+        if (dbHostels) {
+            dbHostels.forEach(h => {
+                if (hostels[h.id]) {
+                    hostels[h.id].name = h.name;
+                    hostels[h.id].mgr = h.manager_name;
+                }
+            });
+        }
+
         console.log("loadData complete");
     } catch (e) {
         console.error("Critical Data Load Error:", e);
