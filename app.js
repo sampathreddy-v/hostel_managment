@@ -2,6 +2,10 @@
 // APP LOGIC & UI INTERACTION
 // ============================================================
 
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000'
+    : 'https://hostel-managment-isy3.onrender.com';
+
 let currentRole = null;
 let currentHostel = 1;
 let currentTenant = null;
@@ -533,7 +537,7 @@ async function addTenant() {
 
 // Helper for sending emails via local backend
 function sendEmail(to, subject, html) {
-    fetch('http://localhost:3000/send-email', {
+    fetch(API_BASE_URL + '/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ to, subject, html })

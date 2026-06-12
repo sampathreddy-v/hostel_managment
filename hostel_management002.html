@@ -4374,6 +4374,10 @@
     </div>
 
     <script>
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:3000'
+            : 'https://hostel-managment-isy3.onrender.com';
+
         // ============================================================
         // SUPABASE CLIENT
         // ============================================================
@@ -5243,7 +5247,7 @@
                 renderMgrTenants();
 
                 // Send notification
-                fetch('http://localhost:3000/send-email', {
+                fetch(API_BASE_URL + '/send-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -5405,7 +5409,7 @@
                             <p>— VUSTELA PG Hostel</p>
                         `;
 
-                        const res = await fetch('http://localhost:3000/send-email', {
+                        const res = await fetch(API_BASE_URL + '/send-email', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -5430,7 +5434,7 @@
 
                 // Step 4: WhatsApp (fire and forget)
                 if (phoneToSend && phoneToSend !== 'undefined') {
-                    fetch('http://localhost:3000/send-whatsapp', {
+                    fetch(API_BASE_URL + '/send-whatsapp', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -5545,7 +5549,7 @@
                 renderManagersTable();
 
                 // Send notification
-                fetch('http://localhost:3000/send-email', {
+                fetch(API_BASE_URL + '/send-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -5764,7 +5768,7 @@
             `;
 
             try {
-                fetch('http://localhost:3000/send-email', {
+                fetch(API_BASE_URL + '/send-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -5855,7 +5859,7 @@
                 for (const bed of tenantBeds) {
                     if (bed.tenant_phone) {
                         try {
-                            const res = await fetch('http://localhost:3000/send-whatsapp', {
+                            const res = await fetch(API_BASE_URL + '/send-whatsapp', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -5875,7 +5879,7 @@
                     }
                     if (bed.tenant_email) {
                         try {
-                            const emailRes = await fetch('http://localhost:3000/send-email', {
+                            const emailRes = await fetch(API_BASE_URL + '/send-email', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -5981,7 +5985,7 @@
                 for (const bed of tenantBeds) {
                     if (bed.tenant_phone) {
                         try {
-                            const res = await fetch('http://localhost:3000/send-whatsapp', {
+                            const res = await fetch(API_BASE_URL + '/send-whatsapp', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ to: bed.tenant_phone, message: `📢 *VUSTELA Notice: ${title}*\n\n${body}` })
@@ -5991,7 +5995,7 @@
                     }
                     if (bed.tenant_email) {
                         try {
-                            const emailRes = await fetch('http://localhost:3000/send-email', {
+                            const emailRes = await fetch(API_BASE_URL + '/send-email', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -6108,7 +6112,7 @@
             for (const bed of activeTenants) {
                 if (bed.tenant_phone) {
                     try {
-                        fetch('http://localhost:3000/send-whatsapp', {
+                        fetch(API_BASE_URL + '/send-whatsapp', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -6120,7 +6124,7 @@
                 }
                 if (bed.tenant_email) {
                     try {
-                        fetch('http://localhost:3000/send-email', {
+                        fetch(API_BASE_URL + '/send-email', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
