@@ -1368,11 +1368,6 @@
 
         /* ===== ROOM OCCUPANCY GRID ===== */
         .occupancy-slide {
-            background: var(--white);
-            border-radius: var(--r);
-            border: 1px solid var(--border);
-            padding: 24px;
-            box-shadow: var(--shadow);
             margin-bottom: 24px
         }
 
@@ -1426,6 +1421,11 @@
         }
 
         .hostel-occ-block {
+            background: var(--white);
+            border-radius: var(--r);
+            border: 1px solid var(--border);
+            padding: 24px;
+            box-shadow: var(--shadow);
             margin-bottom: 28px
         }
 
@@ -2665,8 +2665,14 @@
 
                     <div class="location-box">
                         <div class="loc-tag">📍 <span id="hd-loc-full">Location Name</span></div>
-                        <p style="font-size: 13px; color: var(--ink2); opacity: 0.8;">Premium location with easy access
+                        <p style="font-size: 13px; color: var(--ink2); opacity: 0.8; margin-bottom: 12px;">Premium location with easy access
                             to transport, IT parks, and major city hubs. High security and peaceful environment.</p>
+                        <a id="hd-map-btn" href="#" target="_blank" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none; margin-bottom: 16px;">
+                            🗺️ View on Google Maps
+                        </a>
+                        <div class="map-wrapper" style="width: 100%; height: 250px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow);">
+                            <iframe id="hd-map-iframe" src="" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2810,6 +2816,8 @@
                     </div>
                 </div>
             </div>
+
+
 
             <div style="margin-top:40px">
                 <div class="sec-eyebrow" style="margin-bottom:16px">Amenities</div>
@@ -4535,6 +4543,41 @@
             document.getElementById('hd-loc-sub').textContent = d.locFull.split(',')[0];
             document.getElementById('hd-loc-full').textContent = d.locFull;
             document.getElementById('hd-desc').textContent = d.desc;
+
+            // Update Map Direct Link and Embed iframe
+            const fallbackMapUrls = {
+                1: {
+                    mapUrl: "https://www.google.com/maps/search/?api=1&query=17.394860,78.324830",
+                    mapEmbedUrl: "https://maps.google.com/maps?q=17.394860,78.324830&z=15&output=embed"
+                },
+                2: {
+                    mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448293,78.374185",
+                    mapEmbedUrl: "https://maps.google.com/maps?q=17.448293,78.374185&z=15&output=embed"
+                },
+                3: {
+                    mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448550,78.390830",
+                    mapEmbedUrl: "https://maps.google.com/maps?q=17.448550,78.390830&z=15&output=embed"
+                }
+            };
+            const mapInfo = fallbackMapUrls[id] || fallbackMapUrls[1];
+            const mapBtn = document.getElementById('hd-map-btn');
+            if (mapBtn) {
+                mapBtn.href = d.mapUrl || mapInfo.mapUrl;
+            }
+            const mapIframe = document.getElementById('hd-map-iframe');
+            if (mapIframe) {
+                mapIframe.src = d.mapEmbedUrl || mapInfo.mapEmbedUrl;
+            }
+
+            // Also update main dashboard map
+            const dbMapIframe = document.getElementById('db-map-iframe');
+            if (dbMapIframe) {
+                dbMapIframe.src = mapInfo.mapEmbedUrl;
+            }
+            const dbMapTitle = document.getElementById('db-map-title');
+            if (dbMapTitle) {
+                dbMapTitle.textContent = `${h.name} Location`;
+            }
 
             // Set initial image
             const photos = hostelPhotos[id];

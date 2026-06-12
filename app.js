@@ -144,15 +144,18 @@ const hostelPhotos = {
 const hostelDetails = {
     1: {
         desc: "Our Kokapet property offers premium living in the heart of the Financial District. Ideal for IT professionals, it features ultra-modern amenities, high-speed connectivity, and a peaceful work-from-home environment.",
-        locFull: "Kokapet, Financial District, Hyderabad"
+        locFull: "Kokapet, Financial District, Hyderabad",
+        mapUrl: "https://www.google.com/maps/search/?api=1&query=17.394860,78.324830"
     },
     2: {
         desc: "Located in the bustling IT Hub of Gachibowli, this hostel is designed for convenience and community. Close to major tech parks, hospitals, and shopping centers, it provides a perfect balance of work and life.",
-        locFull: "Gachibowli, IT Hub, Hyderabad"
+        locFull: "Gachibowli, IT Hub, Hyderabad",
+        mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448293,78.374185"
     },
     3: {
         desc: "VUSTELA Madhapur brings you luxury living in the most vibrant part of the city. With spacious rooms and premium food services, it's the top choice for those who value comfort and accessibility.",
-        locFull: "Madhapur, HITEC City, Hyderabad"
+        locFull: "Madhapur, HITEC City, Hyderabad",
+        mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448550,78.390830"
     }
 };
 
@@ -164,6 +167,40 @@ async function openHostelDetail(id) {
     document.getElementById('hd-loc-sub').textContent = d.locFull.split(',')[0];
     document.getElementById('hd-loc-full').textContent = d.locFull;
     document.getElementById('hd-desc').textContent = d.desc;
+    
+    const fallbackMapUrls = {
+        1: {
+            mapUrl: "https://www.google.com/maps/search/?api=1&query=17.394860,78.324830",
+            mapEmbedUrl: "https://maps.google.com/maps?q=17.394860,78.324830&z=15&output=embed"
+        },
+        2: {
+            mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448293,78.374185",
+            mapEmbedUrl: "https://maps.google.com/maps?q=17.448293,78.374185&z=15&output=embed"
+        },
+        3: {
+            mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448550,78.390830",
+            mapEmbedUrl: "https://maps.google.com/maps?q=17.448550,78.390830&z=15&output=embed"
+        }
+    };
+    const mapInfo = fallbackMapUrls[id] || fallbackMapUrls[1];
+    const mapBtn = document.getElementById('hd-map-btn');
+    if (mapBtn) {
+        mapBtn.href = d.mapUrl || mapInfo.mapUrl;
+    }
+    const mapIframe = document.getElementById('hd-map-iframe');
+    if (mapIframe) {
+        mapIframe.src = d.mapEmbedUrl || mapInfo.mapEmbedUrl;
+    }
+
+    // Also update main dashboard map
+    const dbMapIframe = document.getElementById('db-map-iframe');
+    if (dbMapIframe) {
+        dbMapIframe.src = mapInfo.mapEmbedUrl;
+    }
+    const dbMapTitle = document.getElementById('db-map-title');
+    if (dbMapTitle) {
+        dbMapTitle.textContent = `${h.name} Location`;
+    }
     
     // Set initial image
     const photos = hostelPhotos[id];
@@ -709,7 +746,7 @@ async function acceptRequest(id) {
 
             <p style="font-size: 14px; color: #666; margin-bottom: 24px;">You can login here to pay rent, view receipts, and raise complaints:</p>
             
-            <a href="http://localhost:8081/hostel_management002.html" 
+            <a href="http://localhost:8080/hostel_management002.html" 
                style="display: inline-block; background: #1A1814; color: #FFF; padding: 14px 28px; border-radius: 40px; text-decoration: none; font-weight: 700; font-size: 15px;">
                Login to Dashboard
             </a>

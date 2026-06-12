@@ -1368,11 +1368,6 @@
 
         /* ===== ROOM OCCUPANCY GRID ===== */
         .occupancy-slide {
-            background: var(--white);
-            border-radius: var(--r);
-            border: 1px solid var(--border);
-            padding: 24px;
-            box-shadow: var(--shadow);
             margin-bottom: 24px
         }
 
@@ -1426,6 +1421,11 @@
         }
 
         .hostel-occ-block {
+            background: var(--white);
+            border-radius: var(--r);
+            border: 1px solid var(--border);
+            padding: 24px;
+            box-shadow: var(--shadow);
             margin-bottom: 28px
         }
 
@@ -2609,6 +2609,109 @@
         @media (min-width: 768px) { .daily-grid { grid-template-columns: 1fr 1fr; } }
         .digest-group { margin-bottom: 24px; }
         .digest-group h4 { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        
+        /* Safety limits to prevent long names (e.g. containing base64) from breaking table columns */
+        .rent-table-wrap td div.flex.gap8 span {
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        /* Edit Dashboard Styles */
+        .hostels-edit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+        .hostel-edit-card {
+            background: var(--white);
+            border-radius: var(--r);
+            border: 1px solid var(--border);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .edit-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--ink);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 4px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .edit-photos-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .edit-photo-item {
+            position: relative;
+            aspect-ratio: 16/10;
+            border-radius: var(--rs);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .edit-photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .edit-photo-item .btn-remove-photo {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        .edit-rooms-list {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--rs);
+            padding: 8px;
+            background: var(--bg);
+            margin-bottom: 8px;
+        }
+        .edit-room-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 4px;
+            border-bottom: 1px solid var(--border);
+            gap: 8px;
+            font-size: 13px;
+        }
+        .edit-room-item:last-child {
+            border-bottom: none;
+        }
+        .edit-room-info {
+            flex: 1;
+            font-weight: 500;
+        }
+        .edit-room-actions {
+            display: flex;
+            gap: 4px;
+        }
     </style>
 </head>
 
@@ -2669,8 +2772,14 @@
 
                     <div class="location-box">
                         <div class="loc-tag">📍 <span id="hd-loc-full">Location Name</span></div>
-                        <p style="font-size: 13px; color: var(--ink2); opacity: 0.8;">Premium location with easy access
+                        <p style="font-size: 13px; color: var(--ink2); opacity: 0.8; margin-bottom: 12px;">Premium location with easy access
                             to transport, IT parks, and major city hubs. High security and peaceful environment.</p>
+                        <a id="hd-map-btn" href="#" target="_blank" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none; margin-bottom: 16px;">
+                            🗺️ View on Google Maps
+                        </a>
+                        <div class="map-wrapper" style="width: 100%; height: 250px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow);">
+                            <iframe id="hd-map-iframe" src="" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2787,6 +2896,8 @@
                     </div>
                 </div>
             </div>
+
+
 
             <div style="margin-top:40px">
                 <div class="sec-eyebrow" style="margin-bottom:16px">Amenities</div>
@@ -2978,6 +3089,8 @@
                 <div class="sb-link" onclick="ownerTab(this,'o-managers')"><span class="sb-icon">👔</span> Managers
                 </div>
                 <div class="sb-link" onclick="ownerTab(this,'o-tenants')"><span class="sb-icon">👥</span> All Tenants
+                </div>
+                <div class="sb-link" onclick="ownerTab(this,'o-edit-dashboard')"><span class="sb-icon">🎨</span> Edit Dashboard
                 </div>
                 <div class="sb-section" style="margin-top:auto"></div>
                 <div class="sb-logout"><button onclick="logout()">← Logout</button></div>
@@ -3539,6 +3652,19 @@
                             </thead>
                             <tbody id="o-all-tenants-table"></tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- O: EDIT DASHBOARD -->
+                <div class="dash-section" id="o-edit-dashboard">
+                    <div class="dash-header">
+                        <div>
+                            <div class="dash-title">Edit Dashboard Layouts</div>
+                            <div class="dash-subtitle">Manage details, photos, and room grids for Hostel 1, 2, and 3</div>
+                        </div>
+                    </div>
+                    <div class="hostels-edit-grid" id="hostels-edit-container">
+                        <!-- Populated by JS: renderEditDashboard() -->
                     </div>
                 </div>
 
@@ -4398,6 +4524,17 @@
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlibmtxbXBqdmN2Ym53d3VkcWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMzg0MjcsImV4cCI6MjA5MzcxNDQyN30.Msd-VylS1ycp0K1LKBQxu15WqOx7jnJZ_VoIaaThprw'
         );
 
+        function getDisplayName(name) {
+            if (!name) return 'Unnamed Tenant';
+            if (name.includes(' | ID:')) {
+                return name.split(' | ID:')[0];
+            }
+            if (name.length > 30) {
+                return name.substring(0, 30) + '...';
+            }
+            return name;
+        }
+
         // ============================================================
         // DATA (loaded from Supabase)
         // ============================================================
@@ -4532,13 +4669,13 @@
         }
         function closeModal(id) { document.getElementById(id).classList.remove('on'); }
 
-        const hostelPhotos = {
+        const defaultHostelPhotos = {
             1: ['hostel_single.png', 'hostel_common.png'],
             2: ['hostel_triple.png', 'hostel_common.png'],
             3: ['hostel_single.png', 'hostel_triple.png']
         };
 
-        const hostelDetails = {
+        const defaultHostelDetails = {
             1: {
                 desc: "Our Kokapet property offers premium living in the heart of the Financial District. Ideal for IT professionals, it features ultra-modern amenities, high-speed connectivity, and a peaceful work-from-home environment.",
                 locFull: "Kokapet, Financial District, Hyderabad"
@@ -4553,6 +4690,9 @@
             }
         };
 
+        const hostelPhotos = JSON.parse(localStorage.getItem('hostelPhotos')) || defaultHostelPhotos;
+        const hostelDetails = JSON.parse(localStorage.getItem('hostelDetails')) || defaultHostelDetails;
+
         let currentDetailId = null;
         async function openHostelDetail(id) {
             currentDetailId = id;
@@ -4563,6 +4703,41 @@
             document.getElementById('hd-loc-sub').textContent = d.locFull.split(',')[0];
             document.getElementById('hd-loc-full').textContent = d.locFull;
             document.getElementById('hd-desc').textContent = d.desc;
+
+            // Update Map Direct Link and Embed iframe
+            const fallbackMapUrls = {
+                1: {
+                    mapUrl: "https://www.google.com/maps/search/?api=1&query=17.394860,78.324830",
+                    mapEmbedUrl: "https://maps.google.com/maps?q=17.394860,78.324830&z=15&output=embed"
+                },
+                2: {
+                    mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448293,78.374185",
+                    mapEmbedUrl: "https://maps.google.com/maps?q=17.448293,78.374185&z=15&output=embed"
+                },
+                3: {
+                    mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448550,78.390830",
+                    mapEmbedUrl: "https://maps.google.com/maps?q=17.448550,78.390830&z=15&output=embed"
+                }
+            };
+            const mapInfo = fallbackMapUrls[id] || fallbackMapUrls[1];
+            const mapBtn = document.getElementById('hd-map-btn');
+            if (mapBtn) {
+                mapBtn.href = d.mapUrl || mapInfo.mapUrl;
+            }
+            const mapIframe = document.getElementById('hd-map-iframe');
+            if (mapIframe) {
+                mapIframe.src = d.mapEmbedUrl || mapInfo.mapEmbedUrl;
+            }
+
+            // Also update main dashboard map
+            const dbMapIframe = document.getElementById('db-map-iframe');
+            if (dbMapIframe) {
+                dbMapIframe.src = mapInfo.mapEmbedUrl;
+            }
+            const dbMapTitle = document.getElementById('db-map-title');
+            if (dbMapTitle) {
+                dbMapTitle.textContent = `${h.name} Location`;
+            }
 
             // Set initial image
             const photos = hostelPhotos[id];
@@ -4771,6 +4946,9 @@
             el.classList.add('act');
             document.querySelectorAll('#pg-owner .dash-section').forEach(s => s.classList.remove('on'));
             document.getElementById(secId).classList.add('on');
+            if (secId === 'o-edit-dashboard') {
+                renderEditDashboard();
+            }
         }
 
         function mgrTab(el, secId) {
@@ -5207,7 +5385,7 @@
             else if (filter === 'h3') allBeds = allBeds.filter(b => b.hostel === 3);
             document.getElementById('owner-rent-table').innerHTML = allBeds.map(b => `
     <tr>
-      <td><div class="flex gap8"><div class="ava" style="width:30px;height:30px;font-size:10px">${b.tenant.split(' ').map(x => x[0]).join('')}</div><span style="font-weight:500">${b.tenant}</span></div></td>
+      <td><div class="flex gap8"><div class="ava" style="width:30px;height:30px;font-size:10px">${getDisplayName(b.tenant).split(' ').map(x => x[0]).join('')}</div><span style="font-weight:500">${getDisplayName(b.tenant)}</span></div></td>
       <td><span class="badge badge-blue">H${b.hostel}</span></td>
       <td class="mono">${b.num} <span style="font-size:11px;color:var(--ink3)">(Bed ${b.bedIdx})</span></td>
       <td style="font-weight:600">₹${b.rent.toLocaleString()}</td>
@@ -5234,7 +5412,7 @@
             else if (filter === 'overdue') allBeds = allBeds.filter(b => b.rentStatus === 'overdue');
             document.getElementById('mgr-rent-table').innerHTML = allBeds.map(b => `
     <tr>
-      <td><div class="flex gap8"><div class="ava" style="width:30px;height:30px;font-size:10px">${b.tenant.split(' ').map(x => x[0]).join('')}</div><span style="font-weight:500">${b.tenant}</span></div></td>
+      <td><div class="flex gap8"><div class="ava" style="width:30px;height:30px;font-size:10px">${getDisplayName(b.tenant).split(' ').map(x => x[0]).join('')}</div><span style="font-weight:500">${getDisplayName(b.tenant)}</span></div></td>
       <td class="mono">${b.num} <span style="font-size:11px;color:var(--ink3)">(Bed ${b.bedIdx + 1})</span></td>
       <td style="font-weight:600">₹${b.rent.toLocaleString()}</td>
       <td style="color:var(--ink3)">Jun 5, 2025</td>
@@ -5272,7 +5450,7 @@
 
             table.innerHTML = allBeds.map(b => `
     <tr>
-      <td><div class="flex gap8"><div class="ava" style="width:30px;height:30px;font-size:10px">${(b.tenant || 'U').split(' ').map(x => x[0]).join('')}</div><span style="font-weight:500">${b.tenant || 'Unnamed Tenant'}</span></div></td>
+      <td><div class="flex gap8"><div class="ava" style="width:30px;height:30px;font-size:10px">${getDisplayName(b.tenant || 'U').split(' ').map(x => x[0]).join('')}</div><span style="font-weight:500">${getDisplayName(b.tenant || 'Unnamed Tenant')}</span></div></td>
       <td class="mono">${b.num}</td>
       <td style="color:var(--ink2)">${b.tenant_email || 'No email set'}</td>
       <td>
@@ -5548,7 +5726,7 @@
             });
             document.getElementById('o-all-tenants-table').innerHTML = allBeds.map(b => `
     <tr>
-      <td><div class="flex gap8"><div class="ava" style="width:30px;height:30px;font-size:10px">${b.tenant.split(' ').map(x => x[0]).join('')}</div><span style="font-weight:500">${b.tenant}</span></div></td>
+      <td><div class="flex gap8"><div class="ava" style="width:30px;height:30px;font-size:10px">${getDisplayName(b.tenant).split(' ').map(x => x[0]).join('')}</div><span style="font-weight:500">${getDisplayName(b.tenant)}</span></div></td>
       <td><span class="badge badge-blue">H${b.hostel}</span></td>
       <td class="mono">${b.num}</td>
       <td>Monthly</td>
@@ -6679,10 +6857,353 @@
 
                 closeModal('book-room-modal');
                 showToast('Request Sent! 🎉', 'Your booking request has been submitted. The manager will review it shortly.');
-
             } catch (err) {
                 console.error('[submitRoomRequest] Error:', err);
                 showToast('Error', err.message || 'Could not submit request. Please try again.');
+            }
+        }
+
+        // ============================================================
+        // EDIT DASHBOARD LAYOUT & ROOM GRID CONFIGURATION (OWNER)
+        // ============================================================
+
+        function updateLandingPageUI() {
+            const branchCards = document.querySelectorAll('.branch-card');
+            [1, 2, 3].forEach((id, idx) => {
+                const card = branchCards[idx];
+                if (!card) return;
+                const h = hostels[id];
+                const d = hostelDetails[id];
+                const photos = hostelPhotos[id];
+                if (h) {
+                    const nameEl = card.querySelector('.branch-name');
+                    if (nameEl) nameEl.textContent = h.name;
+                }
+                if (d) {
+                    const locEl = card.querySelector('.branch-loc');
+                    if (locEl) locEl.textContent = `📍 ${d.locFull.split(',')[0]}`;
+                }
+                if (photos && photos.length > 0) {
+                    const imgEl = card.querySelector('.branch-img');
+                    if (imgEl) imgEl.style.backgroundImage = `url('${photos[0]}')`;
+                }
+            });
+        }
+        
+        // Execute immediately to update the landing page on page load
+        updateLandingPageUI();
+
+        function renderEditDashboard() {
+            const container = document.getElementById('hostels-edit-container');
+            if (!container) return;
+            
+            let html = '';
+            [1, 2, 3].forEach(id => {
+                const h = hostels[id] || { name: `Hostel ${id}` };
+                const d = hostelDetails[id] || { desc: '', locFull: '' };
+                const photos = hostelPhotos[id] || [];
+                const hrooms = rooms[id] || [];
+                
+                html += `
+                <div class="hostel-edit-card">
+                    <div style="font-size: 18px; font-weight: 700; color: var(--ink); border-bottom: 2px solid var(--accent); padding-bottom: 8px;">
+                        ${h.name}
+                    </div>
+                    
+                    <!-- Info Section -->
+                    <div>
+                        <div class="edit-section-title">Hostel Details</div>
+                        <div class="input-group" style="margin-bottom: 10px;">
+                            <label style="font-size: 11px;">Hostel Name</label>
+                            <input type="text" id="edit-name-${id}" value="${h.name}" class="form-control" style="width: 100%; padding: 8px; border-radius: var(--rs); border: 1px solid var(--border);">
+                        </div>
+                        <div class="input-group" style="margin-bottom: 10px;">
+                            <label style="font-size: 11px;">Full Location / Address</label>
+                            <input type="text" id="edit-loc-${id}" value="${d.locFull}" class="form-control" style="width: 100%; padding: 8px; border-radius: var(--rs); border: 1px solid var(--border);">
+                        </div>
+                        <div class="input-group" style="margin-bottom: 10px;">
+                            <label style="font-size: 11px;">Description</label>
+                            <textarea id="edit-desc-${id}" class="form-control" style="width: 100%; padding: 8px; border-radius: var(--rs); border: 1px solid var(--border); height: 80px; resize: vertical;">${d.desc}</textarea>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="saveHostelInfo(${id})" style="width: 100%; margin-top: 5px;">Save Info & Details</button>
+                    </div>
+
+                    <!-- Media Section -->
+                    <div>
+                        <div class="edit-section-title">Photo Gallery</div>
+                        <div class="edit-photos-list">
+                            ${photos.map((p, pIdx) => `
+                                <div class="edit-photo-item">
+                                    <img src="${p}" alt="Hostel Photo">
+                                    <button class="btn-remove-photo" onclick="removeHostelPhoto(${id}, ${pIdx})">×</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="new-photo-${id}" placeholder="Photo filename or URL..." style="flex: 1; padding: 6px; border-radius: var(--rs); border: 1px solid var(--border); font-size: 12px;">
+                            <button class="btn btn-outline btn-sm" onclick="addHostelPhoto(${id})" style="padding: 6px 12px; font-size: 12px;">+ Add</button>
+                        </div>
+                    </div>
+
+                    <!-- Room Grid Configuration -->
+                    <div>
+                        <div class="edit-section-title">Room Grid Configuration</div>
+                        <div class="edit-rooms-list">
+                            ${hrooms.map((r, rIdx) => `
+                                <div class="edit-room-item" id="room-row-${id}-${r._roomId}">
+                                    <div class="edit-room-info">
+                                        <strong>Room ${r.num}</strong> - Floor ${r.floor} <br>
+                                        <span style="font-size: 11px; color: var(--ink3);">${r.type} (${r.capacity}-Sharing) - ₹${(r.beds[0]?.rent || 5500)}/mo</span>
+                                    </div>
+                                    <div class="edit-room-actions">
+                                        <button class="btn-sm btn-ghost" onclick="openEditRoomModal(${id}, ${r._roomId}, '${r.num}', ${r.floor}, '${r.type}', ${r.beds[0]?.rent || 5500})" style="padding: 4px 8px; font-size: 11px;">✏️</button>
+                                        <button class="btn-sm" onclick="deleteRoom(${id}, ${r._roomId})" style="background: var(--red); color: white; border: none; padding: 4px 8px; font-size: 11px; border-radius: var(--rs);">🗑️</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <!-- Add Room Section -->
+                        <div style="background: var(--bg); border: 1px dashed var(--border); padding: 12px; border-radius: var(--rs);">
+                            <div style="font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--ink);">+ Add New Room</div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                                <input type="text" id="add-room-num-${id}" placeholder="Room No (e.g. 101)" style="padding: 6px; border-radius: var(--rs); border: 1px solid var(--border); font-size: 12px;">
+                                <input type="number" id="add-room-floor-${id}" placeholder="Floor (e.g. 1)" style="padding: 6px; border-radius: var(--rs); border: 1px solid var(--border); font-size: 12px;">
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                                <select id="add-room-type-${id}" style="padding: 6px; border-radius: var(--rs); border: 1px solid var(--border); font-size: 12px;">
+                                    <option value="Single">Single Sharing</option>
+                                    <option value="Double">Double Sharing</option>
+                                    <option value="Triple">Triple Sharing</option>
+                                </select>
+                                <input type="number" id="add-room-rent-${id}" placeholder="Rent (e.g. 6000)" style="padding: 6px; border-radius: var(--rs); border: 1px solid var(--border); font-size: 12px;">
+                            </div>
+                            <button class="btn btn-accent btn-sm" onclick="addNewRoom(${id})" style="width: 100%; padding: 6px; font-size: 12px;">Add Room</button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        async function saveHostelInfo(hostelId) {
+            const newName = document.getElementById(`edit-name-${hostelId}`).value.trim();
+            const newLoc = document.getElementById(`edit-loc-${hostelId}`).value.trim();
+            const newDesc = document.getElementById(`edit-desc-${hostelId}`).value.trim();
+            
+            if (!newName) {
+                showToast('Error', 'Hostel name cannot be empty');
+                return;
+            }
+            
+            showToast('Saving...', 'Updating details in Supabase...');
+            try {
+                const { error } = await db.from('hostels').update({ name: newName }).eq('id', hostelId);
+                if (error) throw error;
+                
+                hostels[hostelId].name = newName;
+                hostelDetails[hostelId] = { desc: newDesc, locFull: newLoc };
+                
+                localStorage.setItem('hostelPhotos', JSON.stringify(hostelPhotos));
+                localStorage.setItem('hostelDetails', JSON.stringify(hostelDetails));
+                
+                updateLandingPageUI();
+                showToast('Success! 🎉', 'Hostel details updated successfully.');
+                renderEditDashboard();
+            } catch (err) {
+                console.error('Error saving hostel info:', err);
+                showToast('Error', err.message || 'Failed to update details');
+            }
+        }
+
+        function addHostelPhoto(hostelId) {
+            const input = document.getElementById(`new-photo-${hostelId}`);
+            const file = input.value.trim();
+            if (!file) return;
+            
+            if (!hostelPhotos[hostelId]) hostelPhotos[hostelId] = [];
+            hostelPhotos[hostelId].push(file);
+            localStorage.setItem('hostelPhotos', JSON.stringify(hostelPhotos));
+            
+            input.value = '';
+            updateLandingPageUI();
+            renderEditDashboard();
+            showToast('Photo Added', 'Gallery updated locally.');
+        }
+
+        function removeHostelPhoto(hostelId, index) {
+            if (confirm('Are you sure you want to remove this photo?')) {
+                hostelPhotos[hostelId].splice(index, 1);
+                localStorage.setItem('hostelPhotos', JSON.stringify(hostelPhotos));
+                updateLandingPageUI();
+                renderEditDashboard();
+                showToast('Photo Removed', 'Gallery updated.');
+            }
+        }
+
+        async function addNewRoom(hostelId) {
+            const roomNum = document.getElementById(`add-room-num-${hostelId}`).value.trim();
+            const floorVal = parseInt(document.getElementById(`add-room-floor-${hostelId}`).value);
+            const typeVal = document.getElementById(`add-room-type-${hostelId}`).value;
+            const rentVal = parseInt(document.getElementById(`add-room-rent-${hostelId}`).value);
+            
+            if (!roomNum || isNaN(floorVal) || isNaN(rentVal)) {
+                showToast('Error', 'Please fill out all room fields correctly.');
+                return;
+            }
+            
+            const capacity = typeVal === 'Single' ? 1 : typeVal === 'Double' ? 2 : 3;
+            
+            showToast('Adding...', 'Creating room in database...');
+            try {
+                // Insert room
+                const { data: newRoom, error: roomError } = await db.from('rooms').insert({
+                    hostel_id: hostelId,
+                    num: roomNum,
+                    floor: floorVal,
+                    type: typeVal,
+                    capacity: capacity
+                }).select().single();
+                
+                if (roomError) throw roomError;
+                
+                // Insert capacity number of empty beds
+                const bedInserts = Array.from({ length: capacity }).map(() => ({
+                    room_id: newRoom.id,
+                    rent: rentVal,
+                    rent_status: null,
+                    tenant_name: null,
+                    tenant_email: null,
+                    tenant_phone: null
+                }));
+                
+                const { error: bedError } = await db.from('beds').insert(bedInserts);
+                if (bedError) throw bedError;
+                
+                // Reload local data
+                await loadData([hostelId]);
+                renderEditDashboard();
+                renderOwnerOccupancy();
+                showToast('Room Added! 🏠', `Room ${roomNum} is now available.`);
+                
+                // Clear fields
+                document.getElementById(`add-room-num-${hostelId}`).value = '';
+                document.getElementById(`add-room-floor-${hostelId}`).value = '';
+                document.getElementById(`add-room-rent-${hostelId}`).value = '';
+            } catch (err) {
+                console.error('Error adding room:', err);
+                showToast('Error', err.message || 'Failed to add room');
+            }
+        }
+
+        async function deleteRoom(hostelId, roomId) {
+            if (!confirm('Are you sure you want to delete this room and all associated beds? This cannot be undone.')) {
+                return;
+            }
+            
+            showToast('Deleting...', 'Removing room from database...');
+            try {
+                // Delete beds first
+                const { error: bedError } = await db.from('beds').delete().eq('room_id', roomId);
+                if (bedError) throw bedError;
+                
+                // Delete room
+                const { error: roomError } = await db.from('rooms').delete().eq('id', roomId);
+                if (roomError) throw roomError;
+                
+                // Reload local data
+                await loadData([hostelId]);
+                renderEditDashboard();
+                renderOwnerOccupancy();
+                showToast('Room Deleted', 'Inventory updated successfully.');
+            } catch (err) {
+                console.error('Error deleting room:', err);
+                showToast('Error', err.message || 'Failed to delete room');
+            }
+        }
+
+        function openEditRoomModal(hostelId, roomId, num, floor, type, rent) {
+            document.getElementById('edit-room-hostel-id').value = hostelId;
+            document.getElementById('edit-room-db-id').value = roomId;
+            document.getElementById('edit-room-num').value = num;
+            document.getElementById('edit-room-floor').value = floor;
+            document.getElementById('edit-room-type').value = type;
+            document.getElementById('edit-room-rent').value = rent;
+            openModal('edit-room-modal');
+        }
+
+        async function saveEditedRoom() {
+            const hostelId = parseInt(document.getElementById('edit-room-hostel-id').value);
+            const roomId = parseInt(document.getElementById('edit-room-db-id').value);
+            const num = document.getElementById('edit-room-num').value.trim();
+            const floor = parseInt(document.getElementById('edit-room-floor').value);
+            const type = document.getElementById('edit-room-type').value;
+            const rent = parseInt(document.getElementById('edit-room-rent').value);
+            
+            if (!num || isNaN(floor) || isNaN(rent)) {
+                showToast('Error', 'Please fill out all fields correctly.');
+                return;
+            }
+            
+            const capacity = type === 'Single' ? 1 : type === 'Double' ? 2 : 3;
+            
+            showToast('Updating...', 'Saving changes to database...');
+            try {
+                // Update room details
+                const { error: roomError } = await db.from('rooms').update({
+                    num: num,
+                    floor: floor,
+                    type: type,
+                    capacity: capacity
+                }).eq('id', roomId);
+                
+                if (roomError) throw roomError;
+                
+                // Update beds rent
+                const { error: bedError } = await db.from('beds').update({ rent: rent }).eq('room_id', roomId);
+                if (bedError) throw bedError;
+                
+                // If capacity changed, adjust beds count (add or delete empty beds)
+                const currentRoom = rooms[hostelId].find(r => r._roomId === roomId);
+                const currentBeds = currentRoom.beds.length;
+                
+                if (capacity > currentBeds) {
+                    // Add empty beds
+                    const additionalBeds = Array.from({ length: capacity - currentBeds }).map(() => ({
+                        room_id: roomId,
+                        rent: rent,
+                        rent_status: null,
+                        tenant_name: null,
+                        tenant_email: null,
+                        tenant_phone: null
+                    }));
+                    const { error: addBedError } = await db.from('beds').insert(additionalBeds);
+                    if (addBedError) throw addBedError;
+                } else if (capacity < currentBeds) {
+                    // Delete only empty beds to avoid removing active tenants
+                    const emptyBeds = currentRoom.beds.filter(b => !b.tenant);
+                    const bedsToDelete = currentBeds - capacity;
+                    
+                    if (emptyBeds.length >= bedsToDelete) {
+                        const deleteIds = emptyBeds.slice(0, bedsToDelete).map(b => b._id).filter(id => id);
+                        if (deleteIds.length > 0) {
+                            const { error: delBedError } = await db.from('beds').delete().in('id', deleteIds);
+                            if (delBedError) throw delBedError;
+                        }
+                    } else {
+                        showToast('Warning', 'Could not fully shrink room capacity because beds are occupied.');
+                    }
+                }
+                
+                closeModal('edit-room-modal');
+                await loadData([hostelId]);
+                renderEditDashboard();
+                renderOwnerOccupancy();
+                showToast('Success! 🎉', `Room details updated.`);
+            } catch (err) {
+                console.error('Error updating room details:', err);
+                showToast('Error', err.message || 'Failed to save changes.');
             }
         }
     </script>
@@ -6809,6 +7330,39 @@
                 </select>
             </div>
             <button class="btn btn-primary" style="width:100%; margin-top:16px" onclick="addNewManager()">Add Manager</button>
+        </div>
+    </div>
+
+    <!-- EDIT ROOM MODAL -->
+    <div class="modal-overlay" id="edit-room-modal">
+        <div class="modal" style="max-width: 400px;">
+            <div class="modal-header">
+                <div class="modal-title">Edit Room Details</div>
+                <button class="modal-close" onclick="closeModal('edit-room-modal')">×</button>
+            </div>
+            <input type="hidden" id="edit-room-hostel-id">
+            <input type="hidden" id="edit-room-db-id">
+            <div class="input-group">
+                <label>Room Number</label>
+                <input type="text" id="edit-room-num" placeholder="e.g. 101">
+            </div>
+            <div class="input-group">
+                <label>Floor</label>
+                <input type="number" id="edit-room-floor" placeholder="e.g. 1">
+            </div>
+            <div class="input-group">
+                <label>Sharing Type</label>
+                <select id="edit-room-type">
+                    <option value="Single">Single</option>
+                    <option value="Double">Double</option>
+                    <option value="Triple">Triple</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Monthly Rent (₹)</label>
+                <input type="number" id="edit-room-rent" placeholder="e.g. 6000">
+            </div>
+            <button class="btn-full" onclick="saveEditedRoom()">Save Room Details</button>
         </div>
     </div>
 
