@@ -5849,8 +5849,9 @@
             // SIMULATE NOTIFICATIONS & LIVE WHATSAPP
             // 1. Fetch all tenants in this hostel
             const { data: tenantBeds } = await db.from('beds')
-                .select('tenant_name, tenant_email, tenant_phone')
-                .not('tenant_name', 'is', null);
+                .select('tenant_name, tenant_email, tenant_phone, rooms!inner(hostel_id)')
+                .not('tenant_name', 'is', null)
+                .eq('rooms.hostel_id', currentHostel);
 
             let emailsSent = 0;
             let whatsappSent = 0;
