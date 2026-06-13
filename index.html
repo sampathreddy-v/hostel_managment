@@ -6219,21 +6219,28 @@
                 }
 
                 if (phoneToSend && phoneToSend !== 'undefined') {
+                    const waMessage = `🎉 *Booking Confirmed!*\n\nHi ${name}, your booking at *${hostelName}* (Room ${roomNum}) has been accepted.\n\n🔑 Login: ${emailToSend}\n🔑 Password: ${tenantPwd}\n\n— VUSTELA`;
                     fetch(API_BASE_URL + '/send-whatsapp', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             to:      phoneToSend,
-                            message: `🎉 *Booking Confirmed!*\n\nHi ${name}, your booking at *${hostelName}* (Room ${roomNum}) has been accepted.\n\n🔑 Login: ${emailToSend}\n🔑 Password: ${tenantPwd}\n\n— VUSTELA`
+                            message: waMessage
                         })
                     }).then(res => res.json()).then(result => {
                         if (result.success) {
                             showToast('WhatsApp Sent ✅', `Confirmation sent to ${phoneToSend}`);
                         } else {
-                            showToast('WhatsApp Failed ❌', result.error || 'Could not send WhatsApp.');
+                            let cleanPhone = phoneToSend.replace(/\D/g, '');
+                            if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+                            const manualUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
+                            showToast('WhatsApp Failed ❌', `Could not send automatically. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to send manually</a>`, 10000);
                         }
                     }).catch(e => {
-                        showToast('WhatsApp Error ❌', 'Could not reach WhatsApp server.');
+                        let cleanPhone = phoneToSend.replace(/\D/g, '');
+                        if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+                        const manualUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
+                        showToast('WhatsApp Error ❌', `Could not reach server. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to send manually</a>`, 10000);
                     });
                 }
 
@@ -6449,7 +6456,7 @@
                                 <p style="margin-bottom: 0;"><strong>Password:</strong> <code style="background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd;">${newPwd}</code></p>
                             </div>
                             <p>You can login here to access the Manager Dashboard and oversee your hostel operations:</p>
-                            <a href="http://localhost:8080/hostel_management002.html" style="display: inline-block; background: #1A1814; color: white; padding: 12px 24px; text-decoration: none; border-radius: 40px; font-weight: 600;">Login to Manager Portal</a>
+                            <a href="${window.location.origin}" style="display: inline-block; background: #1A1814; color: white; padding: 12px 24px; text-decoration: none; border-radius: 40px; font-weight: 600;">Login to Manager Portal</a>
                             <br><br>
                             <hr style="border: 0; border-top: 1px solid #eee; margin: 24px 0;">
                             <p style="font-size: 12px; color: #999;">— VUSTELA PG Hostel Management</p>
@@ -6648,7 +6655,7 @@
                         <p style="margin-bottom: 0;"><strong>Password:</strong> <code style="background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd;">${pwd}</code></p>
                     </div>
                     <p>You can login here to pay rent, view receipts, and raise complaints:</p>
-                    <a href="http://localhost:8080/hostel_management002.html" style="display: inline-block; background: #1A1814; color: white; padding: 12px 24px; text-decoration: none; border-radius: 40px; font-weight: 600;">Login to Dashboard</a>
+                    <a href="${window.location.origin}" style="display: inline-block; background: #1A1814; color: white; padding: 12px 24px; text-decoration: none; border-radius: 40px; font-weight: 600;">Login to Dashboard</a>
                     <br><br>
                     <p style="font-size: 13px; color: #777;">Room: ${roomNum} | Monthly Rent: ₹${rent.toLocaleString()}</p>
                     <hr style="border: 0; border-top: 1px solid #eee; margin: 24px 0;">
@@ -6656,6 +6663,7 @@
                 </div>
             `;
 
+            // Welcome email
             try {
                 fetch(API_BASE_URL + '/send-email', {
                     method: 'POST',
@@ -6673,7 +6681,37 @@
                     }
                 });
             } catch (e) {
-                console.error('Failed to send automated email:', e);
+                console.error('Failed to send welcome email:', e);
+            }
+
+            // Welcome WhatsApp
+            if (phone && phone !== 'undefined') {
+                const hostelName = hostels[currentHostel]?.name || 'VUSTELA PG Hostel';
+                const siteUrl = window.location.origin;
+                const waMessage = `🎉 *Welcome to VUSTELA!*\n\nHi ${name}, you have been registered at *${hostelName}* (Room ${roomNum}).\n\n🔑 Login: ${email}\n🔑 Password: ${pwd}\n\nLogin here: ${siteUrl}\n\n— VUSTELA`;
+
+                fetch(API_BASE_URL + '/send-whatsapp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to:      phone,
+                        message: waMessage
+                    })
+                }).then(res => res.json()).then(result => {
+                    if (result.success) {
+                        showToast('WhatsApp Sent ✅', `Welcome message sent to ${phone}`);
+                    } else {
+                        let cleanPhone = phone.replace(/\D/g, '');
+                        if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+                        const manualUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
+                        showToast('WhatsApp Failed ❌', `Could not send automatically. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to send manually</a>`, 10000);
+                    }
+                }).catch(e => {
+                    let cleanPhone = phone.replace(/\D/g, '');
+                    if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+                    const manualUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
+                    showToast('WhatsApp Error ❌', `Could not reach server. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to send manually</a>`, 10000);
+                });
             }
         }
 
@@ -7231,12 +7269,16 @@
         // ============================================================
         // TOAST
         // ============================================================
-        function showToast(title, body) {
-            document.getElementById('toast-title').textContent = title;
-            document.getElementById('toast-body').textContent = body;
+        function showToast(title, body, duration = 3500) {
+            document.getElementById('toast-title').innerHTML = title;
+            document.getElementById('toast-body').innerHTML = body;
             const t = document.getElementById('toast');
             t.classList.add('on');
-            setTimeout(() => t.classList.remove('on'), 3500);
+            if (t.dataset.timeoutId) {
+                clearTimeout(parseInt(t.dataset.timeoutId));
+            }
+            const timeoutId = setTimeout(() => t.classList.remove('on'), duration);
+            t.dataset.timeoutId = timeoutId;
         }
 
         // INIT
