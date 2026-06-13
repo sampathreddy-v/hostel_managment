@@ -6242,7 +6242,8 @@
                             let cleanPhone = phoneToSend.replace(/\D/g, '');
                             if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
                             const manualUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
-                            showToast('WhatsApp Failed ❌', `Could not send automatically. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to send manually</a>`, 10000);
+                            const errMsg = result.error || 'Meta API Error';
+                            showToast('WhatsApp Failed ❌', `${errMsg}. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to send manually</a>`, 12000);
                         }
                     }).catch(e => {
                         let cleanPhone = phoneToSend.replace(/\D/g, '');
@@ -6712,7 +6713,8 @@
                         let cleanPhone = phone.replace(/\D/g, '');
                         if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
                         const manualUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
-                        showToast('WhatsApp Failed ❌', `Could not send automatically. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to send manually</a>`, 10000);
+                        const errMsg = result.error || 'Meta API Error';
+                        showToast('WhatsApp Failed ❌', `${errMsg}. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to send manually</a>`, 12000);
                     }
                 }).catch(e => {
                     let cleanPhone = phone.replace(/\D/g, '');
