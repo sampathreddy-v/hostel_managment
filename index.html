@@ -5699,7 +5699,15 @@
                             to:      phoneToSend,
                             message: `🎉 *Booking Confirmed!*\n\nHi ${name}, your booking at *${hostelName}* (Room ${roomNum}) has been accepted.\n\n🔑 Login: ${emailToSend}\n🔑 Password: ${tenantPwd}\n\n— VUSTELA`
                         })
-                    }).catch(() => {});
+                    }).then(res => res.json()).then(result => {
+                        if (result.success) {
+                            showToast('WhatsApp Sent ✅', `Confirmation sent to ${phoneToSend}`);
+                        } else {
+                            showToast('WhatsApp Failed ❌', result.error || 'Could not send WhatsApp.');
+                        }
+                    }).catch(e => {
+                        showToast('WhatsApp Error ❌', 'Could not reach WhatsApp server.');
+                    });
                 }
 
                 loadData([currentHostel]).then(() => {
