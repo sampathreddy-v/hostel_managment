@@ -4,7 +4,7 @@
 
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:3000'
-    : 'https://hostel-managment-isy3.onrender.com';
+    : 'https://hostel-managment-i9y5.onrender.com';
 
 let currentRole = null;
 let currentHostel = 1;
