@@ -2733,6 +2733,337 @@
             display: flex;
             gap: 4px;
         }
+
+        /* NEW SECTIONS STYLING */
+        .landing-section {
+            padding: 80px 52px;
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+        }
+        
+        .landing-section.alternate {
+            background: var(--white);
+        }
+
+        /* 1. Testimonials */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 28px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .testimonial-rating {
+            color: #FFB800;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .testimonial-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--ink2);
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .testimonial-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg2);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            border: 1.5px solid var(--border);
+        }
+
+        .testimonial-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--ink);
+        }
+
+        .testimonial-role {
+            font-size: 12px;
+            color: var(--ink3);
+        }
+
+        /* 2. Comparison Table */
+        .comparison-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 32px;
+            border-radius: var(--r);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            background: var(--white);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 600px;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background: var(--ink);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table td:first-child {
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .comp-check {
+            color: var(--green);
+            background: var(--green-bg);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .comp-cross {
+            color: var(--red);
+            background: var(--red-bg);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 3. Floating WhatsApp */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+            z-index: 9999;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            animation: pulse-wa 2s infinite;
+        }
+
+        .whatsapp-float svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+        }
+
+        .whatsapp-float:hover {
+            background: #128C7E;
+            transform: scale(1.1);
+        }
+
+        .whatsapp-tooltip {
+            position: absolute;
+            right: 75px;
+            background: var(--ink);
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: var(--rs);
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .whatsapp-float:hover .whatsapp-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-5px);
+        }
+
+        @keyframes pulse-wa {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+            }
+        }
+
+        /* 4. FAQ Accordion */
+        .faq-list {
+            margin-top: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .faq-item {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .faq-item.active {
+            border-color: var(--accent);
+        }
+
+        .faq-trigger {
+            width: 100%;
+            padding: 22px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            font-family: var(--font-display);
+            font-size: clamp(16px, 2vw, 18px);
+            font-weight: 600;
+            color: var(--ink);
+            gap: 16px;
+        }
+
+        .faq-icon {
+            font-size: 20px;
+            color: var(--ink3);
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+            color: var(--accent);
+        }
+
+        .faq-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 28px;
+        }
+
+        .faq-item.active .faq-content {
+            padding-bottom: 22px;
+        }
+
+        .faq-inner {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--ink2);
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+
+        /* 6. Video Tour */
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 16/9;
+            margin: 32px auto 0 auto;
+            border-radius: var(--r);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: var(--ink2);
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            gap: 16px;
+        }
+
+        .video-placeholder-icon {
+            font-size: 48px;
+        }
+
+        .video-placeholder-title {
+            font-family: var(--font-display);
+            font-size: clamp(18px, 3vw, 24px);
+            font-weight: 700;
+        }
+
+        /* Responsive section padding for mobile */
+        @media (max-width: 768px) {
+            .landing-section {
+                padding: 60px 24px;
+            }
+            .whatsapp-float {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+            .whatsapp-float svg {
+                width: 26px;
+                height: 26px;
+            }
+        }
     </style>
 </head>
 
@@ -2842,6 +3173,7 @@
                 <div class="hero-btns">
                     <button class="btn btn-primary" onclick="openModal('login-modal')">Login to Dashboard</button>
                     <button class="btn btn-outline" onclick="openModal('book-room-modal')">Book a Room</button>
+                    <a href="tel:+916300642776" class="btn btn-outline" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px; border-color:var(--accent); color:var(--accent);">📞 Call Now</a>
                 </div>
             </div>
 
@@ -2959,6 +3291,201 @@
 
             <div style="text-align:center;margin-top:40px">
                 <button class="btn btn-primary" onclick="openModal('book-room-modal')">Book a Room Today</button>
+            </div>
+        </section>
+
+        <!-- VIDEO TOUR SECTION -->
+        <section class="landing-section alternate" id="virtual-tour">
+            <div class="sec-eyebrow">Virtual Tour</div>
+            <h2 class="sec-title">Take a Virtual Tour</h2>
+            <p class="sec-desc">Get a detailed walkthrough of VUSTELA's premium rooms and common spaces from the comfort of your home.</p>
+            <div class="video-container">
+                <!-- If you have a video URL, uncomment the iframe below and remove the placeholder div -->
+                <!-- <iframe width="100%" height="100%" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+                <div class="video-placeholder">
+                    <div class="video-placeholder-icon">🎥</div>
+                    <div class="video-placeholder-title">Video Coming Soon</div>
+                    <p style="opacity: 0.8; font-size: 14px; max-width: 320px;">We are filming a premium walkthrough of VUSTELA PG Hostels. Stay tuned!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- WHY CHOOSE US SECTION -->
+        <section class="landing-section" id="why-choose-us">
+            <div class="sec-eyebrow">Comparison</div>
+            <h2 class="sec-title">Why Choose VUSTELA?</h2>
+            <p class="sec-desc">We offer a premium, modern co-living experience with maximum comfort, transparency, and top-tier amenities.</p>
+            
+            <div class="comparison-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Features & Amenities</th>
+                            <th style="background:var(--accent); color:var(--white);">VUSTELA ✅</th>
+                            <th>Traditional PGs ❌</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>24/7 Security</td>
+                            <td><span class="comp-check">✔ Active Guard & CCTV</span></td>
+                            <td><span class="comp-cross">✖ None / Basic lock only</span></td>
+                        </tr>
+                        <tr>
+                            <td>WiFi Included</td>
+                            <td><span class="comp-check">✔ High-Speed Fiber</span></td>
+                            <td><span class="comp-cross">✖ Paid extra or Slow</span></td>
+                        </tr>
+                        <tr>
+                            <td>Clean Rooms</td>
+                            <td><span class="comp-check">✔ Professional Daily Cleaning</span></td>
+                            <td><span class="comp-cross">✖ Occasional / Self-clean</span></td>
+                        </tr>
+                        <tr>
+                            <td>Flexible Notice Period</td>
+                            <td><span class="comp-check">✔ 1-Month Notice Only</span></td>
+                            <td><span class="comp-cross">✖ 2-3 Months / Non-negotiable</span></td>
+                        </tr>
+                        <tr>
+                            <td>Online Payments</td>
+                            <td><span class="comp-check">✔ Integrated UPI / Cards / App</span></td>
+                            <td><span class="comp-cross">✖ Cash only or Offline bank transfer</span></td>
+                        </tr>
+                        <tr>
+                            <td>Food Included</td>
+                            <td><span class="comp-check">✔ 3 Meals (Hygiene Certified)</span></td>
+                            <td><span class="comp-cross">✖ Not included or low quality</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TESTIMONIALS SECTION -->
+        <section class="landing-section alternate" id="testimonials">
+            <div class="sec-eyebrow">Reviews</div>
+            <h2 class="sec-title">What Our Tenants Say</h2>
+            <p class="sec-desc">Join hundreds of happy professionals and students living their best life at VUSTELA PG Hostels.</p>
+            
+            <div class="testimonials-grid">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="testimonial-text">"Best PG in Gachibowli, very clean and safe"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">R</div>
+                        <div>
+                            <div class="testimonial-name">Rahul</div>
+                            <div class="testimonial-role">Tenant</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="testimonial-text">"Food is amazing and staff is very helpful"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">P</div>
+                        <div>
+                            <div class="testimonial-name">Priya</div>
+                            <div class="testimonial-role">Tenant</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="testimonial-text">"Great value for money, highly recommended"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">A</div>
+                        <div>
+                            <div class="testimonial-name">Arun</div>
+                            <div class="testimonial-role">Tenant</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ SECTION -->
+        <section class="landing-section" id="faq">
+            <div class="sec-eyebrow">FAQ</div>
+            <h2 class="sec-title">Frequently Asked Questions</h2>
+            <p class="sec-desc">Got questions? We've got answers. Explore our frequently asked questions below.</p>
+            
+            <div class="faq-list">
+                <!-- FAQ Item 1 -->
+                <div class="faq-item">
+                    <button class="faq-trigger" onclick="toggleFaq(this)">
+                        <span>Is food included in the rent?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-content">
+                        <div class="faq-inner">
+                            Yes, delicious and hygienic 3-time meals are included in your monthly rent. We serve a variety of North and South Indian dishes prepared in highly hygienic kitchens.
+                        </div>
+                    </div>
+                </div>
+                <!-- FAQ Item 2 -->
+                <div class="faq-item">
+                    <button class="faq-trigger" onclick="toggleFaq(this)">
+                        <span>What is the notice period?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-content">
+                        <div class="faq-inner">
+                            We have a very flexible policy. You only need to provide a 1-month notice period before vacating the room.
+                        </div>
+                    </div>
+                </div>
+                <!-- FAQ Item 3 -->
+                <div class="faq-item">
+                    <button class="faq-trigger" onclick="toggleFaq(this)">
+                        <span>Is the security deposit refundable?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-content">
+                        <div class="faq-inner">
+                            Yes! The security deposit is fully refundable at the time of check-out after adjusting for any notice period discrepancy or structural room damage.
+                        </div>
+                    </div>
+                </div>
+                <!-- FAQ Item 4 -->
+                <div class="faq-item">
+                    <button class="faq-trigger" onclick="toggleFaq(this)">
+                        <span>Is WiFi available?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-content">
+                        <div class="faq-inner">
+                            Yes, high-speed fiber WiFi is available throughout the hostel, including all rooms and common dining/lobby spaces, and is completely free of charge.
+                        </div>
+                    </div>
+                </div>
+                <!-- FAQ Item 5 -->
+                <div class="faq-item">
+                    <button class="faq-trigger" onclick="toggleFaq(this)">
+                        <span>What are the visiting hours?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-content">
+                        <div class="faq-inner">
+                            Visitors are allowed in the common lounge/lobby areas between 9:00 AM and 8:00 PM. For safety and security reasons, overnight visitor stays in tenant rooms are not permitted.
+                        </div>
+                    </div>
+                </div>
+                <!-- FAQ Item 6 -->
+                <div class="faq-item">
+                    <button class="faq-trigger" onclick="toggleFaq(this)">
+                        <span>Are there any additional charges?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-content">
+                        <div class="faq-inner">
+                            No hidden charges! The rent covers accommodation, food, WiFi, housekeeping, security, and access to all amenities. Only minimal sub-metered electricity charges may apply based on room AC usage.
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -7239,6 +7766,24 @@
                 showToast('Error', err.message || 'Failed to save changes.');
             }
         }
+
+        // FAQ accordion toggle
+        function toggleFaq(btn) {
+            const item = btn.parentElement;
+            const content = item.querySelector('.faq-content');
+            const isActive = item.classList.contains('active');
+            
+            // Close all active items
+            document.querySelectorAll('.faq-item').forEach(el => {
+                el.classList.remove('active');
+                el.querySelector('.faq-content').style.maxHeight = null;
+            });
+            
+            if (!isActive) {
+                item.classList.add('active');
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
     </script>
     <!-- BOOK A ROOM MODAL -->
     <div class="modal-overlay" id="book-room-modal">
@@ -7406,6 +7951,14 @@
             return false;
         };
     </script>
+
+    <!-- FLOATING WHATSAPP BUTTON -->
+    <a href="https://wa.me/916300642776" target="_blank" class="whatsapp-float" aria-label="Chat with us on WhatsApp">
+        <svg viewBox="0 0 24 24">
+            <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 001.37 5.054L2 22l5.077-1.331a9.9 9.9 0 004.93 1.313h.005c5.505 0 9.989-4.478 9.99-9.985A9.97 9.97 0 0012.012 2zm5.727 14.153c-.249.702-1.455 1.282-2.007 1.37-.502.08-1.155.143-3.359-.767-2.818-1.164-4.639-4.024-4.78-4.21-.14-.188-1.134-1.506-1.134-2.873s.715-2.036.969-2.298c.254-.262.553-.328.738-.328.183 0 .367.002.528.009.166.008.388-.063.606.467.222.539.757 1.846.823 1.98.066.134.11.29.02.468-.09.178-.135.29-.268.444-.132.155-.278.347-.396.466-.131.132-.269.277-.116.539.153.262.68 1.121 1.455 1.812.997.89 1.836 1.166 2.097 1.297.261.13.412.11.564-.066.152-.177.653-.757.828-1.016.175-.258.35-.218.59-.13.24.088 1.522.717 1.787.848.265.132.441.197.506.31.066.111.066.646-.183 1.348z"/>
+        </svg>
+        <div class="whatsapp-tooltip">Chat with us</div>
+    </a>
 </body>
 
 </html>
