@@ -30,6 +30,7 @@
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --bg: #F7F5F0;
@@ -399,30 +400,40 @@
             background: var(--white);
             border-radius: var(--r);
             border: 1px solid var(--border);
-            padding: 20px 24px;
-            box-shadow: var(--shadow)
+            padding: 16px 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
 
         .stat-num {
             font-family: var(--font-display);
-            font-size: 36px;
+            font-size: clamp(20px, 2.2vw, 32px);
             font-weight: 800;
             color: var(--ink);
-            line-height: 1
+            line-height: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--ink3);
             margin-top: 4px;
             letter-spacing: 0.3px;
-            text-transform: uppercase
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .stat-sub {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--ink2);
-            margin-top: 8px
+            margin-top: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* INPUTS */
@@ -1369,23 +1380,26 @@
         /* STATS GRID */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 16px;
-            margin-bottom: 24px
+            margin-bottom: 24px;
+            width: 100%;
         }
 
         .stats-grid-3 {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 16px;
-            margin-bottom: 24px
+            margin-bottom: 24px;
+            width: 100%;
         }
 
         .stats-grid-2 {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 16px;
-            margin-bottom: 24px
+            margin-bottom: 24px;
+            width: 100%;
         }
 
         /* ===== ROOM OCCUPANCY GRID ===== */
@@ -3184,25 +3198,6 @@
 
         </section>
 
-        <!-- STATS STRIP -->
-        <div class="stats-strip">
-            <div class="ss-item">
-                <div class="ss-num">3</div>
-                <div class="ss-label">Hostels</div>
-            </div>
-            <div class="ss-item">
-                <div class="ss-num">60</div>
-                <div class="ss-label">Total Rooms</div>
-            </div>
-            <div class="ss-item">
-                <div class="ss-num">52</div>
-                <div class="ss-label">Tenants</div>
-            </div>
-            <div class="ss-item">
-                <div class="ss-num">₹3.2L</div>
-                <div class="ss-label">Monthly Rent</div>
-            </div>
-        </div>
 
         <!-- PUBLIC HOSTEL INFO -->
         <section class="hostel-info-section" id="hostel-info">
@@ -3661,9 +3656,8 @@
                             <div class="dash-subtitle">Here's your hostel overview for June 2025</div>
                         </div>
                         <div class="flex gap8">
-                            <button class="btn btn-outline btn-sm"
-                                onclick="showToast('Report Downloaded','Monthly PDF report saved.')">⬇ Export
-                                Report</button>
+                            <button id="btn-export-report" class="btn btn-outline btn-sm"
+                                onclick="downloadPDFReport(this)">⬇ Export Report</button>
                         </div>
                     </div>
 
@@ -3874,19 +3868,19 @@
                     <!-- SUMMARY BAR -->
                     <div class="stats-grid" style="margin-bottom:20px">
                         <div class="stat-card">
-                            <div class="stat-num">60</div>
+                            <div class="stat-num" id="owner-occ-total-rooms">60</div>
                             <div class="stat-label">Total Rooms</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--green)">50</div>
-                            <div class="stat-label">Occupied</div>
+                            <div class="stat-num" style="color:var(--green)" id="owner-occ-occupied">50</div>
+                            <div class="stat-label">Occupied Beds</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--red)">10</div>
-                            <div class="stat-label">Vacant</div>
+                            <div class="stat-num" style="color:var(--red)" id="owner-occ-vacant">10</div>
+                            <div class="stat-label">Vacant Beds</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)">3</div>
+                            <div class="stat-num" style="color:var(--yellow)" id="owner-occ-complaints">3</div>
                             <div class="stat-label">Complaints Open</div>
                         </div>
                     </div>
@@ -3908,27 +3902,26 @@
                                 <span class="search-icon">🔍</span>
                             </div>
                             <button class="btn btn-outline btn-sm"
-                                onclick="showToast('Reminder Sent','Reminder sent to all unpaid tenants.')">📣 Remind
-                                All Unpaid</button>
+                                onclick="remindAllUnpaid(this)">📣 Remind All Unpaid</button>
                         </div>
                     </div>
 
                     <!-- QUICK COUNTS -->
                     <div class="stats-grid" style="margin-bottom:20px">
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--green)">47</div>
+                            <div class="stat-num" style="color:var(--green)" id="owner-rent-paid-count">47</div>
                             <div class="stat-label">✅ Paid</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)">5</div>
+                            <div class="stat-num" style="color:var(--yellow)" id="owner-rent-pending-count">5</div>
                             <div class="stat-label">⏳ Pending</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--red)">3</div>
+                            <div class="stat-num" style="color:var(--red)" id="owner-rent-overdue-count">3</div>
                             <div class="stat-label">🔴 Overdue 30+ days</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num">55</div>
+                            <div class="stat-num" id="owner-rent-total-count">55</div>
                             <div class="stat-label">Total Tenants</div>
                         </div>
                     </div>
@@ -4290,19 +4283,19 @@
 
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-num">20</div>
+                            <div class="stat-num" id="mgr-occ-total-rooms">20</div>
                             <div class="stat-label">Total Rooms</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--green)">16</div>
-                            <div class="stat-label">Occupied</div>
+                            <div class="stat-num" style="color:var(--green)" id="mgr-occ-occupied">16</div>
+                            <div class="stat-label">Occupied Beds</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--red)">4</div>
-                            <div class="stat-label">Vacant</div>
+                            <div class="stat-num" style="color:var(--red)" id="mgr-occ-vacant">4</div>
+                            <div class="stat-label">Vacant Beds</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)">2</div>
+                            <div class="stat-num" style="color:var(--yellow)" id="mgr-occ-complaints">2</div>
                             <div class="stat-label">Open Complaints</div>
                         </div>
                     </div>
@@ -4428,8 +4421,7 @@
                             <div class="dash-subtitle">Mark payments and track status</div>
                         </div>
                         <button class="btn btn-outline btn-sm"
-                            onclick="showToast('Reminders Sent','Sent reminder to 2 unpaid tenants.')">📣 Remind
-                            Unpaid</button>
+                            onclick="remindAllUnpaid(this)">📣 Remind Unpaid</button>
                     </div>
                     <div class="filter-bar">
                         <button class="fb on" onclick="setActive(this,'.filter-bar');mgrFilterRent('all')">All</button>
@@ -5725,8 +5717,71 @@
             container.innerHTML = html;
         }
 
-        function renderOwnerOccupancy() { buildOccGrid([1, 2, 3], 'owner-occ-grid', 'owner'); }
-        function renderManagerOccupancy() { buildOccGrid([currentHostel], 'manager-occ-grid', 'manager'); }
+        function renderOwnerOccupancy() {
+            buildOccGrid([1, 2, 3], 'owner-occ-grid', 'owner');
+            
+            let totalRooms = 0;
+            let occupiedBeds = 0;
+            let totalBeds = 0;
+            let vacantBeds = 0;
+            
+            [1, 2, 3].forEach(hid => {
+                if (rooms[hid]) {
+                    rooms[hid].forEach(r => {
+                        totalRooms++;
+                        totalBeds += r.capacity;
+                        occupiedBeds += r.beds ? r.beds.filter(b => b.tenant).length : 0;
+                    });
+                }
+            });
+            vacantBeds = totalBeds - occupiedBeds;
+            
+            const totalRoomsEl = document.getElementById('owner-occ-total-rooms');
+            const occupiedEl = document.getElementById('owner-occ-occupied');
+            const vacantEl = document.getElementById('owner-occ-vacant');
+            const complaintsEl = document.getElementById('owner-occ-complaints');
+            
+            if (totalRoomsEl) totalRoomsEl.textContent = totalRooms;
+            if (occupiedEl) occupiedEl.textContent = occupiedBeds;
+            if (vacantEl) vacantEl.textContent = vacantBeds;
+            
+            if (complaintsEl) {
+                const openComplaintsCount = complaints.filter(c => c.status !== 'resolved').length;
+                complaintsEl.textContent = openComplaintsCount;
+            }
+        }
+
+        function renderManagerOccupancy() {
+            buildOccGrid([currentHostel], 'manager-occ-grid', 'manager');
+            
+            let totalRooms = 0;
+            let occupiedBeds = 0;
+            let totalBeds = 0;
+            let vacantBeds = 0;
+            
+            if (rooms[currentHostel]) {
+                rooms[currentHostel].forEach(r => {
+                    totalRooms++;
+                    totalBeds += r.capacity;
+                    occupiedBeds += r.beds ? r.beds.filter(b => b.tenant).length : 0;
+                });
+            }
+            vacantBeds = totalBeds - occupiedBeds;
+            
+            const totalRoomsEl = document.getElementById('mgr-occ-total-rooms');
+            const occupiedEl = document.getElementById('mgr-occ-occupied');
+            const vacantEl = document.getElementById('mgr-occ-vacant');
+            const complaintsEl = document.getElementById('mgr-occ-complaints');
+            
+            if (totalRoomsEl) totalRoomsEl.textContent = totalRooms;
+            if (occupiedEl) occupiedEl.textContent = occupiedBeds;
+            if (vacantEl) vacantEl.textContent = vacantBeds;
+            
+            if (complaintsEl) {
+                const openComplaintsCount = complaints.filter(c => c.hostel === currentHostel && c.status !== 'resolved').length;
+                complaintsEl.textContent = openComplaintsCount;
+            }
+        }
 
         function showRoomPopup(e, hostelId, roomNum, role) {
             e.stopPropagation();
@@ -5936,6 +5991,24 @@
                     });
                 });
             });
+
+            // Calculate global statistics from all occupied beds (before filter)
+            let paidCount = allBeds.filter(b => b.rentStatus === 'paid').length;
+            let pendingCount = allBeds.filter(b => b.rentStatus === 'pending').length;
+            let overdueCount = allBeds.filter(b => b.rentStatus === 'overdue').length;
+            let totalCount = allBeds.length;
+
+            // Update DOM element values
+            const paidEl = document.getElementById('owner-rent-paid-count');
+            const pendingEl = document.getElementById('owner-rent-pending-count');
+            const overdueEl = document.getElementById('owner-rent-overdue-count');
+            const totalEl = document.getElementById('owner-rent-total-count');
+
+            if (paidEl) paidEl.textContent = paidCount;
+            if (pendingEl) pendingEl.textContent = pendingCount;
+            if (overdueEl) overdueEl.textContent = overdueCount;
+            if (totalEl) totalEl.textContent = totalCount;
+
             if (filter === 'paid') allBeds = allBeds.filter(b => b.rentStatus === 'paid');
             else if (filter === 'pending') allBeds = allBeds.filter(b => b.rentStatus === 'pending');
             else if (filter === 'overdue') allBeds = allBeds.filter(b => b.rentStatus === 'overdue');
@@ -5951,7 +6024,7 @@
       <td style="color:var(--ink3)">Jun 5, 2025</td>
       <td>${rentBadge(b.rentStatus)}</td>
       <td><div class="flex gap8">
-        ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-ghost" onclick="showToast('Reminder Sent','SMS sent to ${b.tenant}.')">Remind</button>` : ''}
+        ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-ghost" onclick="sendRentReminder(this, '${(b.tenant || '').replace(/'/g, "\\'")}', '${b.tenant_email || ''}', '${b.tenant_phone || ''}', ${b.rent}, ${b.hostel}, '${b.num}')">Remind</button>` : ''}
       </div></td>
     </tr>
   `).join('');
@@ -5977,7 +6050,7 @@
       <td style="color:var(--ink3)">Jun 5, 2025</td>
       <td>${rentBadge(b.rentStatus)}</td>
       <td><div class="flex gap8">
-        ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-green" onclick="markPaid(${currentHostel}, '${b.num}', ${b.bedIdx})">Mark Paid</button><button class="btn-sm btn-ghost" onclick="showToast('Reminder Sent','SMS sent to ${b.tenant}.')">Remind</button>` : `<button class="btn-sm btn-ghost" onclick="showToast('Receipt','Receipt sent to ${b.tenant}.')">Receipt</button>`}
+        ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-green" onclick="markPaid(${currentHostel}, '${b.num}', ${b.bedIdx})">Mark Paid</button><button class="btn-sm btn-ghost" onclick="sendRentReminder(this, '${(b.tenant || '').replace(/'/g, "\\'")}', '${b.tenant_email || ''}', '${b.tenant_phone || ''}', ${b.rent}, ${currentHostel}, '${b.num}')">Remind</button>` : `<button class="btn-sm btn-ghost" onclick="showToast('Receipt','Receipt sent to ${b.tenant}.')">Receipt</button>`}
       </div></td>
     </tr>
   `).join('');
@@ -7099,6 +7172,446 @@
         }
 
         // ============================================================
+        // REPORT EXPORT (PDF GENERATION)
+        // ============================================================
+        async function downloadPDFReport(btn) {
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Generating...';
+            }
+            try {
+                // Calculate numbers dynamically
+                let totalExpected = 0;
+                let totalCollected = 0;
+                let totalPending = 0;
+                let totalMaintenance = 0;
+                let totalPaidTenants = 0;
+                let totalUnpaidTenants = 0;
+                let totalTenants = 0;
+
+                const hostelStats = {
+                    1: { name: 'VUSTELA Kokapet', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 },
+                    2: { name: 'VUSTELA Gachibowli', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 },
+                    3: { name: 'VUSTELA Madhapur', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 }
+                };
+
+                // Loop through rooms/beds
+                [1, 2, 3].forEach(hid => {
+                    if (rooms[hid]) {
+                        rooms[hid].forEach(r => {
+                            r.beds.forEach(b => {
+                                if (b.tenant) {
+                                    hostelStats[hid].expected += b.rent;
+                                    totalExpected += b.rent;
+                                    totalTenants++;
+                                    
+                                    if (b.rentStatus === 'paid') {
+                                        hostelStats[hid].collected += b.rent;
+                                        totalCollected += b.rent;
+                                        hostelStats[hid].paidTenants++;
+                                        totalPaidTenants++;
+                                    } else {
+                                        hostelStats[hid].pending += b.rent;
+                                        totalPending += b.rent;
+                                        hostelStats[hid].unpaidTenants++;
+                                        totalUnpaidTenants++;
+                                    }
+                                }
+                            });
+                        });
+                    }
+                });
+
+                // Calculate maintenance expenses
+                expenses.forEach(e => {
+                    const hid = e.hostel_id;
+                    if (hostelStats[hid]) {
+                        hostelStats[hid].maintenance += e.amount;
+                        totalMaintenance += e.amount;
+                    }
+                });
+
+                // Generate Canvas Chart (Income vs Expense)
+                const canvas = document.createElement('canvas');
+                canvas.width = 600;
+                canvas.height = 360;
+                const ctx = canvas.getContext('2d');
+                
+                // Background
+                ctx.fillStyle = '#FDFDFD';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Chart Border & Grid
+                ctx.strokeStyle = '#EFECEA';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+                
+                // Chart Title
+                ctx.fillStyle = '#1A1814';
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText('Monthly Financial Summary (June 2025)', 40, 50);
+                
+                // Bars data
+                const maxVal = Math.max(totalExpected, totalCollected, totalMaintenance) || 1;
+                const scale = 200 / maxVal;
+                
+                const barWidth = 70;
+                const startY = 280;
+                
+                // Bar 1: Expected Rent
+                const hExpected = totalExpected * scale;
+                ctx.fillStyle = '#2B5EA7'; // Blue
+                ctx.fillRect(80, startY - hExpected, barWidth, hExpected);
+                
+                // Bar 2: Collected Rent
+                const hCollected = totalCollected * scale;
+                ctx.fillStyle = '#2D7D5A'; // Emerald Green
+                ctx.fillRect(190, startY - hCollected, barWidth, hCollected);
+                
+                // Bar 3: Pending Rent
+                const hPending = totalPending * scale;
+                ctx.fillStyle = '#C84B31'; // Terracotta Red
+                ctx.fillRect(300, startY - hPending, barWidth, hPending);
+
+                // Bar 4: Expenses/Maintenance
+                const hMaintenance = totalMaintenance * scale;
+                ctx.fillStyle = '#B8860B'; // Dark Goldenrod
+                ctx.fillRect(410, startY - hMaintenance, barWidth, hMaintenance);
+                
+                // Labels & Values
+                ctx.fillStyle = '#1A1814';
+                ctx.font = 'bold 12px Arial';
+                
+                // Values on top of bars
+                ctx.fillText(`₹${totalExpected.toLocaleString()}`, 80, startY - hExpected - 8);
+                ctx.fillText(`₹${totalCollected.toLocaleString()}`, 190, startY - hCollected - 8);
+                ctx.fillText(`₹${totalPending.toLocaleString()}`, 300, startY - hPending - 8);
+                ctx.fillText(`₹${totalMaintenance.toLocaleString()}`, 410, startY - hMaintenance - 8);
+                
+                // Legend Text below bars
+                ctx.font = '12px Arial';
+                ctx.fillStyle = '#3D3A35';
+                ctx.fillText('Expected Rent', 80, startY + 20);
+                ctx.fillText('Collected Rent', 190, startY + 20);
+                ctx.fillText('Pending Rent', 300, startY + 20);
+                ctx.fillText('Maintenance', 410, startY + 20);
+                
+                const chartImgData = canvas.toDataURL('image/png');
+
+                // Initialize PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                // Theme Colors
+                const colorAccent = '#C84B31';
+                const colorText = '#1A1814';
+                const colorSubText = '#7A756E';
+                const colorGreen = '#2D7D5A';
+                const colorBorder = '#E5E1DB';
+
+                // Add Header Background Stripe
+                doc.setFillColor(26, 24, 20); // Dark Ink
+                doc.rect(0, 0, 210, 35, 'F');
+
+                // Logo Text
+                doc.setTextColor(255, 255, 255);
+                doc.setFont('Helvetica', 'bold');
+                doc.setFontSize(22);
+                doc.text('V U S T E L A', 20, 18);
+
+                doc.setFont('Helvetica', 'normal');
+                doc.setFontSize(10);
+                doc.setTextColor(200, 200, 200);
+                doc.text('PREMIUM PG HOSTELS PORTAL', 20, 25);
+
+                // Date
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(10);
+                doc.text('REPORT GENERATED: ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), 135, 18);
+                doc.text('REPORT PERIOD: JUNE 2025', 135, 25);
+
+                // Document Title
+                doc.setTextColor(colorText);
+                doc.setFontSize(18);
+                doc.setFont('Helvetica', 'bold');
+                doc.text('Financial & Occupancy Summary', 20, 48);
+
+                // Overview Stats cards
+                doc.setDrawColor(229, 225, 219); // Light Gray
+                doc.setFillColor(255, 255, 255);
+                
+                // Stat 1: Occupancy
+                doc.roundedRect(20, 54, 52, 22, 2, 2, 'FD');
+                doc.setTextColor(colorSubText);
+                doc.setFontSize(9);
+                doc.text('TOTAL TENANTS', 25, 60);
+                doc.setTextColor(colorText);
+                doc.setFontSize(14);
+                doc.text(`${totalTenants} Active`, 25, 70);
+
+                // Stat 2: Collected
+                doc.roundedRect(77, 54, 52, 22, 2, 2, 'FD');
+                doc.setTextColor(colorSubText);
+                doc.setFontSize(9);
+                doc.text('RENT COLLECTED', 82, 60);
+                doc.setTextColor(colorGreen);
+                doc.setFontSize(14);
+                doc.text(`₹${totalCollected.toLocaleString()}`, 82, 70);
+
+                // Stat 3: Maintenance
+                doc.roundedRect(134, 54, 56, 22, 2, 2, 'FD');
+                doc.setTextColor(colorSubText);
+                doc.setFontSize(9);
+                doc.text('MAINTENANCE SPENT', 139, 60);
+                doc.setTextColor(colorAccent);
+                doc.setFontSize(14);
+                doc.text(`₹${totalMaintenance.toLocaleString()}`, 139, 70);
+
+                // Table Breakdown Title
+                doc.setTextColor(colorText);
+                doc.setFontSize(14);
+                doc.setFont('Helvetica', 'bold');
+                doc.text('Hostel Wise Financial Breakdown', 20, 88);
+
+                // Table Headers
+                let y = 94;
+                doc.setFillColor(247, 245, 240); // Light cream background
+                doc.rect(20, y, 170, 8, 'F');
+                doc.setDrawColor(colorBorder);
+                doc.line(20, y, 190, y);
+                doc.line(20, y + 8, 190, y + 8);
+
+                doc.setTextColor(colorText);
+                doc.setFontSize(9);
+                doc.setFont('Helvetica', 'bold');
+                doc.text('Hostel Branch', 23, y + 5);
+                doc.text('Expected', 70, y + 5);
+                doc.text('Collected', 95, y + 5);
+                doc.text('Pending', 120, y + 5);
+                doc.text('Maintenance', 145, y + 5);
+                doc.text('Net Income', 170, y + 5);
+
+                // Table Body Rows
+                doc.setFont('Helvetica', 'normal');
+                [1, 2, 3].forEach(hid => {
+                    y += 8;
+                    const stats = hostelStats[hid];
+                    const netIncome = stats.collected - stats.maintenance;
+
+                    // Draw bottom border for row
+                    doc.line(20, y + 8, 190, y + 8);
+
+                    doc.text(stats.name, 23, y + 5);
+                    doc.text(`₹${stats.expected.toLocaleString()}`, 70, y + 5);
+                    doc.text(`₹${stats.collected.toLocaleString()}`, 95, y + 5);
+                    doc.text(`₹${stats.pending.toLocaleString()}`, 120, y + 5);
+                    doc.text(`₹${stats.maintenance.toLocaleString()}`, 145, y + 5);
+                    doc.text(`₹${netIncome.toLocaleString()}`, 170, y + 5);
+                });
+
+                // Totals Row
+                y += 8;
+                doc.setFillColor(239, 236, 234); // Medium light gray
+                doc.rect(20, y, 170, 8, 'F');
+                doc.line(20, y + 8, 190, y + 8);
+
+                doc.setFont('Helvetica', 'bold');
+                doc.text('TOTAL', 23, y + 5);
+                doc.text(`₹${totalExpected.toLocaleString()}`, 70, y + 5);
+                doc.text(`₹${totalCollected.toLocaleString()}`, 95, y + 5);
+                doc.text(`₹${totalPending.toLocaleString()}`, 120, y + 5);
+                doc.text(`₹${totalMaintenance.toLocaleString()}`, 145, y + 5);
+                doc.text(`₹${(totalCollected - totalMaintenance).toLocaleString()}`, 170, y + 5);
+
+                // Add Chart Image
+                doc.addImage(chartImgData, 'PNG', 20, y + 16, 170, 95);
+
+                // Footer
+                doc.setFont('Helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.setTextColor(colorSubText);
+                doc.text('Confidential report generated for Ramesh Sharma, Owner of Vustela PG Hostels.', 20, 282);
+                doc.text('Page 1 of 1', 175, 282);
+
+                // Save Document
+                doc.save('VUSTELA_Hostel_Report_June_2025.pdf');
+                showToast('Report Downloaded ✅', 'Monthly PDF report downloaded successfully.');
+            } catch (err) {
+                console.error('PDF Generation Error:', err);
+                showToast('Error', 'Failed to generate PDF: ' + err.message);
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '⬇ Export Report';
+                }
+            }
+        }
+
+        // ============================================================
+        // RENT REMINDERS (EMAIL & WHATSAPP)
+        // ============================================================
+        function escapeJS(str) {
+            return (str || '').replace(/'/g, "\\'");
+        }
+
+        async function sendRentReminder(btn, name, email, phone, rent, hostelId, roomNum) {
+            if (btn) {
+                btn.disabled = true;
+                btn.dataset.oldText = btn.innerHTML;
+                btn.innerHTML = '⏳ Sending...';
+            }
+
+            const cleanEmail = (email || '').trim();
+            const cleanPhone = (phone || '').replace(/\D/g, '');
+            const hostelName = hostels[hostelId] ? hostels[hostelId].name : `Hostel ${hostelId}`;
+
+            console.log(`Sending rent reminder to ${name}`, { email: cleanEmail, phone: cleanPhone, rent, hostelId, roomNum });
+
+            let emailSuccess = false;
+            let waSuccess = false;
+            let emailErrorMsg = '';
+            let waErrorMsg = '';
+
+            // 1. Send Email if email is present
+            if (cleanEmail && cleanEmail !== 'null' && cleanEmail !== 'undefined') {
+                const subject = `VUSTELA Pending Rent Reminder — Room ${roomNum}`;
+                const emailHtml = `
+                    <div style="font-family: 'DM Sans', Arial, sans-serif; background-color: #F7F5F0; padding: 30px; color: #1A1814;">
+                        <div style="max-width: 500px; margin: 0 auto; background-color: #FFFFFF; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 30px; border-top: 5px solid #C84B31;">
+                            <h2 style="font-family: 'Syne', sans-serif; font-size: 20px; color: #1A1814; margin-top: 0; text-align: center;">Rent Pending Reminder ⏳</h2>
+                            <p>Dear <strong>${name}</strong>,</p>
+                            <p>This is a friendly reminder that your monthly rent at <strong>${hostelName}</strong> is currently pending. Below are the details:</p>
+                            
+                            <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
+                                <tr>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; color: #7A756E;">Room Number</td>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; font-weight: bold; text-align: right;">Room ${roomNum}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; color: #7A756E;">Amount Due</td>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; font-weight: bold; color: #C84B31; text-align: right;">₹${rent.toLocaleString()}</td>
+                                </tr>
+                            </table>
+
+                            <p style="margin-top: 20px;">Please pay your outstanding rent as soon as possible to avoid any late payment charges.</p>
+                            <p>If you have already processed the payment, please share the receipt with your Hostel Manager or ignore this automated reminder.</p>
+                            
+                            <hr style="border: 0; border-top: 1px solid #E5E1DB; margin: 25px 0;">
+                            <p style="font-size: 11px; color: #7A756E; text-align: center; margin-bottom: 0;">VUSTELA Hostel Management Portal</p>
+                        </div>
+                    </div>
+                `;
+
+                try {
+                    const res = await fetch(API_BASE_URL + '/send-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ to: cleanEmail, subject, html: emailHtml })
+                    });
+                    const resData = await res.json();
+                    if (resData.success) {
+                        emailSuccess = true;
+                    } else {
+                        emailErrorMsg = resData.error || 'Server error';
+                    }
+                } catch (err) {
+                    emailErrorMsg = err.message;
+                }
+            } else {
+                emailErrorMsg = 'No email set';
+            }
+
+            // 2. Send WhatsApp if phone is present
+            if (cleanPhone && cleanPhone !== 'null' && cleanPhone !== 'undefined') {
+                const waMessage = `⚠️ *VUSTELA Rent Reminder* ⚠️\n\nHi ${name},\n\nThis is a friendly reminder that your monthly rent of *₹${rent.toLocaleString()}* for *Room ${roomNum}* at *${hostelName}* is currently pending.\n\nPlease process the payment at your earliest convenience and share the receipt with your hostel manager.\n\n_If you have already paid, please ignore this message._\n\n— VUSTELA PG Hostels`;
+                
+                try {
+                    const res = await fetch(API_BASE_URL + '/send-whatsapp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ to: cleanPhone, message: waMessage })
+                    });
+                    const resData = await res.json();
+                    if (resData.success) {
+                        waSuccess = true;
+                    } else {
+                        waErrorMsg = resData.error || 'Server error';
+                    }
+                } catch (err) {
+                    waErrorMsg = err.message;
+                }
+            } else {
+                waErrorMsg = 'No phone set';
+            }
+
+            // UI Response toast
+            if (emailSuccess || waSuccess) {
+                let channels = [];
+                if (emailSuccess) channels.push('Email ✉️');
+                if (waSuccess) channels.push('WhatsApp 💬');
+                showToast('Reminder Sent ✅', `Sent successfully to ${name} via ${channels.join(' and ')}.`);
+            } else {
+                showToast('Send Failed ❌', `Email: ${emailErrorMsg} | WA: ${waErrorMsg}`);
+            }
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = btn.dataset.oldText || 'Remind';
+            }
+            return emailSuccess || waSuccess;
+        }
+
+        async function remindAllUnpaid(btn) {
+            if (btn) {
+                btn.disabled = true;
+                btn.dataset.oldText = btn.innerHTML;
+                btn.innerHTML = '⏳ Processing...';
+            }
+
+            // Gather all unpaid/pending beds
+            let unpaidBeds = [];
+            [1, 2, 3].forEach(hid => {
+                if (rooms[hid]) {
+                    rooms[hid].forEach(r => {
+                        r.beds.forEach((b, idx) => {
+                            if (b.tenant && b.rentStatus !== 'paid') {
+                                unpaidBeds.push({ ...b, num: r.num, bedIdx: idx, hostel: hid });
+                            }
+                        });
+                    });
+                }
+            });
+
+            if (unpaidBeds.length === 0) {
+                showToast('All Paid! 🎉', 'There are no pending rent balances to remind.');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = btn.dataset.oldText;
+                }
+                return;
+            }
+
+            showToast('Sending Reminders...', `Sending notifications to ${unpaidBeds.length} tenants.`);
+
+            let sentCount = 0;
+            for (const b of unpaidBeds) {
+                const success = await sendRentReminder(null, b.tenant, b.tenant_email, b.tenant_phone, b.rent, b.hostel, b.num);
+                if (success) sentCount++;
+            }
+
+            showToast('Process Finished 📣', `Sent reminders to ${sentCount} out of ${unpaidBeds.length} unpaid tenants.`);
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = btn.dataset.oldText;
+            }
+        }
+
+        // ============================================================
         // VACATING LOGIC
         // ============================================================
         function submitVacate() {
@@ -7851,19 +8364,25 @@
                 <div class="hostel-selector-grid"
                     style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
                     <div class="hs-item" onclick="selectHostelForBooking(1)"
-                        style="background: var(--bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
-                        <div class="hs-icon" style="font-size: 32px; margin-bottom: 8px;">🏢</div>
-                        <div class="hs-name" style="font-weight: 700; font-size: 14px;">Kokapet</div>
+                        style="background: var(--white); border: 1px solid var(--border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow);"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='var(--accent)';"
+                        onmouseout="this.style.transform='none'; this.style.borderColor='var(--border)';">
+                        <div class="hs-img" style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background-image: url('hostel1.png'); background-size: cover; background-position: center; border: 2px solid var(--border);"></div>
+                        <div class="hs-name" style="font-weight: 700; font-size: 13px; color: var(--ink);">Kokapet</div>
                     </div>
                     <div class="hs-item" onclick="selectHostelForBooking(2)"
-                        style="background: var(--bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
-                        <div class="hs-icon" style="font-size: 32px; margin-bottom: 8px;">🏗️</div>
-                        <div class="hs-name" style="font-weight: 700; font-size: 14px;">Gachibowli</div>
+                        style="background: var(--white); border: 1px solid var(--border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow);"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='var(--accent)';"
+                        onmouseout="this.style.transform='none'; this.style.borderColor='var(--border)';">
+                        <div class="hs-img" style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background-image: url('hostel2.png'); background-size: cover; background-position: center; border: 2px solid var(--border);"></div>
+                        <div class="hs-name" style="font-weight: 700; font-size: 13px; color: var(--ink);">Gachibowli</div>
                     </div>
                     <div class="hs-item" onclick="selectHostelForBooking(3)"
-                        style="background: var(--bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s;">
-                        <div class="hs-icon" style="font-size: 32px; margin-bottom: 8px;">🏨</div>
-                        <div class="hs-name" style="font-weight: 700; font-size: 14px;">Madhapur</div>
+                        style="background: var(--white); border: 1px solid var(--border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow);"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='var(--accent)';"
+                        onmouseout="this.style.transform='none'; this.style.borderColor='var(--border)';">
+                        <div class="hs-img" style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background-image: url('hostel3.png'); background-size: cover; background-position: center; border: 2px solid var(--border);"></div>
+                        <div class="hs-name" style="font-weight: 700; font-size: 13px; color: var(--ink);">Madhapur</div>
                     </div>
                 </div>
             </div>

@@ -2,6 +2,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",
     "dotenv": "^17.4.2",
-    "nodemailer": "^8.0.7"
+    "nodemailer": "^8.0.7",
+    "pdfkit": "^0.19.1"
   }
 }
