@@ -2989,7 +2989,7 @@
                                     <th>Net Income</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="owner-financial-tbody">
                                 <tr>
                                     <td><strong>Hostel 1 — Kokapet</strong></td>
                                     <td>₹1,10,000</td>
@@ -3030,30 +3030,30 @@
                     <!-- QUICK STATS -->
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--green)">₹2,88,000</div>
+                            <div class="stat-num" style="color:var(--green)" id="owner-stat-collected">₹2,88,000</div>
                             <div class="stat-label">Collected This Month</div>
                             <div class="prog-bar">
-                                <div class="prog-fill prog-green" style="width:92%"></div>
+                                <div class="prog-fill prog-green" style="width:92%" id="owner-stat-collected-fill"></div>
                             </div>
-                            <div class="stat-sub" style="font-size:12px;color:var(--ink3)">92% of expected</div>
+                            <div class="stat-sub" style="font-size:12px;color:var(--ink3)" id="owner-stat-collected-sub">92% of expected</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--red)">₹25,000</div>
+                            <div class="stat-num" style="color:var(--red)" id="owner-stat-pending">₹25,000</div>
                             <div class="stat-label">Pending Rent</div>
                             <div class="prog-bar">
-                                <div class="prog-fill prog-red" style="width:8%"></div>
+                                <div class="prog-fill prog-red" style="width:8%" id="owner-stat-pending-fill"></div>
                             </div>
-                            <div class="stat-sub" style="font-size:12px;color:var(--ink3)">5 tenants unpaid</div>
+                            <div class="stat-sub" style="font-size:12px;color:var(--ink3)" id="owner-stat-pending-sub">5 tenants unpaid</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)">₹17,500</div>
+                            <div class="stat-num" style="color:var(--yellow)" id="owner-stat-maintenance">₹17,500</div>
                             <div class="stat-label">Maintenance Spent</div>
-                            <div class="stat-sub">8 complaints resolved</div>
+                            <div class="stat-sub" id="owner-stat-maintenance-sub">8 complaints resolved</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num">₹2,70,500</div>
+                            <div class="stat-num" id="owner-stat-net">₹2,70,500</div>
                             <div class="stat-label">Net Income</div>
-                            <div class="stat-sub" style="color:var(--green)">↑ ₹12,000 vs last month</div>
+                            <div class="stat-sub" style="color:var(--green)" id="owner-stat-net-sub">↑ ₹12,000 vs last month</div>
                         </div>
                     </div>
 
@@ -3622,27 +3622,27 @@
 
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-num">20</div>
+                            <div class="stat-num" id="mgr-occ-total-rooms">20</div>
                             <div class="stat-label">Total Rooms</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--green)">16</div>
+                            <div class="stat-num" style="color:var(--green)" id="mgr-occ-occupied">16</div>
                             <div class="stat-label">Occupied</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--red)">4</div>
+                            <div class="stat-num" style="color:var(--red)" id="mgr-occ-vacant">4</div>
                             <div class="stat-label">Vacant</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)">2</div>
+                            <div class="stat-num" style="color:var(--yellow)" id="mgr-occ-complaints">2</div>
                             <div class="stat-label">Open Complaints</div>
                         </div>
                     </div>
 
-                    <div class="vacant-banner">
+                    <div class="vacant-banner" id="mgr-vacant-banner">
                         <div>
-                            <div class="vb-text">4 rooms have been vacant for 15+ days</div>
-                            <div class="vb-sub">Rooms 103, 107, 116, 120 — consider following up with leads</div>
+                            <div class="vb-text" id="mgr-vacant-banner-title">4 rooms have been vacant for 15+ days</div>
+                            <div class="vb-sub" id="mgr-vacant-banner-sub">Rooms 103, 107, 116, 120 — consider following up with leads</div>
                         </div>
                         <button class="btn-sm btn-red"
                             onclick="mgrTab(document.querySelector('[onclick*=m-occupancy]'),'m-occupancy')">View
@@ -3655,32 +3655,34 @@
                                 <div class="flex between" style="margin-bottom:14px">
                                     <h3 style="font-size:15px">Today's Tasks</h3>
                                 </div>
-                                <div class="audit-item">
-                                    <div class="audit-icon" style="background:var(--red-bg)">💰</div>
-                                    <div class="audit-body">
-                                        <div class="audit-text">Collect rent from Arjun M. — Room 108 (overdue 5 days)
-                                        </div>
-                                        <div class="audit-time">Rent · ₹6,000 pending</div>
-                                    </div><button class="btn-sm btn-red"
-                                        onclick="showToast('Reminder Sent','SMS reminder sent to Arjun M.')">Remind</button>
-                                </div>
-                                <div class="audit-item">
-                                    <div class="audit-icon" style="background:var(--yellow-bg)">🔧</div>
-                                    <div class="audit-body">
-                                        <div class="audit-text">Follow up on complaint — Room 110, Water heater issue
-                                        </div>
-                                        <div class="audit-time">Complaint · Open 2 days</div>
-                                    </div><button class="btn-sm btn-ghost"
-                                        onclick="mgrTab(document.querySelector('[onclick*=m-complaints]'),'m-complaints')">View</button>
-                                </div>
-                                <div class="audit-item">
-                                    <div class="audit-icon" style="background:var(--green-bg)">✅</div>
-                                    <div class="audit-body">
-                                        <div class="audit-text">Room 116 is vacant — inspection before new tenant</div>
-                                        <div class="audit-time">Checklist · Pending</div>
-                                    </div><button class="btn-sm btn-green"
-                                        onclick="showToast('Inspection Marked','Room 116 marked as inspected and ready.')">Mark
-                                        Done</button>
+                                <div id="mgr-tasks-container">
+                                    <div class="audit-item">
+                                        <div class="audit-icon" style="background:var(--red-bg)">💰</div>
+                                        <div class="audit-body">
+                                            <div class="audit-text">Collect rent from Arjun M. — Room 108 (overdue 5 days)
+                                            </div>
+                                            <div class="audit-time">Rent · ₹6,000 pending</div>
+                                        </div><button class="btn-sm btn-red"
+                                            onclick="showToast('Reminder Sent','SMS reminder sent to Arjun M.')">Remind</button>
+                                    </div>
+                                    <div class="audit-item">
+                                        <div class="audit-icon" style="background:var(--yellow-bg)">🔧</div>
+                                        <div class="audit-body">
+                                            <div class="audit-text">Follow up on complaint — Room 110, Water heater issue
+                                            </div>
+                                            <div class="audit-time">Complaint · Open 2 days</div>
+                                        </div><button class="btn-sm btn-ghost"
+                                            onclick="mgrTab(document.querySelector('[onclick*=m-complaints]'),'m-complaints')">View</button>
+                                    </div>
+                                    <div class="audit-item">
+                                        <div class="audit-icon" style="background:var(--green-bg)">✅</div>
+                                        <div class="audit-body">
+                                            <div class="audit-text">Room 116 is vacant — inspection before new tenant</div>
+                                            <div class="audit-time">Checklist · Pending</div>
+                                        </div><button class="btn-sm btn-green"
+                                            onclick="showToast('Inspection Marked','Room 116 marked as inspected and ready.')">Mark
+                                            Done</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -3690,17 +3692,17 @@
                                 <div style="margin-bottom:8px">
                                     <div class="flex between" style="margin-bottom:4px"><span
                                             style="font-size:13px;color:var(--green)">✅ Paid</span><span
-                                            style="font-weight:700">14 tenants</span></div>
+                                            style="font-weight:700" id="mgr-rent-paid-count">14 tenants</span></div>
                                     <div class="prog-bar">
-                                        <div class="prog-fill prog-green" style="width:88%"></div>
+                                        <div class="prog-fill prog-green" style="width:88%" id="mgr-rent-paid-fill"></div>
                                     </div>
                                 </div>
                                 <div style="margin-bottom:16px">
                                     <div class="flex between" style="margin-bottom:4px"><span
                                             style="font-size:13px;color:var(--red)">❌ Unpaid</span><span
-                                            style="font-weight:700">2 tenants</span></div>
+                                            style="font-weight:700" id="mgr-rent-unpaid-count">2 tenants</span></div>
                                     <div class="prog-bar">
-                                        <div class="prog-fill prog-red" style="width:12%"></div>
+                                        <div class="prog-fill prog-red" style="width:12%" id="mgr-rent-unpaid-fill"></div>
                                     </div>
                                 </div>
                                 <button class="btn-full" style="font-size:13px"
@@ -4954,6 +4956,36 @@
                     badge.style.display = 'none';
                 }
             }
+
+            // Calculate Rent This Month stats
+            let paidCount = 0;
+            let unpaidCount = 0;
+            hrooms.forEach(r => {
+                if (r.beds) {
+                    r.beds.forEach(b => {
+                        if (b.tenant && !b.tenant.startsWith('PENDING:')) {
+                            if (b.rentStatus === 'paid') {
+                                paidCount++;
+                            } else if (b.rentStatus !== 'Request') {
+                                unpaidCount++;
+                            }
+                        }
+                    });
+                }
+            });
+            const totalOccupied = paidCount + unpaidCount;
+            const paidPct = totalOccupied > 0 ? Math.round((paidCount / totalOccupied) * 100) : 0;
+            const unpaidPct = totalOccupied > 0 ? Math.round((unpaidCount / totalOccupied) * 100) : 0;
+
+            const paidCountEl = document.getElementById('mgr-rent-paid-count');
+            const paidFillEl = document.getElementById('mgr-rent-paid-fill');
+            const unpaidCountEl = document.getElementById('mgr-rent-unpaid-count');
+            const unpaidFillEl = document.getElementById('mgr-rent-unpaid-fill');
+
+            if (paidCountEl) paidCountEl.textContent = `${paidCount} tenant${paidCount !== 1 ? 's' : ''}`;
+            if (paidFillEl) paidFillEl.style.width = `${paidPct}%`;
+            if (unpaidCountEl) unpaidCountEl.textContent = `${unpaidCount} tenant${unpaidCount !== 1 ? 's' : ''}`;
+            if (unpaidFillEl) unpaidFillEl.style.width = `${unpaidPct}%`;
         }
 
         function buildOccGrid(hostelIds, containerId, role) {
@@ -5027,8 +5059,301 @@
             container.innerHTML = html;
         }
 
-        function renderOwnerOccupancy() { buildOccGrid([1, 2, 3], 'owner-occ-grid', 'owner'); }
-        function renderManagerOccupancy() { buildOccGrid([currentHostel], 'manager-occ-grid', 'manager'); }
+        function renderOwnerOccupancy() {
+            buildOccGrid([1, 2, 3], 'owner-occ-grid', 'owner');
+            renderOwnerFinancials();
+        }
+
+        function renderOwnerFinancials() {
+            const tbody = document.getElementById('owner-financial-tbody');
+            if (!tbody) return;
+
+            let expectedTotal = 0;
+            let collectedTotal = 0;
+            let pendingTotal = 0;
+            let maintenanceTotal = 0;
+            let netTotal = 0;
+            let unpaidCountTotal = 0;
+
+            const rowsHtml = [];
+            const hostelIds = [1, 2, 3];
+
+            hostelIds.forEach(hid => {
+                let expected = 0;
+                let collected = 0;
+                let pending = 0;
+                let maintenance = 0;
+                let unpaidCount = 0;
+
+                if (rooms[hid]) {
+                    rooms[hid].forEach(r => {
+                        if (r.beds) {
+                            r.beds.forEach(b => {
+                                if (b.tenant) {
+                                    expected += b.rent || 0;
+                                    if (b.rentStatus === 'paid') {
+                                        collected += b.rent || 0;
+                                    } else {
+                                        pending += b.rent || 0;
+                                        unpaidCount++;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+
+                if (expenses) {
+                    maintenance = expenses
+                        .filter(e => e.hostel_id === hid)
+                        .reduce((sum, e) => sum + (e.amount || 0), 0);
+                }
+
+                const net = collected - maintenance;
+
+                expectedTotal += expected;
+                collectedTotal += collected;
+                pendingTotal += pending;
+                maintenanceTotal += maintenance;
+                netTotal += net;
+                unpaidCountTotal += unpaidCount;
+
+                const hName = hostels[hid] ? hostels[hid].name : `Hostel ${hid}`;
+
+                rowsHtml.push(`
+                    <tr>
+                        <td><strong>${hName}</strong></td>
+                        <td>₹${expected.toLocaleString()}</td>
+                        <td style="color:var(--green);font-weight:700">₹${collected.toLocaleString()}</td>
+                        <td style="color:var(--red);font-weight:700">₹${pending.toLocaleString()}</td>
+                        <td style="color:var(--yellow)">₹${maintenance.toLocaleString()}</td>
+                        <td style="font-weight:800;font-family:var(--font-display)">₹${net.toLocaleString()}</td>
+                    </tr>
+                `);
+            });
+
+            // Add Total row
+            rowsHtml.push(`
+                <tr style="background:var(--bg);font-weight:700">
+                    <td><strong>TOTAL</strong></td>
+                    <td><strong>₹${expectedTotal.toLocaleString()}</strong></td>
+                    <td style="color:var(--green);font-weight:800;font-size:16px">₹${collectedTotal.toLocaleString()}</td>
+                    <td style="color:var(--red);font-weight:800">₹${pendingTotal.toLocaleString()}</td>
+                    <td style="color:var(--yellow);font-weight:800">₹${maintenanceTotal.toLocaleString()}</td>
+                    <td style="font-weight:800;font-size:17px;font-family:var(--font-display)">₹${netTotal.toLocaleString()}</td>
+                </tr>
+            `);
+
+            tbody.innerHTML = rowsHtml.join('');
+
+            // Update stats cards
+            const collectedPct = expectedTotal > 0 ? Math.round((collectedTotal / expectedTotal) * 100) : 0;
+            const pendingPct = expectedTotal > 0 ? Math.round((pendingTotal / expectedTotal) * 100) : 0;
+
+            const collNumEl = document.getElementById('owner-stat-collected');
+            const collFillEl = document.getElementById('owner-stat-collected-fill');
+            const collSubEl = document.getElementById('owner-stat-collected-sub');
+
+            if (collNumEl) collNumEl.textContent = `₹${collectedTotal.toLocaleString()}`;
+            if (collFillEl) collFillEl.style.width = `${collectedPct}%`;
+            if (collSubEl) collSubEl.textContent = `${collectedPct}% of expected`;
+
+            const pendNumEl = document.getElementById('owner-stat-pending');
+            const pendFillEl = document.getElementById('owner-stat-pending-fill');
+            const pendSubEl = document.getElementById('owner-stat-pending-sub');
+
+            if (pendNumEl) pendNumEl.textContent = `₹${pendingTotal.toLocaleString()}`;
+            if (pendFillEl) pendFillEl.style.width = `${pendingPct}%`;
+            if (pendSubEl) pendSubEl.textContent = `${unpaidCountTotal} tenant${unpaidCountTotal !== 1 ? 's' : ''} unpaid`;
+
+            const maintNumEl = document.getElementById('owner-stat-maintenance');
+            const maintSubEl = document.getElementById('owner-stat-maintenance-sub');
+
+            if (maintNumEl) maintNumEl.textContent = `₹${maintenanceTotal.toLocaleString()}`;
+            if (maintSubEl) {
+                const resolvedCount = complaints.filter(c => c.status === 'resolved').length;
+                maintSubEl.textContent = `${resolvedCount} complaint${resolvedCount !== 1 ? 's' : ''} resolved`;
+            }
+
+            const netNumEl = document.getElementById('owner-stat-net');
+            const netSubEl = document.getElementById('owner-stat-net-sub');
+
+            if (netNumEl) netNumEl.textContent = `₹${netTotal.toLocaleString()}`;
+            if (netSubEl) {
+                netSubEl.textContent = `↑ ₹12,000 vs last month`;
+            }
+        }
+        function renderManagerOccupancy() {
+            buildOccGrid([currentHostel], 'manager-occ-grid', 'manager');
+            
+            let totalRooms = 0;
+            let occupiedBeds = 0;
+            let totalBeds = 0;
+            let vacantBeds = 0;
+            let vacantRoomNums = [];
+            
+            if (rooms[currentHostel]) {
+                rooms[currentHostel].forEach(r => {
+                    totalRooms++;
+                    totalBeds += r.capacity;
+                    occupiedBeds += r.beds ? r.beds.filter(b => b.tenant).length : 0;
+                    if (r.beds && r.beds.some(b => !b.tenant)) {
+                        vacantRoomNums.push(r.num);
+                    }
+                });
+            }
+            vacantBeds = totalBeds - occupiedBeds;
+            
+            const totalRoomsEl = document.getElementById('mgr-occ-total-rooms');
+            const occupiedEl = document.getElementById('mgr-occ-occupied');
+            const vacantEl = document.getElementById('mgr-occ-vacant');
+            const complaintsEl = document.getElementById('mgr-occ-complaints');
+            
+            if (totalRoomsEl) totalRoomsEl.textContent = totalRooms;
+            if (occupiedEl) occupiedEl.textContent = occupiedBeds;
+            if (vacantEl) vacantEl.textContent = vacantBeds;
+            
+            if (complaintsEl) {
+                const openComplaintsCount = complaints.filter(c => c.hostel === currentHostel && c.status !== 'resolved').length;
+                complaintsEl.textContent = openComplaintsCount;
+            }
+
+            // Update vacant rooms banner dynamically
+            const vacantBanner = document.getElementById('mgr-vacant-banner');
+            const vacantBannerTitle = document.getElementById('mgr-vacant-banner-title');
+            const vacantBannerSub = document.getElementById('mgr-vacant-banner-sub');
+            
+            if (vacantBanner) {
+                if (vacantRoomNums.length === 0) {
+                    vacantBanner.style.display = 'none';
+                } else {
+                    vacantBanner.style.display = 'flex';
+                    const count = vacantRoomNums.length;
+                    if (vacantBannerTitle) {
+                        vacantBannerTitle.textContent = `${count} room${count > 1 ? 's have' : ' has'} been vacant for 15+ days`;
+                    }
+                    if (vacantBannerSub) {
+                        const roomsToShow = vacantRoomNums.slice(0, 4).join(', ') + (count > 4 ? '...' : '');
+                        vacantBannerSub.textContent = `Rooms ${roomsToShow} — consider following up with leads`;
+                    }
+                }
+            }
+
+            renderManagerTasks();
+            updateDashboardStats();
+        }
+
+        function renderManagerTasks() {
+            const container = document.getElementById('mgr-tasks-container');
+            if (!container) return;
+
+            let renderedItems = [];
+
+            // 1. Gather unpaid rents
+            let unpaidTasks = [];
+            if (rooms[currentHostel]) {
+                rooms[currentHostel].forEach(r => {
+                    if (r.beds) {
+                        r.beds.forEach((b, bedIdx) => {
+                            if (b.tenant && b.rentStatus !== 'paid' && b.rentStatus !== 'Request' && !b.tenant.startsWith('PENDING:')) {
+                                unpaidTasks.push({
+                                    tenant: b.tenant,
+                                    email: b.tenant_email || '',
+                                    phone: b.tenant_phone || '',
+                                    rent: b.rent,
+                                    roomNum: r.num,
+                                    bedIdx: bedIdx
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
+            // 2. Gather open complaints
+            let complaintTasks = [];
+            const openComplaints = complaints.filter(c => c.hostel === currentHostel && c.status !== 'resolved');
+            openComplaints.forEach(c => {
+                complaintTasks.push({
+                    id: c.id,
+                    roomNum: c.room,
+                    subject: c.subject,
+                    status: c.status
+                });
+            });
+
+            // 3. Gather vacant rooms
+            let vacantRoomNums = [];
+            if (rooms[currentHostel]) {
+                rooms[currentHostel].forEach(r => {
+                    if (r.beds && r.beds.some(b => !b.tenant)) {
+                        vacantRoomNums.push(r.num);
+                    }
+                });
+            }
+
+            // Render up to 3 items
+            // Priority: Rent reminders, Complaints, Vacancy Checklist
+            
+            // Add unpaid rents (limit to max 1 to show only one Remind button in tasks)
+            let rentCount = 0;
+            unpaidTasks.forEach(t => {
+                if (renderedItems.length < 3 && rentCount < 1) {
+                    renderedItems.push(`
+                        <div class="audit-item">
+                            <div class="audit-icon" style="background:var(--red-bg)">💰</div>
+                            <div class="audit-body">
+                                <div class="audit-text">Collect rent from ${t.tenant} — Room ${t.roomNum}</div>
+                                <div class="audit-time">Rent · ₹${t.rent.toLocaleString()} pending</div>
+                            </div>
+                            <button class="btn-sm btn-red" onclick="sendRentReminder(this, '${escapeJS(t.tenant)}', '${t.email}', '${t.phone}', ${t.rent}, ${currentHostel}, '${t.roomNum}')">Remind</button>
+                        </div>
+                    `);
+                    rentCount++;
+                }
+            });
+
+            // Add complaints
+            complaintTasks.forEach(t => {
+                if (renderedItems.length < 3) {
+                    renderedItems.push(`
+                        <div class="audit-item">
+                            <div class="audit-icon" style="background:var(--yellow-bg)">🔧</div>
+                            <div class="audit-body">
+                                <div class="audit-text">Follow up on complaint — Room ${t.roomNum}, ${t.subject}</div>
+                                <div class="audit-time">Complaint · ${t.status === 'open' ? 'Open' : 'In Progress'}</div>
+                            </div>
+                            <button class="btn-sm btn-ghost" onclick="mgrTab(document.querySelector('[onclick*=m-complaints]'),'m-complaints')">View</button>
+                        </div>
+                    `);
+                }
+            });
+
+            // Add vacancy checklist if we have vacant rooms and < 3 items
+            if (vacantRoomNums.length > 0 && renderedItems.length < 3) {
+                const firstVacant = vacantRoomNums[0];
+                renderedItems.push(`
+                    <div class="audit-item">
+                        <div class="audit-icon" style="background:var(--green-bg)">✅</div>
+                        <div class="audit-body">
+                            <div class="audit-text">Room ${firstVacant} is vacant — inspection before new tenant</div>
+                            <div class="audit-time">Checklist · Pending</div>
+                        </div>
+                        <button class="btn-sm btn-green" onclick="showToast('Inspection Marked','Room ${firstVacant} marked as inspected and ready.')">Mark Done</button>
+                    </div>
+                `);
+            }
+
+            if (renderedItems.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px 0; color: var(--ink3); font-size: 14px;">
+                        🎉 All caught up! No tasks for today.
+                    </div>
+                `;
+            } else {
+                container.innerHTML = renderedItems.join('');
+            }
+        }
 
         function showRoomPopup(e, hostelId, roomNum, role) {
             e.stopPropagation();
@@ -6366,6 +6691,117 @@
                 console.error(err);
                 showToast('Error', 'Could not submit request. Please try again.');
             }
+        }
+
+        function escapeJS(str) {
+            return (str || '').replace(/'/g, "\\'");
+        }
+
+        async function sendRentReminder(btn, name, email, phone, rent, hostelId, roomNum) {
+            if (btn) {
+                btn.disabled = true;
+                btn.dataset.oldText = btn.innerHTML;
+                btn.innerHTML = '⏳ Sending...';
+            }
+
+            const cleanEmail = (email || '').trim();
+            const cleanPhone = (phone || '').replace(/\D/g, '');
+            const hostelName = hostels[hostelId] ? hostels[hostelId].name : `Hostel ${hostelId}`;
+
+            console.log(`Sending rent reminder to ${name}`, { email: cleanEmail, phone: cleanPhone, rent, hostelId, roomNum });
+
+            let emailSuccess = false;
+            let waSuccess = false;
+            let emailErrorMsg = '';
+            let waErrorMsg = '';
+
+            // 1. Send Email if email is present
+            if (cleanEmail && cleanEmail !== 'null' && cleanEmail !== 'undefined') {
+                const subject = `VUSTELA Pending Rent Reminder — Room ${roomNum}`;
+                const emailHtml = `
+                    <div style="font-family: 'DM Sans', Arial, sans-serif; background-color: #F7F5F0; padding: 30px; color: #1A1814;">
+                        <div style="max-width: 500px; margin: 0 auto; background-color: #FFFFFF; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 30px; border-top: 5px solid #C84B31;">
+                            <h2 style="font-family: 'Syne', sans-serif; font-size: 20px; color: #1A1814; margin-top: 0; text-align: center;">Rent Pending Reminder ⏳</h2>
+                            <p>Dear <strong>${name}</strong>,</p>
+                            <p>This is a friendly reminder that your monthly rent at <strong>${hostelName}</strong> is currently pending. Below are the details:</p>
+                            
+                            <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
+                                <tr>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; color: #7A756E;">Room Number</td>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; font-weight: bold; text-align: right;">Room ${roomNum}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; color: #7A756E;">Amount Due</td>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; font-weight: bold; color: #C84B31; text-align: right;">₹${rent.toLocaleString()}</td>
+                                </tr>
+                            </table>
+
+                            <p style="margin-top: 20px;">Please pay your outstanding rent as soon as possible to avoid any late payment charges.</p>
+                            <p>If you have already processed the payment, please share the receipt with your Hostel Manager or ignore this automated reminder.</p>
+                            
+                            <hr style="border: 0; border-top: 1px solid #E5E1DB; margin: 25px 0;">
+                            <p style="font-size: 11px; color: #7A756E; text-align: center; margin-bottom: 0;">VUSTELA Hostel Management Portal</p>
+                        </div>
+                    </div>
+                `;
+
+                try {
+                    const res = await fetch(API_BASE_URL + '/send-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ to: cleanEmail, subject, html: emailHtml })
+                    });
+                    const resData = await res.json();
+                    if (resData.success) {
+                        emailSuccess = true;
+                    } else {
+                        emailErrorMsg = resData.error || 'Server error';
+                    }
+                } catch (err) {
+                    emailErrorMsg = err.message;
+                }
+            } else {
+                emailErrorMsg = 'No email set';
+            }
+
+            // 2. Send WhatsApp if phone is present
+            if (cleanPhone && cleanPhone !== 'null' && cleanPhone !== 'undefined') {
+                const waMessage = `⚠️ *VUSTELA Rent Reminder* ⚠️\n\nHi ${name},\n\nThis is a friendly reminder that your monthly rent of *₹${rent.toLocaleString()}* for *Room ${roomNum}* at *${hostelName}* is currently pending.\n\nPlease process the payment at your earliest convenience and share the receipt with your hostel manager.\n\n_If you have already paid, please ignore this message._\n\n— VUSTELA PG Hostels`;
+                
+                try {
+                    const res = await fetch(API_BASE_URL + '/send-whatsapp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ to: cleanPhone, message: waMessage })
+                    });
+                    const resData = await res.json();
+                    if (resData.success) {
+                        waSuccess = true;
+                    } else {
+                        waErrorMsg = resData.error || 'Server error';
+                    }
+                } catch (err) {
+                    waErrorMsg = err.message;
+                }
+            } else {
+                waErrorMsg = 'No phone set';
+            }
+
+            // UI Response toast
+            if (emailSuccess || waSuccess) {
+                let channels = [];
+                if (emailSuccess) channels.push('Email ✉️');
+                if (waSuccess) channels.push('WhatsApp 💬');
+                showToast('Reminder Sent ✅', `Sent successfully to ${name} via ${channels.join(' and ')}.`);
+            } else {
+                showToast('Send Failed ❌', `Email: ${emailErrorMsg} | WA: ${waErrorMsg}`);
+            }
+
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = btn.dataset.oldText || 'Remind';
+            }
+            return emailSuccess || waSuccess;
         }
     </script>
     <!-- BOOK A ROOM MODAL -->

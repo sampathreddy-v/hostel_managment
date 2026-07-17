@@ -912,6 +912,132 @@
             flex-wrap: wrap
         }
 
+        .hero-action-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .hero-action-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            border-color: var(--accent);
+            box-shadow: 0 12px 30px rgba(200, 75, 49, 0.08);
+        }
+
+        .hac-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .hero-action-card:hover .hac-icon {
+            background: var(--red-bg);
+            transform: scale(1.08);
+        }
+
+        .hac-content {
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .hac-title {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--ink);
+            margin: 0 0 4px 0;
+        }
+
+        .hac-desc {
+            font-size: 13px;
+            color: var(--ink3);
+            line-height: 1.45;
+            margin: 0;
+        }
+
+        .hac-arrow {
+            font-size: 22px;
+            color: var(--ink3);
+            transition: all 0.3s;
+            opacity: 0.5;
+        }
+
+        .hero-action-card:hover .hac-arrow {
+            color: var(--accent);
+            transform: translateX(6px);
+            opacity: 1;
+        }
+
+        /* SLIDESHOW STYLING */
+        .hero-image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            height: 480px;
+            width: 100%;
+        }
+
+        .hero-slideshow {
+            display: flex;
+            width: 400%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hero-slide {
+            width: 25%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slideshow-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .slide-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .slide-dot.active {
+            width: 20px;
+            background: var(--white);
+        }
+
+        @media (max-width: 768px) {
+            .hero-image-container {
+                height: 320px;
+            }
+        }
+
         .login-cards {
             display: flex;
             flex-direction: column;
@@ -3180,22 +3306,55 @@
         </nav>
 
         <section class="hero" style="position:relative;z-index:2">
-            <div style="animation:fadeUp 0.7s ease both">
-                <div class="hero-eyebrow">🏠 Kokapet, Hyderabad</div>
-                <h1>Modern Living,<br><em>Simplified.</em></h1>
-                <p class="hero-desc">Three premium PG hostels managed seamlessly — for tenants, managers, and owners.
-                    Pay rent, raise complaints, and track everything in one place.</p>
-                <div class="hero-btns">
-                    <button class="btn btn-primary" onclick="openModal('login-modal')">Login to Dashboard</button>
-                    <button class="btn btn-outline" onclick="openModal('book-room-modal')">Book a Room</button>
-                    <a href="tel:+916300642776" class="btn btn-outline" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px; border-color:var(--accent); color:var(--accent);">📞 Call Now</a>
+            <!-- Left Side: Room Photo Slideshow -->
+            <div class="hero-image-container" style="animation: fadeUp 0.7s ease both;">
+                <div class="hero-slideshow">
+                    <div class="hero-slide" style="background-image: url('hero_hostel_1.png');"></div>
+                    <div class="hero-slide" style="background-image: url('hero_hostel_2.png');"></div>
+                    <div class="hero-slide" style="background-image: url('hero_hostel_3.png');"></div>
+                    <div class="hero-slide" style="background-image: url('hero_hostel_4.png');"></div>
+                </div>
+                <div class="slideshow-dots">
+                    <span class="slide-dot active"></span>
+                    <span class="slide-dot"></span>
+                    <span class="slide-dot"></span>
+                    <span class="slide-dot"></span>
                 </div>
             </div>
 
-            <div class="hero-image-container" style="animation: fadeUp 0.7s ease both 0.2s;">
-                <img src="hero_hostel.png" alt="Premium PG Hostel Room" style="width: 100%; height: auto; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); object-fit: cover; max-height: 600px; display: block;">
-            </div>
+            <!-- Right Side: Three Large Rectangular Action Cards -->
+            <div class="login-cards" style="animation: fadeUp 0.7s ease both 0.15s; display: flex; flex-direction: column; gap: 20px; justify-content: center; height: 100%;">
+                
+                <!-- 1. LOGIN -->
+                <div class="hero-action-card" onclick="openModal('login-modal')">
+                    <div class="hac-icon">🔑</div>
+                    <div class="hac-content">
+                        <div class="hac-title">Login to Dashboard</div>
+                    </div>
+                    <div class="hac-arrow">→</div>
+                </div>
 
+                <!-- 2. BOOK A ROOM -->
+                <div class="hero-action-card" onclick="openModal('book-room-modal')">
+                    <div class="hac-icon">🛏️</div>
+                    <div class="hac-content">
+                        <div class="hac-title">Book a Room</div>
+                        <div class="hac-desc">Find available beds and rooms at our Kokapet, Gachibowli, or Madhapur branches instantly.</div>
+                    </div>
+                    <div class="hac-arrow">→</div>
+                </div>
+
+                <!-- 3. CALL NOW -->
+                <a href="tel:+916300642776" class="hero-action-card" style="text-decoration: none;">
+                    <div class="hac-icon">📞</div>
+                    <div class="hac-content">
+                        <div class="hac-title">Call for Inquiry</div>
+                        <div class="hac-desc">Have questions? Talk directly to our managers for pricing, amenities, and room visits.</div>
+                    </div>
+                    <div class="hac-arrow">→</div>
+                </a>
+
+            </div>
         </section>
 
 
@@ -3688,7 +3847,7 @@
                                     <th>Net Income</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="owner-financial-tbody">
                                 <tr>
                                     <td><strong>Hostel 1 — Kokapet</strong></td>
                                     <td>₹1,10,000</td>
@@ -3729,30 +3888,30 @@
                     <!-- QUICK STATS -->
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--green)">₹2,88,000</div>
+                            <div class="stat-num" style="color:var(--green)" id="owner-stat-collected">₹2,88,000</div>
                             <div class="stat-label">Collected This Month</div>
                             <div class="prog-bar">
-                                <div class="prog-fill prog-green" style="width:92%"></div>
+                                <div class="prog-fill prog-green" style="width:92%" id="owner-stat-collected-fill"></div>
                             </div>
-                            <div class="stat-sub" style="font-size:12px;color:var(--ink3)">92% of expected</div>
+                            <div class="stat-sub" style="font-size:12px;color:var(--ink3)" id="owner-stat-collected-sub">92% of expected</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--red)">₹25,000</div>
+                            <div class="stat-num" style="color:var(--red)" id="owner-stat-pending">₹25,000</div>
                             <div class="stat-label">Pending Rent</div>
                             <div class="prog-bar">
-                                <div class="prog-fill prog-red" style="width:8%"></div>
+                                <div class="prog-fill prog-red" style="width:8%" id="owner-stat-pending-fill"></div>
                             </div>
-                            <div class="stat-sub" style="font-size:12px;color:var(--ink3)">5 tenants unpaid</div>
+                            <div class="stat-sub" style="font-size:12px;color:var(--ink3)" id="owner-stat-pending-sub">5 tenants unpaid</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)">₹17,500</div>
+                            <div class="stat-num" style="color:var(--yellow)" id="owner-stat-maintenance">₹17,500</div>
                             <div class="stat-label">Maintenance Spent</div>
-                            <div class="stat-sub">8 complaints resolved</div>
+                            <div class="stat-sub" id="owner-stat-maintenance-sub">8 complaints resolved</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-num">₹2,70,500</div>
+                            <div class="stat-num" id="owner-stat-net">₹2,70,500</div>
                             <div class="stat-label">Net Income</div>
-                            <div class="stat-sub" style="color:var(--green)">↑ ₹12,000 vs last month</div>
+                            <div class="stat-sub" style="color:var(--green)" id="owner-stat-net-sub">↑ ₹12,000 vs last month</div>
                         </div>
                     </div>
 
@@ -4300,10 +4459,10 @@
                         </div>
                     </div>
 
-                    <div class="vacant-banner">
+                    <div class="vacant-banner" id="mgr-vacant-banner">
                         <div>
-                            <div class="vb-text">4 rooms have been vacant for 15+ days</div>
-                            <div class="vb-sub">Rooms 103, 107, 116, 120 — consider following up with leads</div>
+                            <div class="vb-text" id="mgr-vacant-banner-title">4 rooms have been vacant for 15+ days</div>
+                            <div class="vb-sub" id="mgr-vacant-banner-sub">Rooms 103, 107, 116, 120 — consider following up with leads</div>
                         </div>
                         <button class="btn-sm btn-red"
                             onclick="mgrTab(document.querySelector('[onclick*=m-occupancy]'),'m-occupancy')">View
@@ -4316,32 +4475,34 @@
                                 <div class="flex between" style="margin-bottom:14px">
                                     <h3 style="font-size:15px">Today's Tasks</h3>
                                 </div>
-                                <div class="audit-item">
-                                    <div class="audit-icon" style="background:var(--red-bg)">💰</div>
-                                    <div class="audit-body">
-                                        <div class="audit-text">Collect rent from Arjun M. — Room 108 (overdue 5 days)
-                                        </div>
-                                        <div class="audit-time">Rent · ₹6,000 pending</div>
-                                    </div><button class="btn-sm btn-red"
-                                        onclick="showToast('Reminder Sent','SMS reminder sent to Arjun M.')">Remind</button>
-                                </div>
-                                <div class="audit-item">
-                                    <div class="audit-icon" style="background:var(--yellow-bg)">🔧</div>
-                                    <div class="audit-body">
-                                        <div class="audit-text">Follow up on complaint — Room 110, Water heater issue
-                                        </div>
-                                        <div class="audit-time">Complaint · Open 2 days</div>
-                                    </div><button class="btn-sm btn-ghost"
-                                        onclick="mgrTab(document.querySelector('[onclick*=m-complaints]'),'m-complaints')">View</button>
-                                </div>
-                                <div class="audit-item">
-                                    <div class="audit-icon" style="background:var(--green-bg)">✅</div>
-                                    <div class="audit-body">
-                                        <div class="audit-text">Room 116 is vacant — inspection before new tenant</div>
-                                        <div class="audit-time">Checklist · Pending</div>
-                                    </div><button class="btn-sm btn-green"
-                                        onclick="showToast('Inspection Marked','Room 116 marked as inspected and ready.')">Mark
-                                        Done</button>
+                                <div id="mgr-tasks-container">
+                                    <div class="audit-item">
+                                        <div class="audit-icon" style="background:var(--red-bg)">💰</div>
+                                        <div class="audit-body">
+                                            <div class="audit-text">Collect rent from Arjun M. — Room 108 (overdue 5 days)
+                                            </div>
+                                            <div class="audit-time">Rent · ₹6,000 pending</div>
+                                        </div><button class="btn-sm btn-red"
+                                            onclick="showToast('Reminder Sent','SMS reminder sent to Arjun M.')">Remind</button>
+                                    </div>
+                                    <div class="audit-item">
+                                        <div class="audit-icon" style="background:var(--yellow-bg)">🔧</div>
+                                        <div class="audit-body">
+                                            <div class="audit-text">Follow up on complaint — Room 110, Water heater issue
+                                            </div>
+                                            <div class="audit-time">Complaint · Open 2 days</div>
+                                        </div><button class="btn-sm btn-ghost"
+                                            onclick="mgrTab(document.querySelector('[onclick*=m-complaints]'),'m-complaints')">View</button>
+                                    </div>
+                                    <div class="audit-item">
+                                        <div class="audit-icon" style="background:var(--green-bg)">✅</div>
+                                        <div class="audit-body">
+                                            <div class="audit-text">Room 116 is vacant — inspection before new tenant</div>
+                                            <div class="audit-time">Checklist · Pending</div>
+                                        </div><button class="btn-sm btn-green"
+                                            onclick="showToast('Inspection Marked','Room 116 marked as inspected and ready.')">Mark
+                                            Done</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -4351,17 +4512,17 @@
                                 <div style="margin-bottom:8px">
                                     <div class="flex between" style="margin-bottom:4px"><span
                                             style="font-size:13px;color:var(--green)">✅ Paid</span><span
-                                            style="font-weight:700">14 tenants</span></div>
+                                            style="font-weight:700" id="mgr-rent-paid-count">14 tenants</span></div>
                                     <div class="prog-bar">
-                                        <div class="prog-fill prog-green" style="width:88%"></div>
+                                        <div class="prog-fill prog-green" style="width:88%" id="mgr-rent-paid-fill"></div>
                                     </div>
                                 </div>
                                 <div style="margin-bottom:16px">
                                     <div class="flex between" style="margin-bottom:4px"><span
                                             style="font-size:13px;color:var(--red)">❌ Unpaid</span><span
-                                            style="font-weight:700">2 tenants</span></div>
+                                            style="font-weight:700" id="mgr-rent-unpaid-count">2 tenants</span></div>
                                     <div class="prog-bar">
-                                        <div class="prog-fill prog-red" style="width:12%"></div>
+                                        <div class="prog-fill prog-red" style="width:12%" id="mgr-rent-unpaid-fill"></div>
                                     </div>
                                 </div>
                                 <button class="btn-full" style="font-size:13px"
@@ -5644,6 +5805,36 @@
                     badge.style.display = 'none';
                 }
             }
+
+            // Calculate Rent This Month stats
+            let paidCount = 0;
+            let unpaidCount = 0;
+            hrooms.forEach(r => {
+                if (r.beds) {
+                    r.beds.forEach(b => {
+                        if (b.tenant && !b.tenant.startsWith('PENDING:')) {
+                            if (b.rentStatus === 'paid') {
+                                paidCount++;
+                            } else if (b.rentStatus !== 'Request') {
+                                unpaidCount++;
+                            }
+                        }
+                    });
+                }
+            });
+            const totalOccupied = paidCount + unpaidCount;
+            const paidPct = totalOccupied > 0 ? Math.round((paidCount / totalOccupied) * 100) : 0;
+            const unpaidPct = totalOccupied > 0 ? Math.round((unpaidCount / totalOccupied) * 100) : 0;
+
+            const paidCountEl = document.getElementById('mgr-rent-paid-count');
+            const paidFillEl = document.getElementById('mgr-rent-paid-fill');
+            const unpaidCountEl = document.getElementById('mgr-rent-unpaid-count');
+            const unpaidFillEl = document.getElementById('mgr-rent-unpaid-fill');
+
+            if (paidCountEl) paidCountEl.textContent = `${paidCount} tenant${paidCount !== 1 ? 's' : ''}`;
+            if (paidFillEl) paidFillEl.style.width = `${paidPct}%`;
+            if (unpaidCountEl) unpaidCountEl.textContent = `${unpaidCount} tenant${unpaidCount !== 1 ? 's' : ''}`;
+            if (unpaidFillEl) unpaidFillEl.style.width = `${unpaidPct}%`;
         }
 
         function buildOccGrid(hostelIds, containerId, role) {
@@ -5749,6 +5940,128 @@
                 const openComplaintsCount = complaints.filter(c => c.status !== 'resolved').length;
                 complaintsEl.textContent = openComplaintsCount;
             }
+
+            renderOwnerFinancials();
+        }
+
+        function renderOwnerFinancials() {
+            const tbody = document.getElementById('owner-financial-tbody');
+            if (!tbody) return;
+
+            let expectedTotal = 0;
+            let collectedTotal = 0;
+            let pendingTotal = 0;
+            let maintenanceTotal = 0;
+            let netTotal = 0;
+            let unpaidCountTotal = 0;
+
+            const rowsHtml = [];
+            const hostelIds = [1, 2, 3];
+
+            hostelIds.forEach(hid => {
+                let expected = 0;
+                let collected = 0;
+                let pending = 0;
+                let maintenance = 0;
+                let unpaidCount = 0;
+
+                if (rooms[hid]) {
+                    rooms[hid].forEach(r => {
+                        if (r.beds) {
+                            r.beds.forEach(b => {
+                                if (b.tenant) {
+                                    expected += b.rent || 0;
+                                    if (b.rentStatus === 'paid') {
+                                        collected += b.rent || 0;
+                                    } else {
+                                        pending += b.rent || 0;
+                                        unpaidCount++;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+
+                if (expenses) {
+                    maintenance = expenses
+                        .filter(e => e.hostel_id === hid)
+                        .reduce((sum, e) => sum + (e.amount || 0), 0);
+                }
+
+                const net = collected - maintenance;
+
+                expectedTotal += expected;
+                collectedTotal += collected;
+                pendingTotal += pending;
+                maintenanceTotal += maintenance;
+                netTotal += net;
+                unpaidCountTotal += unpaidCount;
+
+                const hName = hostels[hid] ? hostels[hid].name : `Hostel ${hid}`;
+
+                rowsHtml.push(`
+                    <tr>
+                        <td><strong>${hName}</strong></td>
+                        <td>₹${expected.toLocaleString()}</td>
+                        <td style="color:var(--green);font-weight:700">₹${collected.toLocaleString()}</td>
+                        <td style="color:var(--red);font-weight:700">₹${pending.toLocaleString()}</td>
+                        <td style="color:var(--yellow)">₹${maintenance.toLocaleString()}</td>
+                        <td style="font-weight:800;font-family:var(--font-display)">₹${net.toLocaleString()}</td>
+                    </tr>
+                `);
+            });
+
+            // Add Total row
+            rowsHtml.push(`
+                <tr style="background:var(--bg);font-weight:700">
+                    <td><strong>TOTAL</strong></td>
+                    <td><strong>₹${expectedTotal.toLocaleString()}</strong></td>
+                    <td style="color:var(--green);font-weight:800;font-size:16px">₹${collectedTotal.toLocaleString()}</td>
+                    <td style="color:var(--red);font-weight:800">₹${pendingTotal.toLocaleString()}</td>
+                    <td style="color:var(--yellow);font-weight:800">₹${maintenanceTotal.toLocaleString()}</td>
+                    <td style="font-weight:800;font-size:17px;font-family:var(--font-display)">₹${netTotal.toLocaleString()}</td>
+                </tr>
+            `);
+
+            tbody.innerHTML = rowsHtml.join('');
+
+            // Update stats cards
+            const collectedPct = expectedTotal > 0 ? Math.round((collectedTotal / expectedTotal) * 100) : 0;
+            const pendingPct = expectedTotal > 0 ? Math.round((pendingTotal / expectedTotal) * 100) : 0;
+
+            const collNumEl = document.getElementById('owner-stat-collected');
+            const collFillEl = document.getElementById('owner-stat-collected-fill');
+            const collSubEl = document.getElementById('owner-stat-collected-sub');
+
+            if (collNumEl) collNumEl.textContent = `₹${collectedTotal.toLocaleString()}`;
+            if (collFillEl) collFillEl.style.width = `${collectedPct}%`;
+            if (collSubEl) collSubEl.textContent = `${collectedPct}% of expected`;
+
+            const pendNumEl = document.getElementById('owner-stat-pending');
+            const pendFillEl = document.getElementById('owner-stat-pending-fill');
+            const pendSubEl = document.getElementById('owner-stat-pending-sub');
+
+            if (pendNumEl) pendNumEl.textContent = `₹${pendingTotal.toLocaleString()}`;
+            if (pendFillEl) pendFillEl.style.width = `${pendingPct}%`;
+            if (pendSubEl) pendSubEl.textContent = `${unpaidCountTotal} tenant${unpaidCountTotal !== 1 ? 's' : ''} unpaid`;
+
+            const maintNumEl = document.getElementById('owner-stat-maintenance');
+            const maintSubEl = document.getElementById('owner-stat-maintenance-sub');
+
+            if (maintNumEl) maintNumEl.textContent = `₹${maintenanceTotal.toLocaleString()}`;
+            if (maintSubEl) {
+                const resolvedCount = complaints.filter(c => c.status === 'resolved').length;
+                maintSubEl.textContent = `${resolvedCount} complaint${resolvedCount !== 1 ? 's' : ''} resolved`;
+            }
+
+            const netNumEl = document.getElementById('owner-stat-net');
+            const netSubEl = document.getElementById('owner-stat-net-sub');
+
+            if (netNumEl) netNumEl.textContent = `₹${netTotal.toLocaleString()}`;
+            if (netSubEl) {
+                netSubEl.textContent = `↑ ₹12,000 vs last month`;
+            }
         }
 
         function renderManagerOccupancy() {
@@ -5758,12 +6071,16 @@
             let occupiedBeds = 0;
             let totalBeds = 0;
             let vacantBeds = 0;
+            let vacantRoomNums = [];
             
             if (rooms[currentHostel]) {
                 rooms[currentHostel].forEach(r => {
                     totalRooms++;
                     totalBeds += r.capacity;
                     occupiedBeds += r.beds ? r.beds.filter(b => b.tenant).length : 0;
+                    if (r.beds && r.beds.some(b => !b.tenant)) {
+                        vacantRoomNums.push(r.num);
+                    }
                 });
             }
             vacantBeds = totalBeds - occupiedBeds;
@@ -5780,6 +6097,142 @@
             if (complaintsEl) {
                 const openComplaintsCount = complaints.filter(c => c.hostel === currentHostel && c.status !== 'resolved').length;
                 complaintsEl.textContent = openComplaintsCount;
+            }
+
+            // Update vacant rooms banner dynamically
+            const vacantBanner = document.getElementById('mgr-vacant-banner');
+            const vacantBannerTitle = document.getElementById('mgr-vacant-banner-title');
+            const vacantBannerSub = document.getElementById('mgr-vacant-banner-sub');
+            
+            if (vacantBanner) {
+                if (vacantRoomNums.length === 0) {
+                    vacantBanner.style.display = 'none';
+                } else {
+                    vacantBanner.style.display = 'flex';
+                    const count = vacantRoomNums.length;
+                    if (vacantBannerTitle) {
+                        vacantBannerTitle.textContent = `${count} room${count > 1 ? 's have' : ' has'} been vacant for 15+ days`;
+                    }
+                    if (vacantBannerSub) {
+                        const roomsToShow = vacantRoomNums.slice(0, 4).join(', ') + (count > 4 ? '...' : '');
+                        vacantBannerSub.textContent = `Rooms ${roomsToShow} — consider following up with leads`;
+                    }
+                }
+            }
+
+            renderManagerTasks();
+            updateDashboardStats();
+        }
+
+        function renderManagerTasks() {
+            const container = document.getElementById('mgr-tasks-container');
+            if (!container) return;
+
+            let renderedItems = [];
+
+            // 1. Gather unpaid rents
+            let unpaidTasks = [];
+            if (rooms[currentHostel]) {
+                rooms[currentHostel].forEach(r => {
+                    if (r.beds) {
+                        r.beds.forEach((b, bedIdx) => {
+                            if (b.tenant && b.rentStatus !== 'paid' && b.rentStatus !== 'Request' && !b.tenant.startsWith('PENDING:')) {
+                                unpaidTasks.push({
+                                    tenant: b.tenant,
+                                    email: b.tenant_email || '',
+                                    phone: b.tenant_phone || '',
+                                    rent: b.rent,
+                                    roomNum: r.num,
+                                    bedIdx: bedIdx
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
+            // 2. Gather open complaints
+            let complaintTasks = [];
+            const openComplaints = complaints.filter(c => c.hostel === currentHostel && c.status !== 'resolved');
+            openComplaints.forEach(c => {
+                complaintTasks.push({
+                    id: c.id,
+                    roomNum: c.room,
+                    subject: c.subject,
+                    status: c.status
+                });
+            });
+
+            // 3. Gather vacant rooms
+            let vacantRoomNums = [];
+            if (rooms[currentHostel]) {
+                rooms[currentHostel].forEach(r => {
+                    if (r.beds && r.beds.some(b => !b.tenant)) {
+                        vacantRoomNums.push(r.num);
+                    }
+                });
+            }
+
+            // Render up to 3 items
+            // Priority: Rent reminders, Complaints, Vacancy Checklist
+            
+            // Add unpaid rents (limit to max 1 to show only one Remind button in tasks)
+            let rentCount = 0;
+            unpaidTasks.forEach(t => {
+                if (renderedItems.length < 3 && rentCount < 1) {
+                    renderedItems.push(`
+                        <div class="audit-item">
+                            <div class="audit-icon" style="background:var(--red-bg)">💰</div>
+                            <div class="audit-body">
+                                <div class="audit-text">Collect rent from ${t.tenant} — Room ${t.roomNum}</div>
+                                <div class="audit-time">Rent · ₹${t.rent.toLocaleString()} pending</div>
+                            </div>
+                            <button class="btn-sm btn-red" onclick="sendRentReminder(this, '${escapeJS(t.tenant)}', '${t.email}', '${t.phone}', ${t.rent}, ${currentHostel}, '${t.roomNum}')">Remind</button>
+                        </div>
+                    `);
+                    rentCount++;
+                }
+            });
+
+            // Add complaints
+            complaintTasks.forEach(t => {
+                if (renderedItems.length < 3) {
+                    renderedItems.push(`
+                        <div class="audit-item">
+                            <div class="audit-icon" style="background:var(--yellow-bg)">🔧</div>
+                            <div class="audit-body">
+                                <div class="audit-text">Follow up on complaint — Room ${t.roomNum}, ${t.subject}</div>
+                                <div class="audit-time">Complaint · ${t.status === 'open' ? 'Open' : 'In Progress'}</div>
+                            </div>
+                            <button class="btn-sm btn-ghost" onclick="mgrTab(document.querySelector('[onclick*=m-complaints]'),'m-complaints')">View</button>
+                        </div>
+                    `);
+                }
+            });
+
+            // Add vacancy checklist if we have vacant rooms and < 3 items
+            if (vacantRoomNums.length > 0 && renderedItems.length < 3) {
+                const firstVacant = vacantRoomNums[0];
+                renderedItems.push(`
+                    <div class="audit-item">
+                        <div class="audit-icon" style="background:var(--green-bg)">✅</div>
+                        <div class="audit-body">
+                            <div class="audit-text">Room ${firstVacant} is vacant — inspection before new tenant</div>
+                            <div class="audit-time">Checklist · Pending</div>
+                        </div>
+                        <button class="btn-sm btn-green" onclick="showToast('Inspection Marked','Room ${firstVacant} marked as inspected and ready.')">Mark Done</button>
+                    </div>
+                `);
+            }
+
+            if (renderedItems.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px 0; color: var(--ink3); font-size: 14px;">
+                        🎉 All caught up! No tasks for today.
+                    </div>
+                `;
+            } else {
+                container.innerHTML = renderedItems.join('');
             }
         }
 
@@ -7610,6 +8063,50 @@
                 btn.innerHTML = btn.dataset.oldText;
             }
         }
+
+        // ============================================================
+        // HERO SLIDESHOW LOGIC
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const slideshow = document.querySelector('.hero-slideshow');
+            const dots = document.querySelectorAll('.slide-dot');
+            if (!slideshow || dots.length === 0) return;
+            
+            let currentIndex = 0;
+            const slideCount = 4;
+            const slideInterval = 3000; // 3 seconds
+            
+            function goToSlide(index) {
+                currentIndex = index;
+                slideshow.style.transform = `translateX(-${currentIndex * 25}%)`;
+                
+                // Update dots
+                dots.forEach((dot, idx) => {
+                    if (idx === currentIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+            
+            function nextSlide() {
+                let nextIdx = (currentIndex + 1) % slideCount;
+                goToSlide(nextIdx);
+            }
+            
+            // Auto slide loop
+            let slideTimer = setInterval(nextSlide, slideInterval);
+            
+            // Allow manual dot click to navigate and reset timer
+            dots.forEach((dot, idx) => {
+                dot.addEventListener('click', () => {
+                    clearInterval(slideTimer);
+                    goToSlide(idx);
+                    slideTimer = setInterval(nextSlide, slideInterval);
+                });
+            });
+        });
 
         // ============================================================
         // VACATING LOGIC
