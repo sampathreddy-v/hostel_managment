@@ -3694,6 +3694,24 @@
         </div>
     </div>
 
+    <!-- EXPORT OPTIONS MODAL -->
+    <div class="modal-overlay" id="export-options-modal">
+        <div class="modal" style="max-width: 400px; width: 90vw; text-align: center;">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Select Report Range</div>
+                    <div style="font-size: 12px; color: var(--ink3); margin-top: 4px;">Choose the period for PDF report export</div>
+                </div>
+                <button class="modal-close" onclick="closeModal('export-options-modal')">×</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px; padding: 20px 0;">
+                <button class="btn btn-primary btn-lg btn-full" onclick="generateReport('daily')">📅 Export Daily Report</button>
+                <button class="btn btn-primary btn-lg btn-full" style="background:var(--accent)" onclick="generateReport('monthly')">🗓️ Export Monthly Report</button>
+                <button class="btn btn-primary btn-lg btn-full" style="background:var(--ink2)" onclick="generateReport('yearly')">🏫 Export Yearly Report</button>
+            </div>
+        </div>
+    </div>
+
     <!-- LOG EXPENSE MODAL -->
     <div class="modal-overlay" id="log-expense-modal">
         <div class="modal">
@@ -3704,10 +3722,16 @@
             <div class="input-group">
                 <label>Category</label>
                 <select id="exp-category" class="input">
-                    <option value="Maintenance">Maintenance & Repairs</option>
-                    <option value="Groceries">Groceries & Provisions</option>
-                    <option value="Utilities">Utilities (Water, Electricity)</option>
-                    <option value="Miscellaneous">Miscellaneous</option>
+                    <option value="Maintenance & Repairs">Maintenance & Repairs</option>
+                    <option value="Groceries & Provisions">Groceries & Provisions</option>
+                    <option value="Electricity">Electricity</option>
+                    <option value="Water Tanker">Water Tanker</option>
+                    <option value="Drinking Water">Drinking Water</option>
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Fuel">Fuel</option>
+                    <option value="Gas">Gas</option>
+                    <option value="Milk & Curd">Milk & Curd</option>
+                    <option value="Plastic Items">Plastic Items</option>
                 </select>
             </div>
             <div class="input-group">
@@ -3724,6 +3748,62 @@
                 <p style="font-size: 11px; color: var(--ink3); margin-top: 4px;">Upload a photo of the receipt.</p>
             </div>
             <button class="btn btn-primary" style="width:100%" onclick="logExpense()">Submit Expense</button>
+        </div>
+    </div>
+
+    <!-- EXPENSE FILTER MODAL -->
+    <div class="modal-overlay" id="expense-filter-modal">
+        <div class="modal" style="max-width: 450px; width: 90vw;">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Filter Expenses</div>
+                    <div style="font-size: 12px; color: var(--ink3); margin-top: 4px;">Search and filter logged expenses</div>
+                </div>
+                <button class="modal-close" onclick="closeModal('expense-filter-modal')">×</button>
+            </div>
+            
+            <div id="filter-hostel-group" class="input-group">
+                <label>Hostel Branch</label>
+                <select id="filter-hostel" class="input">
+                    <option value="all">All Hostels</option>
+                    <option value="1">Hostel 1 — Kokapet</option>
+                    <option value="2">Hostel 2 — Gachibowli</option>
+                    <option value="3">Hostel 3 — Madhapur</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Category</label>
+                <select id="filter-category" class="input">
+                    <option value="all">All Categories</option>
+                    <option value="Maintenance & Repairs">Maintenance & Repairs</option>
+                    <option value="Groceries & Provisions">Groceries & Provisions</option>
+                    <option value="Electricity">Electricity</option>
+                    <option value="Water Tanker">Water Tanker</option>
+                    <option value="Drinking Water">Drinking Water</option>
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Fuel">Fuel</option>
+                    <option value="Gas">Gas</option>
+                    <option value="Milk & Curd">Milk & Curd</option>
+                    <option value="Plastic Items">Plastic Items</option>
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                <div class="input-group" style="margin-bottom: 0;">
+                    <label>From Date</label>
+                    <input type="date" id="filter-start-date" class="input">
+                </div>
+                <div class="input-group" style="margin-bottom: 0;">
+                    <label>To Date</label>
+                    <input type="date" id="filter-end-date" class="input">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                <button class="btn btn-outline" style="flex:1;" onclick="resetExpenseFilters()">Reset Filters</button>
+                <button class="btn btn-primary" style="flex:1;" onclick="applyExpenseFilters()">Apply Filters</button>
+            </div>
         </div>
     </div>
 
@@ -3816,7 +3896,7 @@
                         </div>
                         <div class="flex gap8">
                             <button id="btn-export-report" class="btn btn-outline btn-sm"
-                                onclick="downloadPDFReport(this)">⬇ Export Report</button>
+                                onclick="openModal('export-options-modal')">⬇ Export Report</button>
                         </div>
                     </div>
 
@@ -4127,7 +4207,10 @@
                             <div class="dash-title">Expense Log</div>
                             <div class="dash-subtitle">All logged expenses and maintenance costs with bill evidence</div>
                         </div>
-                        <div class="badge badge-yellow" id="o-exp-total-spent">₹0 spent this month</div>
+                        <div class="flex align-center gap8">
+                            <button class="btn btn-outline btn-sm" onclick="openExpenseFilterModal('owner')">🔍 Filter</button>
+                            <div class="badge badge-yellow" id="o-exp-total-spent">₹0 spent this month</div>
+                        </div>
                     </div>
 
                     <div class="stats-grid-3" style="margin-bottom:20px">
@@ -4695,7 +4778,10 @@
                             <div class="dash-title">Hostel Expenses</div>
                             <div class="dash-subtitle">Log new expenses and view past records</div>
                         </div>
-                        <button class="btn btn-primary" onclick="openModal('log-expense-modal')">+ Log New Expense</button>
+                        <div class="flex gap8">
+                            <button class="btn btn-outline btn-sm" onclick="openExpenseFilterModal('manager')">🔍 Filter</button>
+                            <button class="btn btn-primary btn-sm" onclick="openModal('log-expense-modal')">+ Log New Expense</button>
+                        </div>
                     </div>
 
                     <div class="rent-table-wrap">
@@ -5750,6 +5836,10 @@
 
                 const { data: noticeData } = await db.from('notices').select('*').in('hostel_id', [...hostelIds, 0]).order('created_at', { ascending: false });
                 if (noticeData) notices = noticeData;
+
+                const { data: expData } = await db.from('expenses').select('*').in('hostel_id', hostelIds).order('created_at', { ascending: false });
+                if (expData) expenses = expData;
+                else expenses = [];
 
                 const { data: menuData } = await db.from('food_menu').select('*').in('hostel_id', hostelIds);
                 if (menuData) {
@@ -7486,6 +7576,43 @@
         // ============================================================
         // EXPENSES LOGIC
         // ============================================================
+        function compressImage(file, maxDim = 800, quality = 0.7) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > maxDim) {
+                                height = Math.round((height * maxDim) / width);
+                                width = maxDim;
+                            }
+                        } else {
+                            if (height > maxDim) {
+                                width = Math.round((width * maxDim) / height);
+                                height = maxDim;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.onerror = (err) => reject(err);
+                };
+                reader.onerror = (err) => reject(err);
+            });
+        }
+
         async function logExpense() {
             const cat = document.getElementById('exp-category').value;
             const amt = document.getElementById('exp-amount').value;
@@ -7499,10 +7626,14 @@
             
             showToast('Saving...', 'Logging new expense');
             
-            // For now, simulate file upload by using a placeholder or creating a local blob URL
             let billUrl = '';
             if (billFile) {
-                billUrl = URL.createObjectURL(billFile);
+                try {
+                    billUrl = await compressImage(billFile);
+                } catch (e) {
+                    console.error("Compression failed, using fallback URL.createObjectURL", e);
+                    billUrl = URL.createObjectURL(billFile);
+                }
             }
             
             const newExp = {
@@ -7538,29 +7669,118 @@
         function viewBill(url) {
             const img = document.getElementById('bill-img-preview');
             const noImg = document.getElementById('bill-no-img');
-            if (url) {
+            if (url && !url.startsWith('blob:null')) {
                 img.src = url;
                 img.style.display = 'block';
                 noImg.style.display = 'none';
             } else {
+                img.src = '';
                 img.style.display = 'none';
                 noImg.style.display = 'block';
+                noImg.innerHTML = 'Receipt image is not available.<br><span style="font-size: 11px; color: var(--ink3)">This bill was logged as a local browser-only memory file before the database upload system was active.</span>';
             }
             openModal('view-bill-modal');
+        }
+
+        let expenseFilters = {
+            hostel: 'all',
+            category: 'all',
+            startDate: '',
+            endDate: ''
+        };
+
+        function getFilteredExpenses() {
+            return expenses.filter(e => {
+                if (currentRole === 'manager') {
+                    if (e.hostel_id !== currentHostel) return false;
+                } else {
+                    if (expenseFilters.hostel !== 'all' && e.hostel_id !== parseInt(expenseFilters.hostel)) return false;
+                }
+
+                if (expenseFilters.category !== 'all' && e.category !== expenseFilters.category) return false;
+
+                if (expenseFilters.startDate) {
+                    const sDate = new Date(expenseFilters.startDate);
+                    sDate.setHours(0,0,0,0);
+                    if (new Date(e.created_at) < sDate) return false;
+                }
+                if (expenseFilters.endDate) {
+                    const eDate = new Date(expenseFilters.endDate);
+                    eDate.setHours(23,59,59,999);
+                    if (new Date(e.created_at) > eDate) return false;
+                }
+
+                return true;
+            });
+        }
+
+        function openExpenseFilterModal(role) {
+            const hostelGroup = document.getElementById('filter-hostel-group');
+            if (role === 'owner') {
+                hostelGroup.style.display = 'block';
+            } else {
+                hostelGroup.style.display = 'none';
+            }
+            
+            document.getElementById('filter-hostel').value = expenseFilters.hostel;
+            document.getElementById('filter-category').value = expenseFilters.category;
+            document.getElementById('filter-start-date').value = expenseFilters.startDate;
+            document.getElementById('filter-end-date').value = expenseFilters.endDate;
+
+            openModal('expense-filter-modal');
+        }
+
+        function applyExpenseFilters() {
+            expenseFilters.hostel = document.getElementById('filter-hostel').value;
+            expenseFilters.category = document.getElementById('filter-category').value;
+            expenseFilters.startDate = document.getElementById('filter-start-date').value;
+            expenseFilters.endDate = document.getElementById('filter-end-date').value;
+
+            closeModal('expense-filter-modal');
+            
+            if (currentRole === 'owner') {
+                renderOwnerExpenses();
+            } else {
+                renderMgrExpenses();
+            }
+            showToast('Filter Applied ✅', 'Expenses filter applied successfully.');
+        }
+
+        function resetExpenseFilters() {
+            expenseFilters = {
+                hostel: 'all',
+                category: 'all',
+                startDate: '',
+                endDate: ''
+            };
+            
+            document.getElementById('filter-hostel').value = 'all';
+            document.getElementById('filter-category').value = 'all';
+            document.getElementById('filter-start-date').value = '';
+            document.getElementById('filter-end-date').value = '';
+
+            closeModal('expense-filter-modal');
+            
+            if (currentRole === 'owner') {
+                renderOwnerExpenses();
+            } else {
+                renderMgrExpenses();
+            }
+            showToast('Filter Reset 🔄', 'All expense filters cleared.');
         }
 
         function renderMgrExpenses() {
             const tbody = document.getElementById('mgr-expenses-table');
             if (!tbody) return;
             
-            const myExpenses = expenses.filter(e => e.hostel_id === currentHostel);
+            const filtered = getFilteredExpenses();
             
-            if (myExpenses.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink3);padding:20px;">No expenses logged yet.</td></tr>';
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink3);padding:20px;">No matching expenses found.</td></tr>';
                 return;
             }
             
-            tbody.innerHTML = myExpenses.map(e => {
+            tbody.innerHTML = filtered.map(e => {
                 const d = new Date(e.created_at);
                 const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 return `
@@ -7582,7 +7802,9 @@
             let h1Cost = 0, h2Cost = 0, h3Cost = 0;
             let h1Jobs = 0, h2Jobs = 0, h3Jobs = 0;
             
-            const html = expenses.map(e => {
+            const filtered = getFilteredExpenses();
+            
+            const html = filtered.map(e => {
                 const d = new Date(e.created_at);
                 const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 
@@ -7608,8 +7830,8 @@
                 </tr>`;
             }).join('');
             
-            if (expenses.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:20px;">No expenses logged yet.</td></tr>';
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:20px;">No matching expenses found.</td></tr>';
             } else {
                 tbody.innerHTML = html;
             }
@@ -7627,7 +7849,13 @@
         // ============================================================
         // REPORT EXPORT (PDF GENERATION)
         // ============================================================
-        async function downloadPDFReport(btn) {
+        function generateReport(period) {
+            closeModal('export-options-modal');
+            const btn = document.getElementById('btn-export-report');
+            downloadPDFReport(btn, period);
+        }
+
+        async function downloadPDFReport(btn, period = 'monthly') {
             if (btn) {
                 btn.disabled = true;
                 btn.innerHTML = '⏳ Generating...';
@@ -7684,6 +7912,72 @@
                     }
                 });
 
+                // Adjust based on daily/monthly/yearly
+                let displayExpected = totalExpected;
+                let displayCollected = totalCollected;
+                let displayPending = totalPending;
+                let displayMaintenance = totalMaintenance;
+                let periodText = 'JUNE 2025';
+                let docTitleText = 'Financial & Occupancy Summary';
+                let chartTitleText = 'Monthly Financial Summary (June 2025)';
+                let fileSaveName = 'VUSTELA_Hostel_Report_June_2025.pdf';
+                let successMessage = 'Monthly PDF report downloaded successfully.';
+
+                const todayStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                const currentYear = new Date().getFullYear();
+
+                if (period === 'daily') {
+                    displayExpected = Math.round(totalExpected / 30);
+                    displayCollected = Math.round(totalCollected / 30);
+                    displayPending = Math.round(totalPending / 30);
+                    
+                    // Filter expenses logged today (within 24h)
+                    const todayMs = new Date().setHours(0,0,0,0);
+                    let todayMaint = 0;
+                    const dailyHostelMaint = { 1: 0, 2: 0, 3: 0 };
+                    expenses.forEach(e => {
+                        if (new Date(e.created_at).getTime() >= todayMs) {
+                            todayMaint += e.amount;
+                            if (dailyHostelMaint[e.hostel_id] !== undefined) {
+                                dailyHostelMaint[e.hostel_id] += e.amount;
+                            }
+                        }
+                    });
+                    displayMaintenance = todayMaint;
+
+                    Object.keys(hostelStats).forEach(hid => {
+                        hostelStats[hid].expected = Math.round(hostelStats[hid].expected / 30);
+                        hostelStats[hid].collected = Math.round(hostelStats[hid].collected / 30);
+                        hostelStats[hid].pending = Math.round(hostelStats[hid].pending / 30);
+                        hostelStats[hid].maintenance = dailyHostelMaint[hid];
+                    });
+
+                    periodText = `TODAY (${todayStr})`;
+                    docTitleText = 'Daily Financial & Occupancy Summary';
+                    chartTitleText = `Daily Financial Summary (${todayStr})`;
+                    fileSaveName = `VUSTELA_Daily_Report_${todayStr.replace(/ /g, '_')}.pdf`;
+                    successMessage = 'Daily PDF report downloaded successfully.';
+
+                } else if (period === 'yearly') {
+                    displayExpected = totalExpected * 12;
+                    displayCollected = totalCollected * 12;
+                    displayPending = totalPending * 12;
+                    displayMaintenance = totalMaintenance * 12;
+
+                    Object.keys(hostelStats).forEach(hid => {
+                        hostelStats[hid].expected = hostelStats[hid].expected * 12;
+                        hostelStats[hid].collected = hostelStats[hid].collected * 12;
+                        hostelStats[hid].pending = hostelStats[hid].pending * 12;
+                        hostelStats[hid].maintenance = hostelStats[hid].maintenance * 12;
+                    });
+
+                    periodText = `YEAR ${currentYear}`;
+                    docTitleText = 'Yearly Financial & Occupancy Summary';
+                    chartTitleText = `Yearly Financial Summary (${currentYear})`;
+                    fileSaveName = `VUSTELA_Yearly_Report_${currentYear}.pdf`;
+                    successMessage = 'Yearly PDF report downloaded successfully.';
+                }
+
                 // Generate Canvas Chart (Income vs Expense)
                 const canvas = document.createElement('canvas');
                 canvas.width = 600;
@@ -7702,32 +7996,32 @@
                 // Chart Title
                 ctx.fillStyle = '#1A1814';
                 ctx.font = 'bold 20px Arial';
-                ctx.fillText('Monthly Financial Summary (June 2025)', 40, 50);
+                ctx.fillText(chartTitleText, 40, 50);
                 
                 // Bars data
-                const maxVal = Math.max(totalExpected, totalCollected, totalMaintenance) || 1;
+                const maxVal = Math.max(displayExpected, displayCollected, displayMaintenance) || 1;
                 const scale = 200 / maxVal;
                 
                 const barWidth = 70;
                 const startY = 280;
                 
                 // Bar 1: Expected Rent
-                const hExpected = totalExpected * scale;
+                const hExpected = displayExpected * scale;
                 ctx.fillStyle = '#2B5EA7'; // Blue
                 ctx.fillRect(80, startY - hExpected, barWidth, hExpected);
                 
                 // Bar 2: Collected Rent
-                const hCollected = totalCollected * scale;
+                const hCollected = displayCollected * scale;
                 ctx.fillStyle = '#2D7D5A'; // Emerald Green
                 ctx.fillRect(190, startY - hCollected, barWidth, hCollected);
                 
                 // Bar 3: Pending Rent
-                const hPending = totalPending * scale;
+                const hPending = displayPending * scale;
                 ctx.fillStyle = '#C84B31'; // Terracotta Red
                 ctx.fillRect(300, startY - hPending, barWidth, hPending);
 
                 // Bar 4: Expenses/Maintenance
-                const hMaintenance = totalMaintenance * scale;
+                const hMaintenance = displayMaintenance * scale;
                 ctx.fillStyle = '#B8860B'; // Dark Goldenrod
                 ctx.fillRect(410, startY - hMaintenance, barWidth, hMaintenance);
                 
@@ -7736,10 +8030,10 @@
                 ctx.font = 'bold 12px Arial';
                 
                 // Values on top of bars
-                ctx.fillText(`₹${totalExpected.toLocaleString()}`, 80, startY - hExpected - 8);
-                ctx.fillText(`₹${totalCollected.toLocaleString()}`, 190, startY - hCollected - 8);
-                ctx.fillText(`₹${totalPending.toLocaleString()}`, 300, startY - hPending - 8);
-                ctx.fillText(`₹${totalMaintenance.toLocaleString()}`, 410, startY - hMaintenance - 8);
+                ctx.fillText(`₹${displayExpected.toLocaleString()}`, 80, startY - hExpected - 8);
+                ctx.fillText(`₹${displayCollected.toLocaleString()}`, 190, startY - hCollected - 8);
+                ctx.fillText(`₹${displayPending.toLocaleString()}`, 300, startY - hPending - 8);
+                ctx.fillText(`₹${displayMaintenance.toLocaleString()}`, 410, startY - hMaintenance - 8);
                 
                 // Legend Text below bars
                 ctx.font = '12px Arial';
@@ -7784,14 +8078,14 @@
                 // Date
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(10);
-                doc.text('REPORT GENERATED: ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), 135, 18);
-                doc.text('REPORT PERIOD: JUNE 2025', 135, 25);
+                doc.text('REPORT GENERATED: ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), 130, 18);
+                doc.text('REPORT PERIOD: ' + periodText, 130, 25);
 
                 // Document Title
                 doc.setTextColor(colorText);
                 doc.setFontSize(18);
                 doc.setFont('Helvetica', 'bold');
-                doc.text('Financial & Occupancy Summary', 20, 48);
+                doc.text(docTitleText, 20, 48);
 
                 // Overview Stats cards
                 doc.setDrawColor(229, 225, 219); // Light Gray
@@ -7813,7 +8107,7 @@
                 doc.text('RENT COLLECTED', 82, 60);
                 doc.setTextColor(colorGreen);
                 doc.setFontSize(14);
-                doc.text(`₹${totalCollected.toLocaleString()}`, 82, 70);
+                doc.text(`₹${displayCollected.toLocaleString()}`, 82, 70);
 
                 // Stat 3: Maintenance
                 doc.roundedRect(134, 54, 56, 22, 2, 2, 'FD');
@@ -7822,7 +8116,7 @@
                 doc.text('MAINTENANCE SPENT', 139, 60);
                 doc.setTextColor(colorAccent);
                 doc.setFontSize(14);
-                doc.text(`₹${totalMaintenance.toLocaleString()}`, 139, 70);
+                doc.text(`₹${displayMaintenance.toLocaleString()}`, 139, 70);
 
                 // Table Breakdown Title
                 doc.setTextColor(colorText);
@@ -7874,11 +8168,11 @@
 
                 doc.setFont('Helvetica', 'bold');
                 doc.text('TOTAL', 23, y + 5);
-                doc.text(`₹${totalExpected.toLocaleString()}`, 70, y + 5);
-                doc.text(`₹${totalCollected.toLocaleString()}`, 95, y + 5);
-                doc.text(`₹${totalPending.toLocaleString()}`, 120, y + 5);
-                doc.text(`₹${totalMaintenance.toLocaleString()}`, 145, y + 5);
-                doc.text(`₹${(totalCollected - totalMaintenance).toLocaleString()}`, 170, y + 5);
+                doc.text(`₹${displayExpected.toLocaleString()}`, 70, y + 5);
+                doc.text(`₹${displayCollected.toLocaleString()}`, 95, y + 5);
+                doc.text(`₹${displayPending.toLocaleString()}`, 120, y + 5);
+                doc.text(`₹${displayMaintenance.toLocaleString()}`, 145, y + 5);
+                doc.text(`₹${(displayCollected - displayMaintenance).toLocaleString()}`, 170, y + 5);
 
                 // Add Chart Image
                 doc.addImage(chartImgData, 'PNG', 20, y + 16, 170, 95);
@@ -7891,8 +8185,8 @@
                 doc.text('Page 1 of 1', 175, 282);
 
                 // Save Document
-                doc.save('VUSTELA_Hostel_Report_June_2025.pdf');
-                showToast('Report Downloaded ✅', 'Monthly PDF report downloaded successfully.');
+                doc.save(fileSaveName);
+                showToast('Report Downloaded ✅', successMessage);
             } catch (err) {
                 console.error('PDF Generation Error:', err);
                 showToast('Error', 'Failed to generate PDF: ' + err.message);
