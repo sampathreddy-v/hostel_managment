@@ -1683,6 +1683,12 @@
             border-color: #ffb74d;
         }
 
+        .room-box.advance-booking {
+            background: var(--white);
+            border: 2px solid #111 !important;
+            box-shadow: 0 0 0 1px #111;
+        }
+
         .room-box.maintenance {
             background: var(--bg3);
             border-color: var(--border)
@@ -6360,8 +6366,18 @@
                     html += `<div class="floor-block"><div class="floor-label">Floor ${fl}</div><div class="room-grid">`;
                     flrRooms.forEach(r => {
                         const beds = r.beds || [];
+                        const today = new Date(); today.setHours(0,0,0,0);
                         const occupiedBeds = beds.filter(b => b.tenant && !b.tenant.startsWith('PENDING:')).length;
                         const pendingBookings = beds.filter(b => b.rentStatus === 'Request' || (b.tenant && b.tenant.startsWith('PENDING:'))).length;
+
+                        // Detect advance bookings: tenant added but joining date is in the future
+                        const advanceBookedBeds = beds.filter(b => {
+                            if (!b.tenant || b.tenant.startsWith('PENDING:')) return false;
+                            if (!b.date_of_joining) return false;
+                            const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
+                            return doj > today;
+                        });
+                        const hasAdvanceBooking = advanceBookedBeds.length > 0;
 
                         const isFull = (occupiedBeds + pendingBookings) === r.capacity;
                         const isEmpty = (occupiedBeds + pendingBookings) === 0;
@@ -6369,9 +6385,15 @@
                         const hasPendingPayment = beds.some(b => b.rentStatus === 'pending');
                         const hasNotice = beds.some(b => b.notice_status === 'accepted');
 
-                        let cls = isEmpty ? 'vacant' : (hasNotice ? 'notice-period' : (hasOverdue || hasPendingPayment) ? 'warning' : pendingBookings > 0 ? 'warning' : 'occupied');
+                        let cls = hasAdvanceBooking ? 'advance-booking' : isEmpty ? 'vacant' : (hasNotice ? 'notice-period' : (hasOverdue || hasPendingPayment) ? 'warning' : pendingBookings > 0 ? 'warning' : 'occupied');
 
-                        let statusText = isEmpty ? '<span class="rb-status" style="color:var(--red)">VACANT</span>' :
+                        // "ADVANCE BOOK" label above VACANT — no background fill, just black border card
+                        const advanceLabel = hasAdvanceBooking
+                            ? `<span class="rb-status" style="color:#111;font-size:9px;font-weight:800;letter-spacing:0.5px;display:block;margin-bottom:1px;">ADVANCE BOOK</span>`
+                            : '';
+
+                        let statusText = isEmpty && !hasAdvanceBooking ? '<span class="rb-status" style="color:var(--red)">VACANT</span>' :
+                            hasAdvanceBooking ? `${advanceLabel}<span class="rb-status" style="color:var(--red);">VACANT</span>` :
                             hasNotice ? '<span class="rb-status" style="color:#e65100; font-weight:700;">NOTICE</span>' :
                             hasOverdue ? '<span class="rb-status" style="color:var(--yellow)">OVERDUE</span>' :
                                 pendingBookings > 0 ? '<span class="rb-status" style="color:var(--yellow)">BOOKING REQ</span>' :
@@ -6385,8 +6407,14 @@
                             const isNotice = b.notice_status === 'accepted';
                             const isNoticePending = b.notice_status === 'pending';
                             const isOcc = b.tenant && !isReq;
-                            let color = isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'var(--border)';
-                            let bg = isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'transparent';
+                            // Check if this specific bed is an advance booking
+                            let isAdvance = false;
+                            if (b.tenant && !b.tenant.startsWith('PENDING:') && b.date_of_joining) {
+                                const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
+                                isAdvance = doj > today;
+                            }
+                            let color = isAdvance ? '#90caf9' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'var(--border)';
+                            let bg    = isAdvance ? '#1565c0' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'transparent';
                             return `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:2px;border:1px solid ${color};background:${bg}"></span>`;
                         }).join('');
 
@@ -6755,14 +6783,41 @@
                 const isReq = b.rentStatus === 'Request' || (b.tenant && b.tenant.startsWith('PENDING:'));
                 const cleanName = b.tenant ? b.tenant.replace('PENDING: ', '') : '';
 
+                // Detect if this bed is an advance booking (joining date in future)
+                const todayDate = new Date(); todayDate.setHours(0,0,0,0);
+                let isAdvanceBed = false;
+                let advanceDojStr = '';
+                if (b.tenant && !b.tenant.startsWith('PENDING:') && b.date_of_joining) {
+                    const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
+                    if (doj > todayDate) {
+                        isAdvanceBed = true;
+                        advanceDojStr = new Date(b.date_of_joining).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+                    }
+                }
+
+                // Find the earliest advance booking date in this room so empty beds know the deadline
+                const advanceBedsInRoom = (room.beds || []).filter(ab => {
+                    if (!ab.tenant || ab.tenant.startsWith('PENDING:') || !ab.date_of_joining) return false;
+                    const doj = new Date(ab.date_of_joining); doj.setHours(0,0,0,0);
+                    return doj > todayDate;
+                });
+                const earliestAdvanceDoj = advanceBedsInRoom.length > 0
+                    ? advanceBedsInRoom.map(ab => new Date(ab.date_of_joining)).sort((a,b) => a-b)[0]
+                    : null;
+                const deadlineStr = earliestAdvanceDoj
+                    ? earliestAdvanceDoj.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })
+                    : '';
+
                 return `
-                <div style="padding:10px; border:1px solid var(--border); border-radius:8px; margin-bottom:8px; background:${b.tenant ? 'var(--white)' : 'var(--bg)'}">
+                <div style="padding:10px; border:1px solid ${isAdvanceBed ? '#111' : 'var(--border)'}; border-radius:8px; margin-bottom:8px; background:${b.tenant ? 'var(--white)' : 'var(--bg)'}">
                     <div style="flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                         <div style="font-size:11px; font-weight:700; color:var(--ink3);">BED ${idx + 1}</div>
                         ${isReq ? `<span class="badge badge-yellow" style="font-size:9px; padding:2px 6px;">Booking Request</span>` : ''}
+                        ${isAdvanceBed ? `<span style="font-size:9px; font-weight:800; color:#111; text-transform:uppercase; letter-spacing:0.5px;">⏳ Advance Book</span>` : ''}
                     </div>
                     ${b.tenant ? `
                         <div style="font-weight:600; color:var(--ink); margin-bottom:2px">${cleanName}</div>
+                        ${isAdvanceBed ? `<div style="font-size:11px; color:#555; margin-bottom:4px;">Joins on: <strong>${advanceDojStr}</strong></div>` : ''}
                         ${!isReq ? `
                             <div style="font-size:12px; color:var(--ink2)">Rent: ₹${(b.rent || 0).toLocaleString()}/mo</div>
                             <div style="font-size:12px; margin-top:4px">${b.rentStatus === 'paid' ? '✅ Paid' : b.rentStatus === 'overdue' ? '🔴 Overdue' : '⏳ Pending'}</div>
@@ -6775,7 +6830,8 @@
                             ${(role === 'manager') ? `<button class="btn-sm" style="background:var(--red); padding:4px 8px; border:none; color:var(--white)" onclick="removeTenant(${hostelId},'${roomNum}', ${idx})">${isReq ? 'Reject' : 'Remove'}</button>` : ''}
                         </div>
                     ` : `
-                        <div style="font-weight:500; color:var(--ink3); font-style:italic">Empty Bed</div>
+                        <div style="font-weight:500; color:var(--ink3); font-style:italic;">Empty Bed</div>
+                        ${earliestAdvanceDoj ? `<div style="font-size:10px; color:#c84b31; font-weight:600; margin-top:2px;">⚠️ Advance booked from ${deadlineStr} — add tenant before this date</div>` : ''}
                         ${role === 'manager' ? `<button class="btn-sm btn-ghost" style="margin-top:6px; padding:4px 8px" onclick="closeRoomPopup(); openAddTenantModal('${room.num}')">+ Add Student</button>` : ''}
                     `}
                 </div>`;
