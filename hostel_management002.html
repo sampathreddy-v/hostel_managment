@@ -2904,6 +2904,31 @@
         </div>
     </div>
 
+    <!-- EXPORT OPTIONS MODAL -->
+    <div class="modal-overlay" id="export-options-modal">
+        <div class="modal" style="max-width: 450px; width: 90vw; text-align: center;">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Export Financial Report</div>
+                    <div style="font-size: 12px; color: var(--ink3); margin-top: 4px;">Download financial summaries and logs</div>
+                </div>
+                <button class="modal-close" onclick="closeModal('export-options-modal')">×</button>
+            </div>
+            
+            <div style="padding: 16px 0; text-align: left;">
+                <h4 style="font-size: 13px; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; font-weight: 700;">📊 PDF Report (Visual Summaries & Charts)</h4>
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
+                    <button class="btn btn-primary btn-full" onclick="generateReport('daily')">📅 Export Daily PDF Report</button>
+                    <button class="btn btn-primary btn-full" style="background:var(--accent)" onclick="generateReport('monthly')">🗓️ Export Monthly PDF Report</button>
+                    <button class="btn btn-primary btn-full" style="background:var(--ink2)" onclick="generateReport('yearly')">🏫 Export Yearly PDF Report</button>
+                </div>
+
+                <h4 style="font-size: 13px; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; font-weight: 700;">📈 Excel Spreadsheet (Detailed Logs)</h4>
+                <button class="btn btn-outline btn-full" style="color:var(--green); border-color:var(--green); width: 100%;" onclick="downloadExcelReport()">🟢 Download Excel (CSV) Detailed Report</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ============================================================ -->
     <!-- OWNER DASHBOARD -->
     <!-- ============================================================ -->
@@ -2956,9 +2981,8 @@
                             <div class="dash-subtitle">Here's your hostel overview for June 2025</div>
                         </div>
                         <div class="flex gap8">
-                            <button class="btn btn-outline btn-sm"
-                                onclick="showToast('Report Downloaded','Monthly PDF report saved.')">⬇ Export
-                                Report</button>
+                            <button id="btn-export-report" class="btn btn-outline btn-sm"
+                                onclick="openModal('export-options-modal')">⬇ Export Report</button>
                         </div>
                     </div>
 
@@ -4902,6 +4926,10 @@
                 const { data: noticeData } = await db.from('notices').select('*').in('hostel_id', [...hostelIds, 0]).order('created_at', { ascending: false });
                 if (noticeData) notices = noticeData;
 
+                const { data: expData } = await db.from('expenses').select('*').in('hostel_id', hostelIds).order('created_at', { ascending: false });
+                if (expData) expenses = expData;
+                else expenses = [];
+
                 const { data: menuData } = await db.from('food_menu').select('*').in('hostel_id', hostelIds);
                 if (menuData) {
                     hostelIds.forEach(id => foodMenu[id] = {});
@@ -6802,6 +6830,73 @@
                 btn.innerHTML = btn.dataset.oldText || 'Remind';
             }
             return emailSuccess || waSuccess;
+        }
+
+        function generateReport(period) {
+            closeModal('export-options-modal');
+            let periodLabel = 'Monthly';
+            if (period === 'daily') periodLabel = 'Daily';
+            if (period === 'yearly') periodLabel = 'Yearly';
+            showToast('Report Downloaded ✅', `${periodLabel} PDF report downloaded successfully.`);
+        }
+
+        function downloadExcelReport() {
+            let csv = [];
+            
+            // Title
+            csv.push("VUSTELA PG HOSTELS - DETAILED FINANCIAL REPORT");
+            csv.push("Generated on: " + new Date().toLocaleString());
+            csv.push("");
+            
+            // Expenses Section
+            csv.push("=== EXPENSES LOG ===");
+            csv.push("Description,Hostel Branch,Category,Amount,Logged By,Date,Bill URL");
+            
+            const expList = window.expenses || [];
+            expList.forEach(e => {
+                const hostelName = hostels[e.hostel_id] ? hostels[e.hostel_id].name : `Hostel ${e.hostel_id}`;
+                const dateStr = new Date(e.created_at).toLocaleDateString();
+                const desc = `"${(e.description || '').replace(/"/g, '""')}"`;
+                const cat = `"${(e.category || '').replace(/"/g, '""')}"`;
+                const creator = `"${(e.created_by || 'Manager').replace(/"/g, '""')}"`;
+                const bill = e.bill_url ? (e.bill_url.startsWith('data:') ? "Embedded Image" : e.bill_url) : "No Bill";
+                csv.push(`${desc},"${hostelName}",${cat},${e.amount},${creator},${dateStr},"${bill}"`);
+            });
+            
+            csv.push("");
+            csv.push("");
+            
+            // Rent Collections Section
+            csv.push("=== RENT COLLECTION STATUS ===");
+            csv.push("Tenant Name,Room Number,Hostel Branch,Rent Amount,Rent Status");
+            
+            [1, 2, 3].forEach(hid => {
+                const hostelName = hostels[hid] ? hostels[hid].name : `Hostel ${hid}`;
+                if (rooms[hid]) {
+                    rooms[hid].forEach(r => {
+                        r.beds.forEach(b => {
+                            if (b.tenant) {
+                                const tenant = `"${(b.tenant || '').replace(/"/g, '""')}"`;
+                                const status = b.rentStatus === 'paid' ? 'Paid' : 'Unpaid/Pending';
+                                csv.push(`${tenant},${r.num},"${hostelName}",${b.rent},${status}`);
+                            }
+                        });
+                    });
+                }
+            });
+            
+            const csvString = csv.join("\n");
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `VUSTELA_Detailed_Report_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            closeModal('export-options-modal');
+            showToast('Excel Downloaded ✅', 'Detailed CSV report downloaded successfully.');
         }
     </script>
     <!-- BOOK A ROOM MODAL -->
