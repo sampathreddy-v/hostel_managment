@@ -8224,35 +8224,44 @@
                 doc.text(docTitleText, 20, 48);
 
                 // Overview Stats cards
-                doc.setDrawColor(229, 225, 219); // Light Gray
-                doc.setFillColor(255, 255, 255);
+                // Overview Stats cards
+                doc.setDrawColor(229, 225, 219); // Light Gray border
                 
-                // Stat 1: Occupancy
+                // Stat 1: Occupancy (Soft Light Grey/Blue)
+                doc.setFillColor(244, 246, 249);
                 doc.roundedRect(20, 54, 52, 22, 2, 2, 'FD');
                 doc.setTextColor(colorSubText);
-                doc.setFontSize(9);
+                doc.setFont('Helvetica', 'normal');
+                doc.setFontSize(8);
                 doc.text('TOTAL TENANTS', 25, 60);
                 doc.setTextColor(colorText);
-                doc.setFontSize(14);
+                doc.setFont('Helvetica', 'bold');
+                doc.setFontSize(13);
                 doc.text(`${totalTenants} Active`, 25, 70);
 
-                // Stat 2: Collected
+                // Stat 2: Collected (Soft Light Green)
+                doc.setFillColor(230, 244, 234);
                 doc.roundedRect(77, 54, 52, 22, 2, 2, 'FD');
                 doc.setTextColor(colorSubText);
-                doc.setFontSize(9);
+                doc.setFont('Helvetica', 'normal');
+                doc.setFontSize(8);
                 doc.text('RENT COLLECTED', 82, 60);
-                doc.setTextColor(colorGreen);
-                doc.setFontSize(14);
-                doc.text(`₹${displayCollected.toLocaleString()}`, 82, 70);
+                doc.setTextColor(19, 115, 51); // Dark Green
+                doc.setFont('Helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.text(`Rs. ${displayCollected.toLocaleString()}`, 82, 70);
 
-                // Stat 3: Maintenance
+                // Stat 3: Maintenance (Soft Light Red)
+                doc.setFillColor(252, 232, 230);
                 doc.roundedRect(134, 54, 56, 22, 2, 2, 'FD');
                 doc.setTextColor(colorSubText);
-                doc.setFontSize(9);
+                doc.setFont('Helvetica', 'normal');
+                doc.setFontSize(8);
                 doc.text('MAINTENANCE SPENT', 139, 60);
-                doc.setTextColor(colorAccent);
-                doc.setFontSize(14);
-                doc.text(`₹${displayMaintenance.toLocaleString()}`, 139, 70);
+                doc.setTextColor(197, 34, 31); // Dark Red
+                doc.setFont('Helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.text(`Rs. ${displayMaintenance.toLocaleString()}`, 139, 70);
 
                 // Table Breakdown Title
                 doc.setTextColor(colorText);
@@ -8289,11 +8298,11 @@
                     doc.line(20, y + 8, 190, y + 8);
 
                     doc.text(stats.name, 23, y + 5);
-                    doc.text(`₹${stats.expected.toLocaleString()}`, 70, y + 5);
-                    doc.text(`₹${stats.collected.toLocaleString()}`, 95, y + 5);
-                    doc.text(`₹${stats.pending.toLocaleString()}`, 120, y + 5);
-                    doc.text(`₹${stats.maintenance.toLocaleString()}`, 145, y + 5);
-                    doc.text(`₹${netIncome.toLocaleString()}`, 170, y + 5);
+                    doc.text(`Rs. ${stats.expected.toLocaleString()}`, 70, y + 5);
+                    doc.text(`Rs. ${stats.collected.toLocaleString()}`, 95, y + 5);
+                    doc.text(`Rs. ${stats.pending.toLocaleString()}`, 120, y + 5);
+                    doc.text(`Rs. ${stats.maintenance.toLocaleString()}`, 145, y + 5);
+                    doc.text(`Rs. ${netIncome.toLocaleString()}`, 170, y + 5);
                 });
 
                 // Totals Row
@@ -8304,11 +8313,11 @@
 
                 doc.setFont('Helvetica', 'bold');
                 doc.text('TOTAL', 23, y + 5);
-                doc.text(`₹${displayExpected.toLocaleString()}`, 70, y + 5);
-                doc.text(`₹${displayCollected.toLocaleString()}`, 95, y + 5);
-                doc.text(`₹${displayPending.toLocaleString()}`, 120, y + 5);
-                doc.text(`₹${displayMaintenance.toLocaleString()}`, 145, y + 5);
-                doc.text(`₹${(displayCollected - displayMaintenance).toLocaleString()}`, 170, y + 5);
+                doc.text(`Rs. ${displayExpected.toLocaleString()}`, 70, y + 5);
+                doc.text(`Rs. ${displayCollected.toLocaleString()}`, 95, y + 5);
+                doc.text(`Rs. ${displayPending.toLocaleString()}`, 120, y + 5);
+                doc.text(`Rs. ${displayMaintenance.toLocaleString()}`, 145, y + 5);
+                doc.text(`Rs. ${(displayCollected - displayMaintenance).toLocaleString()}`, 170, y + 5);
 
                 // Add Chart Image
                 doc.addImage(chartImgData, 'PNG', 20, y + 16, 170, 95);
@@ -8412,7 +8421,7 @@
                         doc.text(truncatedDesc, 23, expY + 5);
                         doc.text(hostelName, 85, expY + 5);
                         doc.text(e.category, 120, expY + 5);
-                        doc.text(`₹${e.amount.toLocaleString()}`, 155, expY + 5);
+                        doc.text(`Rs. ${e.amount.toLocaleString()}`, 155, expY + 5);
                         doc.text(dateStr, 178, expY + 5);
                     });
                 }
