@@ -3839,9 +3839,11 @@
     <!-- TENANT PROFILE MODAL -->
     <div class="modal-overlay" id="tenant-profile-modal">
         <div class="modal" style="max-width: 500px; width: 90vw;">
-            <div class="modal-header" style="position: relative; padding-right: 140px; display: flex; align-items: center; justify-content: space-between;">
+            <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
                 <div class="modal-title">Tenant Profile</div>
-                <button class="btn btn-primary btn-sm" id="tp-checkout-btn" style="position: absolute; right: 40px; top: 12px;" onclick="generateCheckoutReceipt()">Checkout Receipt</button>
+                <div style="margin-left: auto; margin-right: 12px;">
+                    <button class="btn btn-primary btn-sm" id="tp-checkout-btn" onclick="generateCheckoutReceipt()">Checkout Receipt</button>
+                </div>
                 <button class="modal-close" onclick="closeModal('tenant-profile-modal')">×</button>
             </div>
             <div style="padding: 20px 0;">
@@ -5529,6 +5531,13 @@
             document.getElementById(id).classList.add('on');
         }
         function closeModal(id) { document.getElementById(id).classList.remove('on'); }
+
+        // Click outside modal content box to close modal
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                closeModal(e.target.id);
+            }
+        });
 
         const defaultHostelPhotos = {
             1: ['hostel_single.png', 'hostel_common.png'],
