@@ -1678,6 +1678,11 @@
             border-color: rgba(184, 134, 11, 0.3)
         }
 
+        .room-box.notice-period {
+            background: #fff3e0;
+            border-color: #ffb74d;
+        }
+
         .room-box.maintenance {
             background: var(--bg3);
             border-color: var(--border)
@@ -3848,9 +3853,16 @@
             </div>
             <div style="padding: 20px 0;">
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <div id="tp-avatar" class="ava" style="width: 70px; height: 70px; font-size: 24px; margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center; background: var(--accent); color: white; border-radius: 50%; font-weight: 700;"></div>
+                    <!-- Avatar: shows passport photo if available, else initials -->
+                    <div id="tp-avatar" style="width: 80px; height: 80px; margin: 0 auto 10px auto; border-radius: 50%; overflow: hidden; border: 3px solid var(--border); background: var(--accent); display: flex; align-items: center; justify-content: center; position: relative;">
+                        <img id="tp-photo" src="" alt="Tenant Photo" style="display:none; width:100%; height:100%; object-fit:cover; object-position:center top;">
+                        <span id="tp-initials" style="font-size: 26px; font-weight: 700; color: white; letter-spacing:1px;"></span>
+                    </div>
                     <h3 id="tp-name" style="margin: 0; font-size: 20px; font-weight: 700; color: var(--ink);"></h3>
-                    <span id="tp-hostel-badge" class="badge badge-blue" style="margin-top: 6px; display: inline-block;"></span>
+                    <div style="display: flex; justify-content: center; gap: 8px; margin-top: 8px; align-items: center;">
+                        <span id="tp-hostel-badge" class="badge badge-blue" style="display: inline-block; margin-top: 0;"></span>
+                        <button class="btn btn-outline btn-sm" id="tp-history-btn" style="padding: 2px 8px; font-size: 11px; min-height: 22px;" onclick="openTenantHistory()">📜 History</button>
+                    </div>
                 </div>
                 
                 <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--bg1); border-top: 1px solid var(--border); margin-top: 20px;">
@@ -3858,7 +3870,17 @@
                         <tbody>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); width: 40%; background: var(--bg2);">Room Number</td>
-                                <td id="tp-room" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none; border-bottom: none;">
+                                    <span id="tp-room"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="openChangeRoomGrid()">✏️ Edit</button>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Rent Amount</td>
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none; border-bottom: none;">
+                                    <span id="tp-rent-amount"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantRent()">✏️ Edit</button>
+                                </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Rent Status</td>
@@ -3873,16 +3895,135 @@
                                 <td id="tp-parent-phone" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Father Email</td>
+                                <td id="tp-father-email" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Email Address</td>
                                 <td id="tp-email" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
                             </tr>
-                            <tr>
+                            <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Date of Joining</td>
                                 <td id="tp-joining-date" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Advance Deposit</td>
+                                <td id="tp-advance-deposit" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Deposit Status</td>
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
+                                    <span id="tp-deposit-status"></span>
+                                    <button class="btn-sm btn-ghost" style="padding: 2px 6px; font-size: 11px; margin-left: 8px;" onclick="editDepositStatus()">✏️ Edit</button>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Payment Style</td>
+                                <td id="tp-payment-style" style="padding: 12px 16px; font-weight: 600; color: var(--ink); text-transform: capitalize;"></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">ID Proof Type</td>
+                                <td id="tp-id-type" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button class="btn btn-outline" style="flex: 1; min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="resetTenantPwdFromProfile()">
+                        🔄 Reset Password
+                    </button>
+                    <button class="btn btn-red" style="flex: 1; min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--red); color: white; border: none; border-radius: 40px; font-weight: 600; cursor: pointer;" onclick="removeTenantFromProfile()">
+                        🗑️ Remove Tenant
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TENANT HISTORY MODAL -->
+    <div class="modal-overlay" id="tenant-history-modal">
+        <div class="modal" style="max-width: 450px; width: 90vw;">
+            <div class="modal-header">
+                <div class="modal-title" id="th-title">Payment History</div>
+                <button class="modal-close" onclick="closeModal('tenant-history-modal')">×</button>
+            </div>
+            <div style="padding: 16px 0; max-height: 70vh; overflow-y: auto;" id="th-history-list">
+                <!-- Rectangular boxes dynamically rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- CHANGE ROOM MODAL -->
+    <div class="modal-overlay" id="change-room-modal">
+        <div class="modal" style="max-width: 500px; width: 90vw;">
+            <div class="modal-header">
+                <div class="modal-title" id="cr-title">Change Room</div>
+                <button class="modal-close" onclick="closeModal('change-room-modal')">×</button>
+            </div>
+            <div style="padding: 16px 0; max-height: 70vh; overflow-y: auto;">
+                <div style="margin-bottom: 12px; font-size: 13px; color: var(--ink3); text-align: left;">Select an empty bed (dashed box) to transfer the tenant to that room. Your current room is highlighted in orange.</div>
+                <div id="cr-live-grid">
+                    <!-- Dynamic room cards populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEPOSIT STATUS EDIT MODAL -->
+    <div class="modal-overlay" id="edit-deposit-status-modal" style="z-index: 10000;">
+        <div class="modal" style="max-width: 320px; text-align: center;">
+            <div class="modal-header">
+                <div class="modal-title">Select Deposit Status</div>
+                <button class="modal-close" onclick="closeModal('edit-deposit-status-modal')">×</button>
+            </div>
+            <div style="padding: 16px 0; display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn btn-outline" style="width: 100%; min-height: 40px; border-color: var(--green); color: var(--green); font-weight: 700;" onclick="selectDepositStatus('Paid')">Paid</button>
+                <button class="btn btn-outline" style="width: 100%; min-height: 40px; border-color: var(--yellow); color: var(--yellow); font-weight: 700;" onclick="selectDepositStatus('Pending')">Pending</button>
+                <button class="btn btn-outline" style="width: 100%; min-height: 40px; border-color: var(--red); color: var(--red); font-weight: 700;" onclick="selectDepositStatus('Refunded')">Refunded</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OLD STUDENT DATA MODALS -->
+    <div class="modal-overlay" id="old-student-modal">
+        <div class="modal" style="max-width: 800px; width: 95vw;">
+            <div class="modal-header">
+                <div class="modal-title">Old Student Data</div>
+                <button class="modal-close" onclick="closeModal('old-student-modal')">×</button>
+            </div>
+            <div style="padding: 16px 0; display: flex; flex-direction: column; gap: 12px;">
+                <input type="text" id="os-search" placeholder="🔍 Search old students by name, phone, or email..." 
+                       style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; box-sizing: border-box;" 
+                       oninput="filterOldStudents()">
+                <div style="max-height: 60vh; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                        <thead>
+                            <tr style="background: var(--bg2); border-bottom: 1px solid var(--border); font-weight: 700;">
+                                <th style="padding: 12px 14px;">Student</th>
+                                <th style="padding: 12px 14px;">Hostel/Room</th>
+                                <th style="padding: 12px 14px;">Joined</th>
+                                <th style="padding: 12px 14px;">Left On</th>
+                                <th style="padding: 12px 14px;">Phone</th>
+                                <th style="padding: 12px 14px; text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="old-students-table-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="old-student-detail-modal">
+        <div class="modal" style="max-width: 500px; width: 90vw;">
+            <div class="modal-header">
+                <div class="modal-title">Old Student Details</div>
+                <button class="modal-close" onclick="closeModal('old-student-detail-modal')">×</button>
+            </div>
+            <div style="padding: 16px 0;" id="old-student-detail-content">
+                <!-- Dynamically populated key-value table -->
             </div>
         </div>
     </div>
@@ -3945,6 +4086,8 @@
                 </div>
                 <div class="sb-link" onclick="ownerTab(this,'o-tenants')"><span class="sb-icon">👥</span> All Tenants
                 </div>
+                <div class="sb-link" onclick="ownerTab(this,'o-notice-requests')"><span class="sb-icon">⏰</span> Notice Requests <span id="owner-notice-badge" class="badge badge-orange" style="display:none; padding: 2px 6px; font-size: 10px; margin-left: 4px;">0</span>
+                </div>
                 <div class="sb-link" onclick="ownerTab(this,'o-edit-dashboard')"><span class="sb-icon">🎨</span> Edit Dashboard
                 </div>
                 <div class="sb-section" style="margin-top:auto"></div>
@@ -3990,6 +4133,7 @@
                                     <th>Collected</th>
                                     <th>Pending</th>
                                     <th>Maintenance</th>
+                                    <th>Advance Deposits</th>
                                     <th>Net Income</th>
                                 </tr>
                             </thead>
@@ -4491,9 +4635,14 @@
 
                 <!-- O: ALL TENANTS -->
                 <div class="dash-section" id="o-tenants">
-                    <div class="dash-header">
-                        <div class="dash-title">All Tenants</div>
-                        <div class="dash-subtitle">Complete tenant list across all 3 hostels</div>
+                    <div class="dash-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <div>
+                            <div class="dash-title">All Tenants</div>
+                            <div class="dash-subtitle">Complete tenant list across all 3 hostels</div>
+                        </div>
+                        <button class="btn btn-outline" style="min-height: 40px; display: flex; align-items: center; gap: 6px; padding: 0 16px; border-radius: 20px; font-weight: 600;" onclick="openOldStudentDataModal()">
+                            📂 Old Student Data
+                        </button>
                     </div>
                     <div class="rent-table-wrap">
                         <table>
@@ -4510,6 +4659,35 @@
                             </thead>
                             <tbody id="o-all-tenants-table"></tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- O: NOTICE REQUESTS -->
+                <div class="dash-section" id="o-notice-requests">
+                    <div class="dash-header">
+                        <div>
+                            <div class="dash-title">Notice Period Requests</div>
+                            <div class="dash-subtitle">Review all notice period requests submitted by students across all branches</div>
+                        </div>
+                    </div>
+                    <div class="rent-table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tenant</th>
+                                    <th>Hostel / Room</th>
+                                    <th>Gmail</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="owner-notice-requests-table"></tbody>
+                        </table>
+                    </div>
+                    <div id="owner-no-notice-msg" style="display:none; text-align:center; padding: 40px; color: var(--ink3);">
+                        <div style="font-size: 40px; margin-bottom: 12px;">⏰</div>
+                        <p>No pending notice period requests.</p>
                     </div>
                 </div>
 
@@ -4558,6 +4736,9 @@
                 <div class="sb-section">Management</div>
                 <div class="sb-link" onclick="mgrTab(this,'m-bookings')"><span class="sb-icon">📅</span> Bookings <span
                         id="mgr-booking-badge" class="badge badge-red"
+                        style="display:none; padding: 2px 6px; font-size: 10px; margin-left: 4px;">0</span></div>
+                <div class="sb-link" onclick="mgrTab(this,'m-notice-requests')"><span class="sb-icon">⏰</span> Notice Requests <span
+                        id="mgr-notice-badge" class="badge badge-orange"
                         style="display:none; padding: 2px 6px; font-size: 10px; margin-left: 4px;">0</span></div>
                 <div class="sb-link" onclick="mgrTab(this,'m-rent')"><span class="sb-icon">💰</span> Rent</div>
                 <div class="sb-link" onclick="mgrTab(this,'m-tenants')"><span class="sb-icon">👥</span> Tenants</div>
@@ -4722,6 +4903,35 @@
                         style="display:none; text-align:center; padding: 40px; color: var(--ink3);">
                         <div style="font-size: 40px; margin-bottom: 12px;">📭</div>
                         <p>No pending booking requests at the moment.</p>
+                    </div>
+                </div>
+
+                <!-- M: NOTICE REQUESTS -->
+                <div class="dash-section" id="m-notice-requests">
+                    <div class="dash-header">
+                        <div>
+                            <div class="dash-title">Notice Period Requests</div>
+                            <div class="dash-subtitle">Accept notice period requests for students in your hostel branch</div>
+                        </div>
+                    </div>
+                    <div class="rent-table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tenant</th>
+                                    <th>Room</th>
+                                    <th>Gmail</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mgr-notice-requests-table"></tbody>
+                        </table>
+                    </div>
+                    <div id="mgr-no-notice-msg" style="display:none; text-align:center; padding: 40px; color: var(--ink3);">
+                        <div style="font-size: 40px; margin-bottom: 12px;">⏰</div>
+                        <p>No pending notice period requests.</p>
                     </div>
                 </div>
 
@@ -4896,28 +5106,87 @@
 
     <!-- ADD TENANT MODAL -->
     <div class="modal-overlay" id="add-tenant-modal">
-        <div class="modal">
+        <div class="modal" style="max-width:560px; width:92vw;">
             <div class="modal-header">
-                <div class="modal-title">Add New Tenant</div><button class="modal-close"
-                    onclick="closeModal('add-tenant-modal')">×</button>
+                <div class="modal-title">Add New Tenant</div>
+                <button class="modal-close" onclick="closeModal('add-tenant-modal')">×</button>
             </div>
-            <div class="input-group"><label>Full Name</label><input type="text" id="at-name"
-                    placeholder="Tenant full name"></div>
-            <div class="input-group"><label>Email Address</label><input type="email" id="at-email"
-                    placeholder="tenant@example.com"></div>
-            <div class="input-group"><label>Phone Number</label><input type="tel" id="at-phone"
-                    placeholder="+91 00000 00000"></div>
-            <div class="input-group"><label>Room Number</label>
-                <select id="at-room">
-                    <!-- Options are dynamically generated via JS -->
-                </select>
+            <div style="max-height:75vh; overflow-y:auto; padding-bottom:8px;">
+
+                <!-- SECTION: Student Details -->
+                <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;margin:4px 0 10px;">Student Details</div>
+                <div class="input-group"><label>Full Name *</label><input type="text" id="at-name" placeholder="Full name of student"></div>
+                <div class="input-group"><label>Phone Number *</label><input type="tel" id="at-phone" placeholder="+91 00000 00000" maxlength="10"></div>
+                <div class="input-group"><label>Gmail Address *</label><input type="email" id="at-email" placeholder="student@gmail.com"></div>
+                <div class="input-group"><label>Date of Joining *</label><input type="date" id="at-doj"></div>
+
+                <!-- SECTION: Father Details -->
+                <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;">Father / Guardian Details</div>
+                <div class="input-group"><label>Father Phone Number *</label><input type="tel" id="at-father-phone" placeholder="+91 00000 00000" maxlength="10"></div>
+                <div class="input-group"><label>Father Gmail (optional)</label><input type="email" id="at-father-email" placeholder="father@gmail.com"></div>
+
+                <!-- SECTION: Room & Payment -->
+                <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;">Room & Payment</div>
+                <div class="input-group"><label>Room Number *</label>
+                    <select id="at-room"><!-- Populated by JS --></select>
+                </div>
+                <div class="input-group"><label>Rent Amount (Rs.) *</label><input type="number" id="at-rent" placeholder="5500" value="5500"></div>
+                <div class="input-group"><label>Advance Deposit (Rs.) *</label><input type="number" id="at-deposit" placeholder="11000" value="11000"></div>
+                <div class="input-group">
+                    <label>Advance Deposit Status *</label>
+                    <select id="at-deposit-status">
+                        <option value="Paid">Paid</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+                </div>
+
+                <!-- Payment Style -->
+                <div class="input-group">
+                    <label>Payment Style *</label>
+                    <select id="at-pay-style" onchange="showPayStyleHint()">
+                        <option value="">-- Select payment style --</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="daily">Day Wise</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+                <!-- Payment hint shown based on selection -->
+                <div id="at-pay-hint" style="display:none; margin-top:-8px; margin-bottom:12px; padding:10px 14px; background:#eef6ff; border:1px solid #b8d4f8; border-radius:8px; font-size:13px; color:#1a56a4;">
+                    ⏰ <span id="at-pay-hint-text"></span>
+                </div>
+
+                <!-- SECTION: Documents -->
+                <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;">Documents</div>
+                <div class="input-group">
+                    <label>ID Proof Type *</label>
+                    <select id="at-id-type">
+                        <option value="">-- Select ID type --</option>
+                        <option value="Aadhaar Card">Aadhaar Card</option>
+                        <option value="College ID">College ID</option>
+                        <option value="Driving Licence">Driving Licence</option>
+                        <option value="Passport">Passport</option>
+                        <option value="Voter ID">Voter ID</option>
+                        <option value="PAN Card">PAN Card</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="input-group"><label>Upload ID Proof</label><input type="file" id="at-id" accept="image/*,.pdf"></div>
+
+                <!-- Photo Upload -->
+                <div class="input-group">
+                    <label>Passport Photo *</label>
+                    <div style="border:2px dashed var(--border);border-radius:8px;padding:16px;text-align:center;cursor:pointer;" onclick="document.getElementById('at-photo').click()">
+                        <img id="at-photo-preview" src="" alt="" style="display:none;width:100px;height:120px;object-fit:cover;border-radius:6px;margin:0 auto 8px auto;border:1px solid var(--border);">
+                        <div id="at-photo-placeholder" style="color:var(--ink3);font-size:13px;">
+                            <div style="font-size:28px;margin-bottom:4px;">📷</div>
+                            Click to upload passport photo
+                        </div>
+                        <input type="file" id="at-photo" accept="image/*" style="display:none;" onchange="previewTenantPhoto(this)">
+                    </div>
+                </div>
+
             </div>
-            <div class="input-group"><label>Monthly Rent (₹)</label><input type="number" id="at-rent" placeholder="5500"
-                    value="5500"></div>
-            <div class="input-group"><label>Security Deposit (₹)</label><input type="number" id="at-deposit"
-                    placeholder="11000" value="11000"></div>
-            <div class="input-group"><label>ID Proof</label><input type="file" id="at-id" accept="image/*,.pdf"></div>
-            <button class="btn-full" onclick="addTenant()">Add Tenant</button>
+            <button class="btn-full" style="margin-top:16px;" onclick="addTenant()">Add Tenant</button>
         </div>
     </div>
 
@@ -5004,6 +5273,9 @@
                             <button class="btn btn-outline"
                                 style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7)"
                                 onclick="showToast('Receipt','Last month receipt downloaded.')">⬇ Last Receipt</button>
+                            <button class="btn btn-outline" id="tenant-notice-btn"
+                                style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7); display:flex; align-items:center; gap:6px;"
+                                onclick="submitNoticePeriodRequest()">⏰ Notice Period</button>
                         </div>
                     </div>
 
@@ -5437,7 +5709,23 @@
                 console.log(`Hostel ${hid}: loaded ${roomData?.length} rooms`, roomData);
                 rooms[hid] = (roomData || []).map(r => {
                     const defaultRent = r.beds[0]?.rent || 5000;
-                    const filledBeds = r.beds.map(b => ({ _id: b.id, tenant: b.tenant_name || '', tenant_email: b.tenant_email, tenant_phone: b.tenant_phone, rent: b.rent, rentStatus: b.rent_status }));
+                    const filledBeds = r.beds.map(b => ({ 
+                        _id: b.id, 
+                        tenant: b.tenant_name || '', 
+                        tenant_email: b.tenant_email, 
+                        tenant_phone: b.tenant_phone, 
+                        rent: b.rent, 
+                        rentStatus: b.rent_status,
+                        father_phone: b.father_phone,
+                        father_email: b.father_email,
+                        date_of_joining: b.date_of_joining,
+                        advance_deposit: b.advance_deposit,
+                        payment_style: b.payment_style,
+                        id_proof_type: b.id_proof_type,
+                        photo_url: b.photo_url,
+                        notice_status: b.notice_status,
+                        deposit_status: b.deposit_status
+                    }));
                     while (filledBeds.length < r.capacity) filledBeds.push({ tenant: '', rent: defaultRent, rentStatus: null });
                     return { _roomId: r.id, num: r.num, floor: r.floor, type: r.type, capacity: r.capacity, beds: filledBeds };
                 });
@@ -5810,6 +6098,32 @@
             document.getElementById('tp-info-hostel').textContent = hname;
             document.getElementById('tp-info-room').textContent = rnum;
             document.getElementById('tp-info-rent').textContent = rentStr;
+
+            const noticeBtn = document.getElementById('tenant-notice-btn');
+            if (noticeBtn) {
+                if (currentTenant.notice_status === 'pending') {
+                    noticeBtn.textContent = '⏰ Pending Approval';
+                    noticeBtn.style.opacity = '0.7';
+                    noticeBtn.style.pointerEvents = 'none';
+                    noticeBtn.style.background = 'transparent';
+                    noticeBtn.style.color = 'rgba(255,255,255,0.7)';
+                    noticeBtn.style.borderColor = 'rgba(255,255,255,0.2)';
+                } else if (currentTenant.notice_status === 'accepted') {
+                    noticeBtn.textContent = '⏰ Notice Accepted';
+                    noticeBtn.style.opacity = '1';
+                    noticeBtn.style.background = '#e65100'; // orange
+                    noticeBtn.style.color = '#fff';
+                    noticeBtn.style.borderColor = '#ff9800';
+                    noticeBtn.style.pointerEvents = 'none';
+                } else {
+                    noticeBtn.textContent = '⏰ Notice Period';
+                    noticeBtn.style.opacity = '1';
+                    noticeBtn.style.background = 'transparent';
+                    noticeBtn.style.color = 'rgba(255,255,255,0.7)';
+                    noticeBtn.style.borderColor = 'rgba(255,255,255,0.2)';
+                    noticeBtn.style.pointerEvents = 'auto';
+                }
+            }
         }
 
         // ============================================================
@@ -5822,6 +6136,8 @@
             document.getElementById(secId).classList.add('on');
             if (secId === 'o-edit-dashboard') {
                 renderEditDashboard();
+            } else if (secId === 'o-notice-requests') {
+                renderNoticeRequests('owner');
             }
         }
 
@@ -5833,6 +6149,8 @@
 
             if (secId === 'm-bookings') {
                 renderMgrBookings();
+            } else if (secId === 'm-notice-requests') {
+                renderNoticeRequests('manager');
             }
         }
 
@@ -5879,7 +6197,16 @@
                                 tenant_phone: b.tenant_phone || '',
                                 tenant_password: b.tenant_password || '',
                                 rent: b.rent || defaultRent,
-                                rentStatus: b.rent_status || null
+                                rentStatus: b.rent_status || null,
+                                father_phone: b.father_phone || '',
+                                father_email: b.father_email || '',
+                                date_of_joining: b.date_of_joining || '',
+                                advance_deposit: b.advance_deposit || 0,
+                                payment_style: b.payment_style || '',
+                                id_proof_type: b.id_proof_type || '',
+                                photo_url: b.photo_url || '',
+                                notice_status: b.notice_status || null,
+                                deposit_status: b.deposit_status || 'Paid'
                             };
                         });
                         while (filledBeds.length < r.capacity) {
@@ -6040,10 +6367,12 @@
                         const isEmpty = (occupiedBeds + pendingBookings) === 0;
                         const hasOverdue = beds.some(b => b.rentStatus === 'overdue');
                         const hasPendingPayment = beds.some(b => b.rentStatus === 'pending');
+                        const hasNotice = beds.some(b => b.notice_status === 'accepted');
 
-                        let cls = isEmpty ? 'vacant' : (hasOverdue || hasPendingPayment) ? 'warning' : pendingBookings > 0 ? 'warning' : 'occupied';
+                        let cls = isEmpty ? 'vacant' : (hasNotice ? 'notice-period' : (hasOverdue || hasPendingPayment) ? 'warning' : pendingBookings > 0 ? 'warning' : 'occupied');
 
                         let statusText = isEmpty ? '<span class="rb-status" style="color:var(--red)">VACANT</span>' :
+                            hasNotice ? '<span class="rb-status" style="color:#e65100; font-weight:700;">NOTICE</span>' :
                             hasOverdue ? '<span class="rb-status" style="color:var(--yellow)">OVERDUE</span>' :
                                 pendingBookings > 0 ? '<span class="rb-status" style="color:var(--yellow)">BOOKING REQ</span>' :
                                     hasPendingPayment ? '<span class="rb-status" style="color:var(--yellow)">RENT PENDING</span>' :
@@ -6053,9 +6382,11 @@
                         const hasComplaint = complaints.some(c => c.hostel === hid && c.room === r.num && c.status !== 'resolved');
                         let bedDots = beds.map(b => {
                             const isReq = b.rentStatus === 'Request' || (b.tenant && b.tenant.startsWith('PENDING:'));
+                            const isNotice = b.notice_status === 'accepted';
+                            const isNoticePending = b.notice_status === 'pending';
                             const isOcc = b.tenant && !isReq;
-                            let color = isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'var(--border)';
-                            let bg = isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'transparent';
+                            let color = isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'var(--border)';
+                            let bg = isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'transparent';
                             return `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:2px;border:1px solid ${color};background:${bg}"></span>`;
                         }).join('');
 
@@ -6120,6 +6451,7 @@
             let maintenanceTotal = 0;
             let netTotal = 0;
             let unpaidCountTotal = 0;
+            let advanceDepositTotal = 0;
 
             const rowsHtml = [];
             const hostelIds = [1, 2, 3];
@@ -6130,6 +6462,7 @@
                 let pending = 0;
                 let maintenance = 0;
                 let unpaidCount = 0;
+                let advanceDeposit = 0;
 
                 if (rooms[hid]) {
                     rooms[hid].forEach(r => {
@@ -6143,6 +6476,8 @@
                                         pending += b.rent || 0;
                                         unpaidCount++;
                                     }
+                                    // Sum advance deposits for all occupied beds
+                                    advanceDeposit += b.advance_deposit || 0;
                                 }
                             });
                         }
@@ -6163,6 +6498,7 @@
                 maintenanceTotal += maintenance;
                 netTotal += net;
                 unpaidCountTotal += unpaidCount;
+                advanceDepositTotal += advanceDeposit;
 
                 const hName = hostels[hid] ? hostels[hid].name : `Hostel ${hid}`;
 
@@ -6173,6 +6509,7 @@
                         <td style="color:var(--green);font-weight:700">₹${collected.toLocaleString()}</td>
                         <td style="color:var(--red);font-weight:700">₹${pending.toLocaleString()}</td>
                         <td style="color:var(--yellow)">₹${maintenance.toLocaleString()}</td>
+                        <td style="color:#1565c0;font-weight:700">₹${advanceDeposit.toLocaleString()}</td>
                         <td style="font-weight:800;font-family:var(--font-display)">₹${net.toLocaleString()}</td>
                     </tr>
                 `);
@@ -6186,6 +6523,7 @@
                     <td style="color:var(--green);font-weight:800;font-size:16px">₹${collectedTotal.toLocaleString()}</td>
                     <td style="color:var(--red);font-weight:800">₹${pendingTotal.toLocaleString()}</td>
                     <td style="color:var(--yellow);font-weight:800">₹${maintenanceTotal.toLocaleString()}</td>
+                    <td style="color:#1565c0;font-weight:800">₹${advanceDepositTotal.toLocaleString()}</td>
                     <td style="font-weight:800;font-size:17px;font-family:var(--font-display)">₹${netTotal.toLocaleString()}</td>
                 </tr>
             `);
@@ -6459,7 +6797,40 @@
             if (room && room.beds[bedIndex]) {
                 room.beds[bedIndex].rentStatus = 'paid';
                 const bedId = room.beds[bedIndex]._id;
+                const bed = room.beds[bedIndex];
                 if (bedId) await db.from('beds').update({ rent_status: 'paid' }).eq('id', bedId);
+                
+                // Auto-save history record
+                const now = new Date();
+                const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                const monthName = monthNames[now.getMonth()];
+                const monthNum = now.getMonth() + 1;
+                const year = now.getFullYear();
+                const daysInMonth = new Date(year, monthNum, 0).getDate();
+                
+                // Only insert if not already logged this month
+                const { data: existing } = await db.from('rent_history')
+                    .select('id')
+                    .eq('tenant_email', bed.tenant_email || '')
+                    .eq('month_num', monthNum)
+                    .eq('year', year);
+                
+                if (!existing || existing.length === 0) {
+                    await db.from('rent_history').insert({
+                        bed_id: bedId,
+                        tenant_name: bed.tenant,
+                        tenant_email: bed.tenant_email || '',
+                        room_num: String(roomNum),
+                        hostel_id: hostelId,
+                        month: monthName,
+                        month_num: monthNum,
+                        year: year,
+                        start_date: `${monthName} 01, ${year}`,
+                        end_date: `${monthName} ${daysInMonth}, ${year}`,
+                        rent_amount: bed.rent || 0,
+                        rent_status: 'paid'
+                    });
+                }
             }
             closeRoomPopup();
             renderManagerOccupancy();
@@ -6471,10 +6842,29 @@
             if (!confirm("Are you sure you want to remove this tenant?")) return;
             const room = rooms[hostelId].find(r => r.num === roomNum);
             if (room && room.beds[bedIndex]) {
-                const bedId = room.beds[bedIndex]._id;
+                const bed = room.beds[bedIndex];
+                const bedId = bed._id;
+                
+                // First archive tenant details
+                await archiveTenant(bed, roomNum, hostelId);
+                
                 if (bedId) {
-                    await db.from('beds').delete().eq('id', bedId);
+                    await db.from('beds').update({
+                        tenant_name: null,
+                        tenant_email: null,
+                        tenant_password: null,
+                        tenant_phone: null,
+                        rent_status: null,
+                        father_phone: null,
+                        father_email: null,
+                        date_of_joining: null,
+                        advance_deposit: null,
+                        payment_style: null,
+                        id_proof_type: null,
+                        photo_url: null
+                    }).eq('id', bedId);
                 }
+                
                 // Reset bed locally
                 const defaultRent = room.beds[0]?.rent || 5500;
                 room.beds[bedIndex] = { tenant: '', rent: defaultRent, rentStatus: null };
@@ -6770,18 +7160,30 @@
             showToast('Removing...', `Clearing data for ${name}...`);
 
             try {
+                // Archive tenant details
+                const r = rooms[currentHostel].find(rm => rm.num === roomNum);
+                if (r && r.beds[bedIdx]) {
+                    await archiveTenant(r.beds[bedIdx], roomNum, currentHostel);
+                }
+
                 const { error } = await db.from('beds').update({
                     tenant_name: null,
                     tenant_email: null,
                     tenant_password: null,
                     tenant_phone: null,
-                    rent_status: null
+                    rent_status: null,
+                    father_phone: null,
+                    father_email: null,
+                    date_of_joining: null,
+                    advance_deposit: null,
+                    payment_style: null,
+                    id_proof_type: null,
+                    photo_url: null
                 }).eq('id', bedId);
 
                 if (error) throw error;
 
                 // Update local state
-                const r = rooms[currentHostel].find(rm => rm.num === roomNum);
                 if (r) {
                     r.beds[bedIdx] = { tenant: '', rent: 5500, rentStatus: null };
                 }
@@ -7028,19 +7430,40 @@
             const inits = name.split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase();
             
             document.getElementById('tp-name').textContent = name;
-            document.getElementById('tp-avatar').textContent = inits;
+            
+            // --- Load passport photo or show initials ---
+            const photoEl    = document.getElementById('tp-photo');
+            const initialsEl = document.getElementById('tp-initials');
+            // Check localStorage first (base64 or URL saved at enrolment)
+            const storedPhoto = localStorage.getItem('tenant_photo_' + (tenant.tenant_email || ''));
+            const photoSrc    = storedPhoto || tenant.photo_url || '';
+            if (photoSrc) {
+                photoEl.src = photoSrc;
+                photoEl.style.display = 'block';
+                initialsEl.style.display = 'none';
+            } else {
+                photoEl.style.display = 'none';
+                initialsEl.style.display = 'block';
+                initialsEl.textContent = inits;
+            }
+            // --- End photo load ---
+
             document.getElementById('tp-hostel-badge').textContent = hostels[tenant.hostel] ? hostels[tenant.hostel].name : `Hostel ${tenant.hostel}`;
             document.getElementById('tp-room').textContent = tenant.num;
             document.getElementById('tp-phone').textContent = tenant.tenant_phone || 'Not Provided';
-            
-            let parentPhone = "Not Provided";
-            if (tenant.tenant_phone && tenant.tenant_phone.length >= 10) {
-                parentPhone = tenant.tenant_phone.substring(0, tenant.tenant_phone.length - 2) + "88";
-            }
-            document.getElementById('tp-parent-phone').textContent = parentPhone;
-            
+            document.getElementById('tp-parent-phone').textContent = tenant.father_phone || 'Not Provided';
+            document.getElementById('tp-father-email').textContent = tenant.father_email || 'Not Provided';
             document.getElementById('tp-email').textContent = tenant.tenant_email || 'Not Provided';
-            document.getElementById('tp-joining-date').textContent = 'Mar 15, 2025';
+            document.getElementById('tp-joining-date').textContent = tenant.date_of_joining || 'Not Provided';
+            
+            const depVal = tenant.advance_deposit || 0;
+            document.getElementById('tp-advance-deposit').textContent = depVal ? `Rs. ${Number(depVal).toLocaleString()}` : 'Not Provided';
+            document.getElementById('tp-deposit-status').textContent = tenant.deposit_status || 'Paid';
+            document.getElementById('tp-payment-style').textContent = tenant.payment_style || 'Not Provided';
+            document.getElementById('tp-id-type').textContent = tenant.id_proof_type || 'Not Provided';
+            
+            const rentVal = tenant.rent || 0;
+            document.getElementById('tp-rent-amount').textContent = `Rs. ${rentVal.toLocaleString()}`;
             
             const statusEl = document.getElementById('tp-rent-status');
             if (tenant.rentStatus === 'paid') {
@@ -7050,6 +7473,589 @@
             }
             
             openModal('tenant-profile-modal');
+        }
+
+        async function editTenantRent() {
+            if (!activeProfileTenant) return;
+            
+            const name = getDisplayName(activeProfileTenant.tenant);
+            const currentRent = activeProfileTenant.rent || 0;
+            const newRentStr = prompt(`Update monthly rent for ${name}:`, currentRent);
+            if (newRentStr === null) return; // cancelled
+            
+            const newRent = parseInt(newRentStr);
+            if (isNaN(newRent) || newRent <= 0) {
+                showToast('Error', 'Please enter a valid positive number.');
+                return;
+            }
+            
+            showToast('Updating...', 'Saving new rent amount');
+            
+            try {
+                if (activeProfileTenant._id) {
+                    const { error } = await db.from('beds')
+                        .update({ rent: newRent })
+                        .eq('id', activeProfileTenant._id);
+                    if (error) throw error;
+                }
+                
+                // Update local memory state
+                const hostelId = activeProfileTenant.hostel;
+                const roomNum = activeProfileTenant.num;
+                const rm = rooms[hostelId].find(r => r.num === roomNum);
+                if (rm && rm.beds) {
+                    const bed = rm.beds.find(b => b.tenant === activeProfileTenant.tenant);
+                    if (bed) {
+                        bed.rent = newRent;
+                    }
+                }
+                
+                // Update active profile object
+                activeProfileTenant.rent = newRent;
+                document.getElementById('tp-rent-amount').textContent = `Rs. ${newRent.toLocaleString()}`;
+                
+                // Refresh views
+                renderOwnerAllTenants();
+                if (typeof renderRentTracker === 'function') renderRentTracker();
+                if (typeof updateDashboardStats === 'function') updateDashboardStats();
+                
+                showToast('Updated ✅', 'Rent amount updated successfully.');
+            } catch (err) {
+                console.error('Rent update failed:', err);
+                showToast('Error ❌', 'Failed to update rent: ' + err.message);
+            }
+        }
+
+        function editDepositStatus() {
+            if (!activeProfileTenant) return;
+            openModal('edit-deposit-status-modal');
+        }
+
+        async function selectDepositStatus(cleanStatus) {
+            if (!activeProfileTenant) return;
+            
+            closeModal('edit-deposit-status-modal');
+            showToast('Updating...', 'Saving deposit status...');
+            
+            try {
+                const bedId = activeProfileTenant._id || activeProfileTenant.id;
+                if (!bedId) throw new Error('Tenant bed ID not found.');
+                
+                const { error } = await db.from('beds').update({ deposit_status: cleanStatus }).eq('id', bedId);
+                if (error) throw error;
+                
+                // Sync locally
+                activeProfileTenant.deposit_status = cleanStatus;
+                document.getElementById('tp-deposit-status').textContent = cleanStatus;
+                
+                // Sync rooms array
+                [1, 2, 3].forEach(hid => {
+                    rooms[hid].forEach(r => {
+                        const b = r.beds.find(bed => bed._id == bedId || bed.id == bedId);
+                        if (b) b.deposit_status = cleanStatus;
+                    });
+                });
+
+                // Auto log expense on Refunded status
+                if (cleanStatus === 'Refunded') {
+                    const depositAmt = activeProfileTenant.advance_deposit || 0;
+                    const tenantName = activeProfileTenant.tenant;
+                    const roomNum = activeProfileTenant.num;
+                    const hostelId = activeProfileTenant.hostel;
+                    
+                    const receiptImage = generateDepositRefundReceipt(getDisplayName(tenantName), roomNum, depositAmt, hostelId);
+                    
+                    const newExp = {
+                        hostel_id: hostelId,
+                        category: 'advance deposit',
+                        amount: parseFloat(depositAmt),
+                        description: `Refunded advance deposit for ${getDisplayName(tenantName)} (Room ${roomNum})`,
+                        bill_url: receiptImage,
+                        created_by: 'Owner (Ramesh Sharma)',
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    const { data: expResult, error: expError } = await db.from('expenses').insert([newExp]).select();
+                    if (expError) {
+                        console.error('Failed to log refund expense to Supabase:', expError);
+                    } else if (expResult && expResult[0]) {
+                        newExp.id = expResult[0].id;
+                        expenses.unshift(newExp);
+                        if (typeof renderOwnerExpenses === 'function') renderOwnerExpenses();
+                        if (typeof renderMgrExpenses === 'function') renderMgrExpenses();
+                        showToast('Refund Logged ✅', 'Refund expense registered successfully.');
+                    }
+                }
+                
+                showToast('Success ✅', 'Deposit status updated successfully.');
+            } catch (err) {
+                console.error(err);
+                showToast('Error', 'Failed to update deposit status: ' + err.message);
+            }
+        }
+
+        async function openTenantHistory() {
+            if (!activeProfileTenant) return;
+            
+            const name = getDisplayName(activeProfileTenant.tenant);
+            document.getElementById('th-title').textContent = `Payment History — ${name}`;
+            
+            const historyListEl = document.getElementById('th-history-list');
+            historyListEl.innerHTML = '<div style="text-align:center; padding:30px; color:var(--ink3);">Loading history...</div>';
+            openModal('tenant-history-modal');
+            
+            try {
+                // Fetch real history from Supabase
+                let query = db.from('rent_history')
+                    .select('*')
+                    .eq('tenant_email', activeProfileTenant.tenant_email || '')
+                    .order('year', { ascending: false })
+                    .order('month_num', { ascending: false });
+                
+                const { data: historyRows, error } = await query;
+                
+                if (error) throw error;
+                
+                if (!historyRows || historyRows.length === 0) {
+                    historyListEl.innerHTML = `
+                        <div style="text-align:center; padding:40px; color:var(--ink3);">
+                            <div style="font-size:32px; margin-bottom:12px;">📋</div>
+                            <div style="font-weight:600; margin-bottom:6px;">No History Found</div>
+                            <div style="font-size:13px;">Rent records will appear here each month once the tenant is active. Click <b>"Log This Month"</b> below to create the first entry.</div>
+                        </div>
+                        <div style="text-align:center; padding: 0 16px 16px;">
+                            <button class="btn btn-primary" onclick="logCurrentMonthHistory()">+ Log This Month</button>
+                        </div>`;
+                    return;
+                }
+                
+                renderTenantHistoryCards(historyRows);
+                
+            } catch (err) {
+                console.error('History fetch error:', err);
+                historyListEl.innerHTML = `<div style="text-align:center; padding:40px; color:#c62828;">⚠️ Could not load history: ${err.message}</div>`;
+            }
+        }
+
+        function renderTenantHistoryCards(historyRows) {
+            const historyListEl = document.getElementById('th-history-list');
+            historyListEl.innerHTML = historyRows.map(h => {
+                const statusBadge = h.rent_status === 'paid'
+                    ? '<span class="badge badge-green" style="background:#e6f4ea; color:#137333; border: 1px solid #137333;">Paid</span>'
+                    : '<span class="badge badge-yellow" style="background:#fef7e0; color:#b06000; border: 1px solid #b06000;">Pending</span>';
+                return `
+                <div style="border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; background: var(--bg1); display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: left;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 4px;">
+                        <span style="font-weight: 700; font-size: 15px; color: var(--ink);">${h.month} ${h.year}</span>
+                        ${statusBadge}
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;">
+                        <div>
+                            <span style="color: var(--ink3); display: block; font-size: 10px; text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">Start Date</span>
+                            <span style="font-weight: 600; color: var(--ink);">${h.start_date}</span>
+                        </div>
+                        <div>
+                            <span style="color: var(--ink3); display: block; font-size: 10px; text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">End Date</span>
+                            <span style="font-weight: 600; color: var(--ink);">${h.end_date}</span>
+                        </div>
+                        <div>
+                            <span style="color: var(--ink3); display: block; font-size: 10px; text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">Room</span>
+                            <span style="font-weight: 600; color: var(--ink);">Room ${h.room_num}</span>
+                        </div>
+                        <div>
+                            <span style="color: var(--ink3); display: block; font-size: 10px; text-transform: uppercase; font-weight: 700; margin-bottom: 2px;">Rent Amount</span>
+                            <span style="font-weight: 700; color: var(--ink); font-size: 14px;">Rs. ${Number(h.rent_amount).toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('') + `
+            <div style="text-align:center; padding: 8px 16px 16px;">
+                <button class="btn btn-outline btn-sm" onclick="logCurrentMonthHistory()">+ Log Current Month</button>
+            </div>`;
+        }
+
+        async function logCurrentMonthHistory() {
+            if (!activeProfileTenant) return;
+            
+            const now = new Date();
+            const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            const monthName = monthNames[now.getMonth()];
+            const monthNum = now.getMonth() + 1;
+            const year = now.getFullYear();
+            const daysInMonth = new Date(year, monthNum, 0).getDate();
+            const startDate = `${monthName} 01, ${year}`;
+            const endDate = `${monthName} ${daysInMonth}, ${year}`;
+            
+            // Check for duplicate entry this month
+            const { data: existing } = await db.from('rent_history')
+                .select('id')
+                .eq('tenant_email', activeProfileTenant.tenant_email || '')
+                .eq('month_num', monthNum)
+                .eq('year', year);
+            
+            if (existing && existing.length > 0) {
+                showToast('Already Logged', `History for ${monthName} ${year} already exists.`);
+                return;
+            }
+            
+            const record = {
+                bed_id: activeProfileTenant._id || null,
+                tenant_name: activeProfileTenant.tenant,
+                tenant_email: activeProfileTenant.tenant_email || '',
+                room_num: String(activeProfileTenant.num),
+                hostel_id: activeProfileTenant.hostel,
+                month: monthName,
+                month_num: monthNum,
+                year: year,
+                start_date: startDate,
+                end_date: endDate,
+                rent_amount: activeProfileTenant.rent || 0,
+                rent_status: activeProfileTenant.rentStatus || 'pending'
+            };
+            
+            const { error } = await db.from('rent_history').insert(record);
+            if (error) {
+                showToast('Error ❌', 'Could not log history: ' + error.message);
+                return;
+            }
+            
+            showToast('Logged ✅', `History for ${monthName} ${year} saved.`);
+            openTenantHistory(); // Refresh view
+        }
+
+        function openChangeRoomGrid() {
+            if (!activeProfileTenant) return;
+            const hostelId = activeProfileTenant.hostel;
+            const hostelRooms = rooms[hostelId] || [];
+            
+            document.getElementById('cr-title').textContent = `Change Room — ${getDisplayName(activeProfileTenant.tenant)}`;
+            
+            const container = document.getElementById('cr-live-grid');
+            if (!container) return;
+            
+            if (hostelRooms.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--ink3);">No rooms found.</div>';
+                return;
+            }
+            
+            container.innerHTML = hostelRooms.map(rm => {
+                return `
+                <div class="floor-block" style="margin-bottom: 24px; text-align: left;">
+                    <div class="floor-label" style="font-size: 11px; font-weight: 700; color: var(--ink3); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 4px;">
+                        ${rm.floor === 0 ? 'Ground Floor' : rm.floor + (rm.floor === 1 ? 'st' : (rm.floor === 2 ? 'nd' : 'th')) + ' Floor'}
+                    </div>
+                    <div class="room-grid" style="display: flex; flex-wrap: wrap; gap: 12px;">
+                        <div class="room-card" style="background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 12px; flex: 1; min-width: 180px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <div style="font-weight: 700; font-size: 13px;">Room ${rm.num}</div>
+                                <div style="font-size:10px; padding:2px 6px; background:var(--bg); border-radius:10px; color:var(--ink3); font-weight:600;">${rm.type}</div>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                ${rm.beds.map((b, idx) => {
+                                    const isCurrent = b.tenant === activeProfileTenant.tenant;
+                                    const isOccupied = !!b.tenant && !isCurrent;
+                                    
+                                    let style = 'border: 1.5px dashed var(--accent); color: var(--accent);';
+                                    let clickAction = `selectBedForChangeRoom('${rm.num}', ${idx})`;
+                                    let labelText = idx + 1;
+                                    
+                                    if (isCurrent) {
+                                        style = 'background: var(--accent); color: white; border: 1.5px solid var(--accent);';
+                                        clickAction = 'showToast("Current Bed", "This is already their current bed.")';
+                                    } else if (isOccupied) {
+                                        style = 'background: var(--green); color: white; cursor: not-allowed;';
+                                        clickAction = '';
+                                    }
+                                    
+                                    return `
+                                    <div class="bed-box" 
+                                         onclick="${clickAction}"
+                                         style="width: 32px; height: 32px; border-radius: 6px; cursor: ${isOccupied ? 'not-allowed' : 'pointer'}; 
+                                                display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700;
+                                                transition: all 0.2s;
+                                                ${style}">
+                                        ${labelText}
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+            
+            openModal('change-room-modal');
+        }
+
+        async function selectBedForChangeRoom(newRoomNum, newBedIdx) {
+            if (!activeProfileTenant) return;
+            
+            const name = getDisplayName(activeProfileTenant.tenant);
+            if (!confirm(`Are you sure you want to transfer ${name} to Room ${newRoomNum} (Bed ${newBedIdx + 1})?`)) return;
+            
+            showToast('Transferring...', 'Updating tenant room mapping');
+            
+            try {
+                const hostelId = activeProfileTenant.hostel;
+                
+                const newRoom = rooms[hostelId].find(r => r.num === newRoomNum);
+                if (!newRoom) throw new Error('New room not found.');
+                
+                const newBedId = newRoom.beds[newBedIdx]?._id || newRoom.beds[newBedIdx]?.id;
+                if (!newBedId) throw new Error('New bed ID not found.');
+                
+                const oldRoomNum = activeProfileTenant.num;
+                const oldRoom = rooms[hostelId].find(r => r.num === oldRoomNum);
+                if (!oldRoom) throw new Error('Old room not found.');
+                
+                const oldBed = oldRoom.beds.find(b => b.tenant === activeProfileTenant.tenant);
+                if (!oldBed) throw new Error('Old bed not found.');
+                
+                const oldBedId = oldBed._id || oldBed.id;
+                
+                const { error: newBedError } = await db.from('beds')
+                    .update({
+                        tenant_name: activeProfileTenant.tenant,
+                        tenant_email: activeProfileTenant.tenant_email,
+                        tenant_phone: activeProfileTenant.tenant_phone,
+                        tenant_password: activeProfileTenant.tenant_password || 'Vustela#123',
+                        rent: activeProfileTenant.rent,
+                        rent_status: activeProfileTenant.rentStatus
+                    })
+                    .eq('id', newBedId);
+                    
+                if (newBedError) throw newBedError;
+                
+                const { error: oldBedError } = await db.from('beds')
+                    .update({
+                        tenant_name: null,
+                        tenant_email: null,
+                        tenant_phone: null,
+                        tenant_password: null,
+                        rent_status: null
+                    })
+                    .eq('id', oldBedId);
+                    
+                if (oldBedError) throw oldBedError;
+                
+                const localNewBed = newRoom.beds[newBedIdx];
+                localNewBed.tenant = activeProfileTenant.tenant;
+                localNewBed.tenant_email = activeProfileTenant.tenant_email;
+                localNewBed.tenant_phone = activeProfileTenant.tenant_phone;
+                localNewBed.tenant_password = activeProfileTenant.tenant_password;
+                localNewBed.rent = activeProfileTenant.rent;
+                localNewBed.rentStatus = activeProfileTenant.rentStatus;
+                
+                oldBed.tenant = '';
+                oldBed.tenant_email = null;
+                oldBed.tenant_phone = null;
+                oldBed.tenant_password = null;
+                oldBed.rentStatus = null;
+                
+                activeProfileTenant.num = newRoomNum;
+                document.getElementById('tp-room').textContent = newRoomNum;
+                
+                closeModal('change-room-modal');
+                
+                renderOwnerAllTenants();
+                if (typeof renderRentTracker === 'function') renderRentTracker();
+                if (typeof updateDashboardStats === 'function') updateDashboardStats();
+                
+                showToast('Transferred ✅', 'Tenant room changed successfully.');
+            } catch (err) {
+                console.error('Transfer failed:', err);
+            }
+        }
+        async function resetTenantPwdFromProfile() {
+            if (!activeProfileTenant) return;
+            const tenant = activeProfileTenant;
+            const name = getDisplayName(tenant.tenant);
+            const email = tenant.tenant_email;
+            
+            if (!confirm(`Are you sure you want to reset the password for ${name}?`)) return;
+
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let newPwd = 'Vustela#';
+            for (let i = 0; i < 4; i++) newPwd += chars[Math.floor(Math.random() * chars.length)];
+
+            showToast('Resetting...', `Updating password for ${name}...`);
+
+            try {
+                const { error } = await db.from('beds').update({ tenant_password: newPwd }).eq('tenant_email', email);
+                if (error) throw error;
+
+                // Sync locally
+                tenant.tenant_password = newPwd;
+                
+                showToast('Password Reset ✅', `New password: ${newPwd}`);
+            } catch (err) {
+                console.error('Password reset failed:', err);
+                showToast('Error', 'Failed to reset password: ' + err.message);
+            }
+        }
+
+        async function removeTenantFromProfile() {
+            if (!activeProfileTenant) return;
+            const tenant = activeProfileTenant;
+            const bedId = tenant._id || tenant.id;
+            const name = getDisplayName(tenant.tenant);
+            const roomNum = tenant.num;
+            const hostelId = tenant.hostel;
+            
+            if (!confirm(`Are you sure you want to REMOVE ${name} from the hostel roster? This will clear their bed.`)) return;
+
+            showToast('Removing...', `Clearing data for ${name}...`);
+
+            try {
+                // First archive tenant details
+                await archiveTenant(tenant, roomNum, hostelId);
+                
+                // Clear from beds table
+                const { error } = await db.from('beds').update({
+                    tenant_name: null,
+                    tenant_email: null,
+                    tenant_password: null,
+                    tenant_phone: null,
+                    rent_status: null,
+                    father_phone: null,
+                    father_email: null,
+                    date_of_joining: null,
+                    advance_deposit: null,
+                    payment_style: null,
+                    id_proof_type: null,
+                    photo_url: null
+                }).eq('id', bedId);
+
+                if (error) throw error;
+
+                // Locate the bed in local array and reset it
+                const r = rooms[hostelId].find(rm => rm.num === roomNum);
+                if (r) {
+                    const bedIndex = r.beds.findIndex(b => b._id === bedId || b.id === bedId);
+                    if (bedIndex !== -1) {
+                        const defaultRent = r.beds[0]?.rent || 5500;
+                        r.beds[bedIndex] = { tenant: '', rent: defaultRent, rentStatus: null };
+                    }
+                }
+
+                closeModal('tenant-profile-modal');
+                
+                // Refresh all views
+                renderOwnerAllTenants();
+                if (typeof renderRentTracker === 'function') renderRentTracker();
+                if (typeof updateDashboardStats === 'function') updateDashboardStats();
+                if (typeof renderMgrTenants === 'function') renderMgrTenants();
+                if (typeof renderManagerOccupancy === 'function') renderManagerOccupancy();
+
+                showToast('Removed ✅', `${name} has been removed.`);
+            } catch (err) {
+                console.error(err);
+                showToast('Error', 'Failed to remove tenant: ' + err.message);
+            }
+        }
+
+        function generateDepositRefundReceipt(name, roomNum, amount, hostelId) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 400;
+            canvas.height = 500;
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 400, 500);
+            
+            // Border
+            ctx.strokeStyle = '#C84B31';
+            ctx.lineWidth = 10;
+            ctx.strokeRect(5, 5, 390, 490);
+            
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(15, 15, 370, 470);
+            
+            // Header
+            ctx.fillStyle = '#C84B31';
+            ctx.font = 'bold 20px Helvetica';
+            ctx.textAlign = 'center';
+            ctx.fillText('VUSTELA PG HOSTELS', 200, 55);
+            
+            ctx.fillStyle = '#555555';
+            ctx.font = '9px Helvetica';
+            ctx.fillText('OFFICIAL DEPOSIT REFUND RECEIPT', 200, 75);
+            
+            // Divider Line
+            ctx.strokeStyle = '#C84B31';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(30, 95);
+            ctx.lineTo(370, 95);
+            ctx.stroke();
+            
+            // Date & Receipt Info
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#333333';
+            ctx.font = 'bold 10px Helvetica';
+            ctx.fillText('Date:', 40, 130);
+            ctx.font = '10px Helvetica';
+            ctx.fillText(new Date().toLocaleDateString('en-IN'), 90, 130);
+            
+            ctx.font = 'bold 10px Helvetica';
+            ctx.fillText('Receipt No:', 230, 130);
+            ctx.font = '10px Helvetica';
+            ctx.fillText('REF-' + Math.floor(Math.random() * 90000 + 10000), 300, 130);
+            
+            // Tenant Details Section
+            ctx.fillStyle = '#f9f9f9';
+            ctx.fillRect(30, 155, 340, 140);
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.strokeRect(30, 155, 340, 140);
+            
+            ctx.fillStyle = '#333333';
+            ctx.font = 'bold 11px Helvetica';
+            ctx.fillText('REFUNDED TO:', 40, 180);
+            
+            ctx.font = '11px Helvetica';
+            ctx.fillText('Name: ' + name, 40, 205);
+            ctx.fillText('Room: Room ' + roomNum, 40, 225);
+            const hostelName = hostels[hostelId] ? hostels[hostelId].name : 'Branch ' + hostelId;
+            ctx.fillText('Hostel: ' + hostelName, 40, 245);
+            ctx.fillText('Purpose: Advance Deposit Refund', 40, 275);
+            
+            // Refund Amount
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#ffebee';
+            ctx.fillRect(30, 320, 340, 50);
+            ctx.strokeStyle = '#ef9a9a';
+            ctx.strokeRect(30, 320, 340, 50);
+            
+            ctx.fillStyle = '#c62828';
+            ctx.font = 'bold 16px Helvetica';
+            ctx.fillText('REFUNDED AMOUNT: Rs. ' + Number(amount).toLocaleString(), 200, 352);
+            
+            // Signatures
+            ctx.fillStyle = '#777777';
+            ctx.font = '9px Helvetica';
+            ctx.fillText('Authorized Signature', 100, 445);
+            ctx.fillText('Tenant Acknowledgment', 300, 445);
+            
+            ctx.strokeStyle = '#cccccc';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(50, 430);
+            ctx.lineTo(150, 430);
+            ctx.moveTo(250, 430);
+            ctx.lineTo(350, 430);
+            ctx.stroke();
+            
+            // Stamp
+            ctx.strokeStyle = 'rgba(200, 75, 49, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(260, 390, 80, 25);
+            ctx.fillStyle = 'rgba(200, 75, 49, 0.6)';
+            ctx.font = 'bold 9px Helvetica';
+            ctx.fillText('PAID REFUND', 300, 407);
+            
+            return canvas.toDataURL('image/jpeg', 0.8);
         }
 
         function generateCheckoutReceipt() {
@@ -7203,6 +8209,442 @@
             
             doc.save(`VUSTELA_Checkout_Receipt_${getDisplayName(tenant.tenant).replace(/\s+/g, '_')}.pdf`);
             showToast('Receipt Downloaded ✅', 'Tenant checkout receipt PDF generated.');
+        }
+
+        // ============================================================
+        // OLD STUDENT DATA ARCHIVING & LISTING LOGIC
+        // ============================================================
+        async function archiveTenant(bed, roomNum, hostelId) {
+            try {
+                if (!bed || !bed.tenant) return;
+                
+                const leftDate = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                
+                const archiveRecord = {
+                    tenant_name: bed.tenant,
+                    tenant_email: bed.tenant_email || '',
+                    tenant_phone: bed.tenant_phone || '',
+                    father_phone: bed.father_phone || '',
+                    father_email: bed.father_email || '',
+                    date_of_joining: bed.date_of_joining || '',
+                    advance_deposit: bed.advance_deposit || 0,
+                    payment_style: bed.payment_style || '',
+                    id_proof_type: bed.id_proof_type || '',
+                    photo_url: bed.photo_url || '',
+                    room_num: String(roomNum),
+                    hostel_id: hostelId,
+                    left_date: leftDate,
+                    deposit_status: bed.deposit_status || 'Paid'
+                };
+                
+                const { error } = await db.from('archived_tenants').insert(archiveRecord);
+                if (error) {
+                    console.error('Failed to archive tenant to Supabase:', error);
+                }
+            } catch (e) {
+                console.error('Error during tenant archiving:', e);
+            }
+        }
+
+        let archivedTenants = [];
+
+        async function openOldStudentDataModal() {
+            const tbody = document.getElementById('old-students-table-body');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--ink3);">Loading archived records...</td></tr>';
+            
+            openModal('old-student-modal');
+            
+            try {
+                const { data, error } = await db
+                    .from('archived_tenants')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                archivedTenants = data || [];
+                renderOldStudentsList(archivedTenants);
+            } catch (err) {
+                console.error('Error fetching old student data:', err);
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--red);">Failed to load: ${err.message}</td></tr>`;
+            }
+        }
+
+        function renderOldStudentsList(list) {
+            const tbody = document.getElementById('old-students-table-body');
+            if (!tbody) return;
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--ink3);">No old student records found.</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = list.map(t => {
+                const name = getDisplayName(t.tenant_name || 'Unnamed');
+                const inits = name.split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase();
+                
+                let avatarHTML = `<div class="ava" style="width:32px; height:32px; font-size:11px; margin-right:8px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-weight:700;">${inits}</div>`;
+                if (t.photo_url) {
+                    avatarHTML = `<img src="${t.photo_url}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; margin-right:8px; border:1px solid var(--border);">`;
+                }
+                
+                const hostelName = hostels[t.hostel_id] ? hostels[t.hostel_id].name : `Hostel ${t.hostel_id}`;
+                
+                return `
+                <tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:12px 14px; font-weight:600; color:var(--ink);">
+                        <div style="display:flex; align-items:center;">
+                            ${avatarHTML}
+                            <span>${name}</span>
+                        </div>
+                    </td>
+                    <td style="padding:12px 14px;">${hostelName} / Room ${t.room_num}</td>
+                    <td style="padding:12px 14px;">${t.date_of_joining || 'Not Set'}</td>
+                    <td style="padding:12px 14px; color:var(--ink3);">${t.left_date || 'Not Set'}</td>
+                    <td style="padding:12px 14px; font-family:var(--font-mono);">${t.tenant_phone || 'N/A'}</td>
+                    <td style="padding:12px 14px; text-align:center;">
+                        <button class="btn btn-outline btn-sm" style="padding:4px 8px; font-size:11px; min-height:24px;" onclick="viewOldStudentDetails(${t.id})">🔍 View</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function filterOldStudents() {
+            const query = document.getElementById('os-search').value.toLowerCase().trim();
+            if (!query) {
+                renderOldStudentsList(archivedTenants);
+                return;
+            }
+            const filtered = archivedTenants.filter(t => {
+                return (t.tenant_name && t.tenant_name.toLowerCase().includes(query)) ||
+                       (t.tenant_email && t.tenant_email.toLowerCase().includes(query)) ||
+                       (t.tenant_phone && t.tenant_phone.includes(query)) ||
+                       (t.room_num && t.room_num.includes(query));
+            });
+            renderOldStudentsList(filtered);
+        }
+
+        function viewOldStudentDetails(id) {
+            const tenant = archivedTenants.find(t => t.id === id);
+            if (!tenant) return;
+            
+            const name = getDisplayName(tenant.tenant_name);
+            const inits = name.split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase();
+            
+            let photoHTML = `<div style="width:80px; height:80px; margin:0 auto 12px auto; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:700; border:3px solid var(--border);">${inits}</div>`;
+            if (tenant.photo_url) {
+                photoHTML = `<div style="width:80px; height:80px; margin:0 auto 12px auto; border-radius:50%; overflow:hidden; border:3px solid var(--border);"><img src="${tenant.photo_url}" style="width:100%; height:100%; object-fit:cover;"></div>`;
+            }
+            
+            const depVal = tenant.advance_deposit || 0;
+            const depStr = depVal ? `Rs. ${Number(depVal).toLocaleString()}` : 'Not Provided';
+            const hostelName = hostels[tenant.hostel_id] ? hostels[tenant.hostel_id].name : `Hostel ${tenant.hostel_id}`;
+            
+            const contentEl = document.getElementById('old-student-detail-content');
+            contentEl.innerHTML = `
+                <div style="text-align:center; margin-bottom:20px;">
+                    ${photoHTML}
+                    <h3 style="margin:0; font-size:20px; font-weight:700; color:var(--ink);">${name}</h3>
+                    <div style="font-size:12px; color:var(--ink3); text-transform:uppercase; font-weight:700; margin-top:4px;">Archived Student</div>
+                </div>
+                <div style="border:1px solid var(--border); border-radius:8px; overflow:hidden; background:var(--bg1);">
+                    <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
+                        <tbody>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:10px 12px; font-weight:700; color:var(--ink3); width:40%; background:var(--bg2);">Hostel Branch</td>
+                                <td style="padding:10px 12px; font-weight:600; color:var(--ink);">${hostelName}</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:10px 12px; font-weight:700; color:var(--ink3); background:var(--bg2);">Room Number</td>
+                                <td style="padding:10px 12px; font-weight:600; color:var(--ink);">Room ${tenant.room_num}</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:10px 12px; font-weight:700; color:var(--ink3); background:var(--bg2);">Phone Number</td>
+                                <td style="padding:10px 12px; font-weight:600; color:var(--ink);">${tenant.tenant_phone || 'Not Provided'}</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:10px 12px; font-weight:700; color:var(--ink3); background:var(--bg2);">Parent Phone</td>
+                                <td style="padding:10px 12px; font-weight:600; color:var(--ink);">${tenant.father_phone || 'Not Provided'}</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:10px 12px; font-weight:700; color:var(--ink3); background:var(--bg2);">Father Email</td>
+                                <td style="padding:10px 12px; font-weight:600; color:var(--ink);">${tenant.father_email || 'Not Provided'}</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:10px 12px; font-weight:700; color:var(--ink3); background:var(--bg2);">Email Address</td>
+                                <td style="padding:10px 12px; font-weight:600; color:var(--ink);">${tenant.tenant_email || 'Not Provided'}</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:10px 12px; font-weight:700; color:var(--ink3); background:var(--bg2);">Joined Date</td>
+                                <td style="padding:10px 12px; font-weight:600; color:var(--ink);">${tenant.date_of_joining || 'Not Provided'}</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:10px 12px; font-weight:700; color:var(--ink3); background:var(--bg2);">Left Date</td>
+                                <td style="padding:10px 12px; font-weight:600; color:var(--ink);">${tenant.left_date || 'Not Provided'}</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:10px 12px; font-weight:700; color:var(--ink3); background:var(--bg2);">Advance Deposit</td>
+                                <td style="padding:10px 12px; font-weight:600; color:var(--ink);">${depStr}</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:10px 12px; font-weight:700; color:var(--ink3); background:var(--bg2);">Deposit Status</td>
+                                <td style="padding:10px 12px; font-weight:600; color:var(--ink);">${tenant.deposit_status || 'Paid'}</td>
+                            </tr>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:10px 12px; font-weight:700; color:var(--ink3); background:var(--bg2);">Payment Style</td>
+                                <td style="padding:10px 12px; font-weight:600; color:var(--ink); text-transform:capitalize;">${tenant.payment_style || 'Not Provided'}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px 12px; font-weight:700; color:var(--ink3); background:var(--bg2);">ID Proof Type</td>
+                                <td style="padding:10px 12px; font-weight:600; color:var(--ink);">${tenant.id_proof_type || 'Not Provided'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            openModal('old-student-detail-modal');
+        }
+
+        async function submitNoticePeriodRequest() {
+            if (!currentTenant) return;
+            
+            if (currentTenant.notice_status === 'pending') {
+                showToast('Info', 'Your notice period request is already pending approval.');
+                return;
+            }
+            if (currentTenant.notice_status === 'accepted') {
+                showToast('Info', 'Your notice period request has already been accepted.');
+                return;
+            }
+            
+            if (!confirm("Are you sure you want to submit a Notice Period request? This will inform the manager and owner that this is your last month in the hostel.")) {
+                return;
+            }
+            
+            showToast('Submitting...', 'Sending notice period request');
+            
+            try {
+                const bedId = currentTenant._id || currentTenant.id;
+                if (!bedId) throw new Error('Tenant bed ID not found.');
+                
+                const { error } = await db.from('beds').update({ notice_status: 'pending' }).eq('id', bedId);
+                if (error) throw error;
+                
+                currentTenant.notice_status = 'pending';
+                
+                [1, 2, 3].forEach(hid => {
+                    rooms[hid].forEach(r => {
+                        const b = r.beds.find(bed => bed.tenant_email === currentTenant.tenant_email);
+                        if (b) b.notice_status = 'pending';
+                    });
+                });
+                
+                const managerEmail = managers.find(m => m.hostel_id === currentHostel)?.email || 'sampathreddyvustela4@gmail.com';
+                const ownerEmail = 'sampathreddyvustela4@gmail.com';
+                
+                const mailData = {
+                    subject: `⏰ NOTICE PERIOD REQUEST: ${getDisplayName(currentTenant.tenant_name || currentTenant.tenant)}`,
+                    html: `
+                        <div style="font-family: sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px; max-width: 600px;">
+                            <h2 style="color: #ff9800;">⏰ Notice Period Request</h2>
+                            <p>Hi,</p>
+                            <p>Tenant <strong>${getDisplayName(currentTenant.tenant_name || currentTenant.tenant)}</strong> from <strong>Room ${currentTenant.rooms?.num || 'N/A'}</strong> has submitted a notice period request.</p>
+                            <p>This indicates that this is their <strong>last month</strong> in the hostel.</p>
+                            <div style="background: #fff3e0; border-left: 4px solid #ff9800; padding: 12px; border-radius: 4px; margin: 16px 0;">
+                                <strong>Student Details:</strong><br>
+                                👤 Name: ${getDisplayName(currentTenant.tenant_name || currentTenant.tenant)}<br>
+                                📧 Email: ${currentTenant.tenant_email}<br>
+                                📞 Phone: ${currentTenant.tenant_phone || 'N/A'}<br>
+                                🚪 Room: Room ${currentTenant.rooms?.num || 'N/A'}<br>
+                                📅 Request Date: ${new Date().toLocaleDateString('en-IN')}
+                            </div>
+                            <p>Please login to your portal to review and accept this request.</p>
+                        </div>
+                    `
+                };
+                
+                fetch(API_BASE_URL + '/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ to: managerEmail, ...mailData })
+                });
+                
+                fetch(API_BASE_URL + '/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ to: ownerEmail, ...mailData })
+                });
+
+                showToast('Success ✅', 'Notice period request submitted successfully.');
+                renderTenantPortal();
+            } catch (err) {
+                console.error(err);
+                showToast('Error', 'Failed to submit request: ' + err.message);
+            }
+        }
+
+        async function renderNoticeRequests(role) {
+            const allNoticeBeds = [];
+            [1, 2, 3].forEach(hid => {
+                if (rooms[hid]) {
+                    rooms[hid].forEach(r => {
+                        r.beds.forEach((b, idx) => {
+                            if (b.notice_status) {
+                                allNoticeBeds.push({ ...b, num: r.num, hostel: hid, bedIdx: idx });
+                            }
+                        });
+                    });
+                }
+            });
+
+            const displayBeds = role === 'manager' 
+                ? allNoticeBeds.filter(b => b.hostel === currentHostel)
+                : allNoticeBeds;
+
+            const pendingCount = displayBeds.filter(b => b.notice_status === 'pending').length;
+            const badgeId = role === 'manager' ? 'mgr-notice-badge' : 'owner-notice-badge';
+            const badgeEl = document.getElementById(badgeId);
+            if (badgeEl) {
+                if (pendingCount > 0) {
+                    badgeEl.textContent = pendingCount;
+                    badgeEl.style.display = 'inline-block';
+                } else {
+                    badgeEl.style.display = 'none';
+                }
+            }
+
+            const tableId = role === 'manager' ? 'mgr-notice-requests-table' : 'owner-notice-requests-table';
+            const noMsgId = role === 'manager' ? 'mgr-no-notice-msg' : 'owner-no-notice-msg';
+            
+            const tableBody = document.getElementById(tableId);
+            const noMsgEl = document.getElementById(noMsgId);
+            if (!tableBody) return;
+
+            if (displayBeds.length === 0) {
+                tableBody.innerHTML = '';
+                tableBody.closest('table').style.display = 'none';
+                if (noMsgEl) noMsgEl.style.display = 'block';
+                return;
+            }
+
+            tableBody.closest('table').style.display = 'table';
+            if (noMsgEl) noMsgEl.style.display = 'none';
+
+            tableBody.innerHTML = displayBeds.map(b => {
+                const name = getDisplayName(b.tenant);
+                const inits = name.split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase();
+                
+                let avatarHTML = `<div class="ava" style="width:30px; height:30px; font-size:10px; margin-right:8px; border-radius:50%; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; font-weight:700;">${inits}</div>`;
+                if (b.photo_url) {
+                    avatarHTML = `<img src="${b.photo_url}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; margin-right:8px; border:1px solid var(--border);">`;
+                }
+
+                const hostelName = hostels[b.hostel] ? hostels[b.hostel].name : `Hostel ${b.hostel}`;
+                const locationCell = role === 'manager' 
+                    ? `Room ${b.num}`
+                    : `${hostelName} / Room ${b.num}`;
+
+                const statusHTML = b.notice_status === 'pending'
+                    ? `<span class="badge badge-yellow">Pending Manager</span>`
+                    : `<span class="badge badge-green" style="background:#e6f4ea; color:#137333; border: 1px solid #137333;">Notice Accepted (Orange Room)</span>`;
+
+                const actionHTML = b.notice_status === 'pending'
+                    ? `<div class="flex gap8">
+                         <button class="btn btn-primary btn-sm" style="background:var(--accent); min-height:28px; padding:2px 10px;" onclick="acceptNoticeRequest('${b._id || b.id}', '${name}', '${b.tenant_email}', '${b.num}', ${b.hostel})">Accept</button>
+                         <button class="btn btn-outline btn-sm" style="min-height:28px; padding:2px 10px;" onclick="rejectNoticeRequest('${b._id || b.id}', '${b.hostel}')">Reject</button>
+                       </div>`
+                    : `<button class="btn btn-outline btn-sm" style="min-height:28px; padding:2px 10px;" onclick="rejectNoticeRequest('${b._id || b.id}', '${b.hostel}')">Cancel Notice</button>`;
+
+                return `
+                <tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:10px 12px; font-weight:600; color:var(--ink);">
+                        <div style="display:flex; align-items:center;">
+                            ${avatarHTML}
+                            <span>${name}</span>
+                        </div>
+                    </td>
+                    <td style="padding:10px 12px;">${locationCell}</td>
+                    <td style="padding:10px 12px; color:var(--ink2);">${b.tenant_email || 'N/A'}</td>
+                    <td style="padding:10px 12px; font-family:var(--font-mono);">${b.tenant_phone || 'N/A'}</td>
+                    <td style="padding:10px 12px;">${statusHTML}</td>
+                    <td style="padding:10px 12px;">${actionHTML}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function acceptNoticeRequest(bedId, name, email, roomNum, hostelId) {
+            if (!confirm(`Are you sure you want to ACCEPT notice period for ${name} (Room ${roomNum})? This will change the room grid color to orange.`)) return;
+
+            showToast('Processing...', 'Accepting notice request...');
+
+            try {
+                const { error } = await db.from('beds').update({ notice_status: 'accepted' }).eq('id', bedId);
+                if (error) throw error;
+
+                const r = rooms[hostelId].find(rm => rm.num === roomNum);
+                if (r) {
+                    const b = r.beds.find(bed => bed._id == bedId || bed.id == bedId);
+                    if (b) b.notice_status = 'accepted';
+                }
+
+                const hostelName = hostels[hostelId]?.name || `Hostel ${hostelId}`;
+                fetch(API_BASE_URL + '/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: email,
+                        subject: `Notice Period Request Accepted — ${hostelName}`,
+                        html: `
+                            <div style="font-family: sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px; max-width: 600px;">
+                                <h2 style="color: #ff9800;">Notice Request Accepted</h2>
+                                <p>Hi ${name},</p>
+                                <p>Your notice period request for <strong>Room ${roomNum}</strong> at <strong>${hostelName}</strong> has been accepted by the hostel manager.</p>
+                                <p>This marks your final month at the hostel. Please ensure all your clearances are handled before leaving.</p>
+                                <p>Thank you for staying with us!</p>
+                            </div>
+                        `
+                    })
+                });
+
+                await loadData([hostelId]);
+                renderNoticeRequests(currentRole);
+                renderManagerOccupancy();
+                renderOwnerOccupancy();
+                
+                showToast('Accepted ✅', 'Notice period is now active.');
+            } catch (err) {
+                console.error(err);
+                showToast('Error', 'Failed to accept notice request.');
+            }
+        }
+
+        async function rejectNoticeRequest(bedId, hostelId) {
+            if (!confirm("Are you sure you want to cancel/reject this notice period request?")) return;
+
+            showToast('Processing...', 'Rejecting notice request...');
+
+            try {
+                const { error } = await db.from('beds').update({ notice_status: null }).eq('id', bedId);
+                if (error) throw error;
+
+                [1, 2, 3].forEach(hid => {
+                    if (rooms[hid]) {
+                        rooms[hid].forEach(r => {
+                            const b = r.beds.find(bed => bed._id == bedId || bed.id == bedId);
+                            if (b) b.notice_status = null;
+                        });
+                    }
+                });
+
+                await loadData([hostelId]);
+                renderNoticeRequests(currentRole);
+                renderManagerOccupancy();
+                renderOwnerOccupancy();
+                
+                showToast('Cancelled ✅', 'Notice request cancelled.');
+            } catch (err) {
+                console.error(err);
+                showToast('Error', 'Failed to cancel notice request.');
+            }
         }
 
         function renderManagersTable() {
@@ -7493,21 +8935,103 @@
             showToast('Payment Successful! 💳', '₹5,500 paid for June 2025. Receipt sent to your email.');
         }
 
-        async function addTenant() {
-            const name = document.getElementById('at-name').value.trim() || 'New Tenant';
-            const email = document.getElementById('at-email').value.trim().toLowerCase();
-            const phoneRaw = document.getElementById('at-phone').value;
-            const phone = phoneRaw.replace(/\D/g, '');
-            const roomNum = document.getElementById('at-room').value;
-            const rent = parseInt(document.getElementById('at-rent').value) || 5500;
+        function showPayStyleHint() {
+            const style = document.getElementById('at-pay-style').value;
+            const hint  = document.getElementById('at-pay-hint');
+            const hintText = document.getElementById('at-pay-hint-text');
+            if (style === 'daily') {
+                hint.style.display = 'block';
+                hintText.textContent = 'Tenant will be reminded automatically after every 1 day.';
+            } else if (style === 'monthly') {
+                hint.style.display = 'block';
+                hintText.textContent = 'Tenant will be reminded automatically after every 1 month.';
+            } else if (style === 'yearly') {
+                hint.style.display = 'block';
+                hintText.textContent = 'Tenant will be reminded automatically after every 1 year.';
+            } else {
+                hint.style.display = 'none';
+            }
+        }
 
+        function previewTenantPhoto(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const preview = document.getElementById('at-photo-preview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    document.getElementById('at-photo-placeholder').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function getResizedPassportPhotoBase64(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = new Image();
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Set standard passport photo size
+                        canvas.width = 150;
+                        canvas.height = 180;
+                        ctx.drawImage(img, 0, 0, 150, 180);
+                        
+                        // Get compressed base64 jpeg
+                        resolve(canvas.toDataURL('image/jpeg', 0.85));
+                    };
+                    img.onerror = () => resolve(null);
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => resolve(null);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function addTenant() {
+            const name    = document.getElementById('at-name').value.trim();
+            const email   = document.getElementById('at-email').value.trim().toLowerCase();
+            const phoneRaw = document.getElementById('at-phone').value;
+            const phone   = phoneRaw.replace(/\D/g, '');
+            const fatherPhone = document.getElementById('at-father-phone').value.replace(/\D/g, '');
+            const fatherEmail = document.getElementById('at-father-email').value.trim().toLowerCase();
+            const doj     = document.getElementById('at-doj').value;
+            const roomNum = document.getElementById('at-room').value;
+            const rent    = parseInt(document.getElementById('at-rent').value) || 5500;
+            const deposit = parseInt(document.getElementById('at-deposit').value) || 0;
+            const payStyle  = document.getElementById('at-pay-style').value;
+            const idType    = document.getElementById('at-id-type').value;
+
+            const depStatus = document.getElementById('at-deposit-status').value || 'Paid';
+
+            if (!name) { showToast('Error', 'Please enter the student full name.'); return; }
             if (!email || !email.endsWith('@gmail.com')) {
-                showToast('Error', 'Tenant Email must be a valid @gmail.com address.');
+                showToast('Error', 'Student Gmail must be a valid @gmail.com address.');
                 return;
             }
             if (phone.length !== 10) {
-                showToast('Error', 'Please enter a valid 10-digit phone number.');
+                showToast('Error', 'Please enter a valid 10-digit student phone number.');
                 return;
+            }
+            if (fatherPhone.length !== 10) {
+                showToast('Error', 'Please enter a valid 10-digit father phone number.');
+                return;
+            }
+            if (!doj) { showToast('Error', 'Please select the date of joining.'); return; }
+            if (!payStyle) { showToast('Error', 'Please select a payment style.'); return; }
+
+            // --- Read and resize passport photo synchronously ---
+            const photoFile = document.getElementById('at-photo').files[0];
+            let photoUrl = '';
+            if (photoFile) {
+                showToast('Processing...', 'Processing passport photo');
+                photoUrl = await getResizedPassportPhotoBase64(photoFile);
+                if (photoUrl) {
+                    localStorage.setItem('tenant_photo_' + email, photoUrl);
+                }
             }
 
             const r = rooms[currentHostel].find(rm => rm.num === roomNum);
@@ -7521,14 +9045,41 @@
 
                     emptyBed.tenant = name;
                     emptyBed.tenant_email = email;
+                    emptyBed.tenant_phone = phone;
                     emptyBed.tenant_password = genPwd;
                     emptyBed.rent = rent;
                     emptyBed.rentStatus = 'pending';
+                    emptyBed.father_phone = fatherPhone;
+                    emptyBed.father_email = fatherEmail;
+                    emptyBed.date_of_joining = doj;
+                    emptyBed.advance_deposit = deposit;
+                    emptyBed.payment_style = payStyle;
+                    emptyBed.id_proof_type = idType;
+                    emptyBed.photo_url = photoUrl;
+                    emptyBed.deposit_status = depStatus;
+
+                    const dbPayload = {
+                        tenant_name: name,
+                        tenant_email: email,
+                        tenant_password: genPwd,
+                        tenant_phone: phone,
+                        rent: rent,
+                        rent_status: 'pending',
+                        father_phone: fatherPhone,
+                        father_email: fatherEmail,
+                        date_of_joining: doj,
+                        advance_deposit: deposit,
+                        payment_style: payStyle,
+                        id_proof_type: idType,
+                        photo_url: photoUrl,
+                        deposit_status: depStatus
+                    };
+
                     try {
                         if (emptyBed._id) {
-                            await db.from('beds').update({ tenant_name: name, tenant_email: email, tenant_password: genPwd, tenant_phone: phone, rent, rent_status: 'pending' }).eq('id', emptyBed._id);
+                            await db.from('beds').update(dbPayload).eq('id', emptyBed._id);
                         } else {
-                            const { data } = await db.from('beds').insert({ room_id: r._roomId, tenant_name: name, tenant_email: email, tenant_password: genPwd, tenant_phone: phone, rent, rent_status: 'pending' }).select().single();
+                            const { data } = await db.from('beds').insert({ room_id: r._roomId, ...dbPayload }).select().single();
                             if (data) emptyBed._id = data.id;
                         }
                     } catch (err) {
@@ -7537,8 +9088,19 @@
                 } else { showToast('Error', 'Room is fully occupied.'); return; }
             }
             closeModal('add-tenant-modal');
-            document.getElementById('at-name').value = '';
-            document.getElementById('at-email').value = '';
+            // Reset all form fields
+            ['at-name','at-email','at-phone','at-father-phone','at-father-email','at-doj','at-rent','at-deposit'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.value = '';
+            });
+            ['at-pay-style','at-id-type'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.selectedIndex = 0;
+            });
+            const payHint = document.getElementById('at-pay-hint');
+            if (payHint) payHint.style.display = 'none';
+            const photoPreview = document.getElementById('at-photo-preview');
+            if (photoPreview) { photoPreview.src = ''; photoPreview.style.display = 'none'; }
+            const photoPH = document.getElementById('at-photo-placeholder');
+            if (photoPH) photoPH.style.display = 'block';
             renderManagerOccupancy();
             renderMgrRentTable('all');
             renderMgrTenants();
