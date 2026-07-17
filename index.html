@@ -3836,6 +3836,51 @@
         </div>
     </div>
 
+    <!-- TENANT PROFILE MODAL -->
+    <div class="modal-overlay" id="tenant-profile-modal">
+        <div class="modal" style="max-width: 500px; width: 90vw;">
+            <div class="modal-header" style="position: relative; padding-right: 140px; display: flex; align-items: center; justify-content: space-between;">
+                <div class="modal-title">Tenant Profile</div>
+                <button class="btn btn-primary btn-sm" id="tp-checkout-btn" style="position: absolute; right: 40px; top: 12px;" onclick="generateCheckoutReceipt()">Checkout Receipt</button>
+                <button class="modal-close" onclick="closeModal('tenant-profile-modal')">×</button>
+            </div>
+            <div style="padding: 20px 0;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div id="tp-avatar" class="ava" style="width: 70px; height: 70px; font-size: 24px; margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center; background: var(--accent); color: white; border-radius: 50%; font-weight: 700;"></div>
+                    <h3 id="tp-name" style="margin: 0; font-size: 20px; font-weight: 700; color: var(--ink);"></h3>
+                    <span id="tp-hostel-badge" class="badge badge-blue" style="margin-top: 6px; display: inline-block;"></span>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; border-top: 1px solid var(--border); padding-top: 20px;">
+                    <div>
+                        <div style="font-size: 11px; color: var(--ink3); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Room Number</div>
+                        <div id="tp-room" style="font-weight: 600; color: var(--ink);"></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--ink3); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Rent Status</div>
+                        <div id="tp-rent-status"></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--ink3); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Phone Number</div>
+                        <div id="tp-phone" style="font-weight: 600; color: var(--ink);"></div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--ink3); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Parent Phone Number</div>
+                        <div id="tp-parent-phone" style="font-weight: 600; color: var(--ink);"></div>
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <div style="font-size: 11px; color: var(--ink3); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Email Address</div>
+                        <div id="tp-email" style="font-weight: 600; color: var(--ink);"></div>
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <div style="font-size: 11px; color: var(--ink3); text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Date of Joining</div>
+                        <div id="tp-joining-date" style="font-weight: 600; color: var(--ink);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- LOGIN MODAL -->
     <div class="modal-overlay" id="login-modal">
         <div class="modal">
@@ -6926,6 +6971,8 @@
             }
         }
 
+        let activeProfileTenant = null;
+
         function renderOwnerAllTenants() {
             let allBeds = [];
             [1, 2, 3].forEach(hid => {
@@ -6941,9 +6988,208 @@
       <td>Monthly</td>
       <td style="color:var(--ink3)">Mar 2025</td>
       <td>${rentBadge(b.rentStatus)}</td>
-      <td><button class="btn-sm btn-ghost" onclick="showToast('Profile','Viewing tenant profile.')">View</button></td>
+      <td><button class="btn-sm btn-ghost" onclick="viewTenantProfile('${escapeJS(b.tenant)}')">View</button></td>
     </tr>
   `).join('');
+        }
+
+        function viewTenantProfile(tenantName) {
+            let allBeds = [];
+            [1, 2, 3].forEach(hid => {
+                rooms[hid].forEach(r => {
+                    r.beds.forEach((b, idx) => { 
+                        if (b.tenant) allBeds.push({ ...b, num: r.num, hostel: hid }); 
+                    });
+                });
+            });
+            
+            const tenant = allBeds.find(b => b.tenant === tenantName);
+            if (!tenant) {
+                showToast('Error', 'Tenant data not found.');
+                return;
+            }
+            
+            activeProfileTenant = tenant;
+            
+            const name = getDisplayName(tenant.tenant);
+            const inits = name.split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase();
+            
+            document.getElementById('tp-name').textContent = name;
+            document.getElementById('tp-avatar').textContent = inits;
+            document.getElementById('tp-hostel-badge').textContent = hostels[tenant.hostel] ? hostels[tenant.hostel].name : `Hostel ${tenant.hostel}`;
+            document.getElementById('tp-room').textContent = tenant.num;
+            document.getElementById('tp-phone').textContent = tenant.tenant_phone || 'Not Provided';
+            
+            let parentPhone = "Not Provided";
+            if (tenant.tenant_phone && tenant.tenant_phone.length >= 10) {
+                parentPhone = tenant.tenant_phone.substring(0, tenant.tenant_phone.length - 2) + "88";
+            }
+            document.getElementById('tp-parent-phone').textContent = parentPhone;
+            
+            document.getElementById('tp-email').textContent = tenant.tenant_email || 'Not Provided';
+            document.getElementById('tp-joining-date').textContent = 'Mar 15, 2025';
+            
+            const statusEl = document.getElementById('tp-rent-status');
+            if (tenant.rentStatus === 'paid') {
+                statusEl.innerHTML = '<span class="badge badge-green" style="background:#e6f4ea; color:#137333; border: 1px solid #137333;">Paid</span>';
+            } else {
+                statusEl.innerHTML = '<span class="badge badge-yellow" style="background:#fef7e0; color:#b06000; border: 1px solid #b06000;">Pending</span>';
+            }
+            
+            openModal('tenant-profile-modal');
+        }
+
+        function generateCheckoutReceipt() {
+            if (!activeProfileTenant) return;
+            downloadCheckoutReceipt(activeProfileTenant);
+        }
+
+        function downloadCheckoutReceipt(tenant) {
+            const { jsPDF } = window.jspdf;
+            if (!jsPDF) {
+                showToast('Error', 'PDF library not loaded');
+                return;
+            }
+            const doc = new jsPDF();
+            
+            const colorText = '#1A1814';
+            const colorSubText = '#7A756E';
+            const colorGreen = '#2D7D5A';
+            const colorAccent = '#C84B31';
+            const colorBorder = '#E5E1DB';
+            
+            const hostelName = hostels[tenant.hostel] ? hostels[tenant.hostel].name : `Hostel ${tenant.hostel}`;
+            const securityDeposit = tenant.rent * 2;
+            const outstanding = tenant.rentStatus === 'paid' ? 0 : tenant.rent;
+            const refund = securityDeposit - outstanding;
+            
+            doc.setFillColor(26, 24, 20);
+            doc.rect(0, 0, 210, 30, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('Helvetica', 'bold');
+            doc.setFontSize(18);
+            doc.text('V U S T E L A', 20, 15);
+            doc.setFont('Helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(200, 200, 200);
+            doc.text('PREMIUM PG HOSTELS PORTAL', 20, 22);
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(9);
+            doc.text('CHECKOUT DATE: ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), 130, 18);
+            
+            doc.setTextColor(colorText);
+            doc.setFontSize(16);
+            doc.setFont('Helvetica', 'bold');
+            doc.text('TENANT CHECKOUT RECEIPT & CLEARANCE', 20, 48);
+            
+            doc.setDrawColor(200, 196, 190);
+            doc.line(20, 52, 190, 52);
+            
+            doc.setFontSize(9);
+            doc.setTextColor(colorSubText);
+            doc.text('TENANT NAME:', 20, 62);
+            doc.setTextColor(colorText);
+            doc.setFont('Helvetica', 'bold');
+            doc.text(getDisplayName(tenant.tenant), 55, 62);
+            
+            doc.setFont('Helvetica', 'normal');
+            doc.setTextColor(colorSubText);
+            doc.text('HOSTEL BRANCH:', 20, 70);
+            doc.setTextColor(colorText);
+            doc.text(hostelName, 55, 70);
+            
+            doc.setTextColor(colorSubText);
+            doc.text('ROOM NUMBER:', 20, 78);
+            doc.setTextColor(colorText);
+            doc.text(tenant.num.toString(), 55, 78);
+            
+            doc.setTextColor(colorSubText);
+            doc.text('PHONE NUMBER:', 20, 86);
+            doc.setTextColor(colorText);
+            doc.text(tenant.tenant_phone || 'Not Provided', 55, 86);
+            
+            doc.setTextColor(colorSubText);
+            doc.text('DATE OF JOINING:', 20, 94);
+            doc.setTextColor(colorText);
+            doc.text('Mar 15, 2025', 55, 94);
+            
+            doc.line(20, 102, 190, 102);
+            
+            doc.setFontSize(11);
+            doc.setFont('Helvetica', 'bold');
+            doc.text('FINANCIAL SUMMARY & DEPOSIT CLEARANCE', 20, 112);
+            
+            let y = 120;
+            doc.setFillColor(247, 245, 240);
+            doc.rect(20, y, 170, 8, 'F');
+            doc.line(20, y, 190, y);
+            doc.line(20, y + 8, 190, y + 8);
+            
+            doc.setFontSize(9);
+            doc.setTextColor(colorText);
+            doc.text('Description', 23, y + 5);
+            doc.text('Status', 100, y + 5);
+            doc.text('Amount', 160, y + 5);
+            
+            doc.setFont('Helvetica', 'normal');
+            
+            y += 8;
+            doc.line(20, y + 8, 190, y + 8);
+            doc.text('Monthly Rent Amount', 23, y + 5);
+            doc.text(tenant.rentStatus === 'paid' ? 'Paid (No Dues)' : 'Pending Due', 100, y + 5);
+            doc.text(`Rs. ${tenant.rent.toLocaleString()}`, 160, y + 5);
+            
+            y += 8;
+            doc.line(20, y + 8, 190, y + 8);
+            doc.text('Security Deposit Paid (2x Rent)', 23, y + 5);
+            doc.text('Held', 100, y + 5);
+            doc.text(`Rs. ${securityDeposit.toLocaleString()}`, 160, y + 5);
+            
+            y += 8;
+            doc.line(20, y + 8, 190, y + 8);
+            doc.text('Deduction for Rent Dues', 23, y + 5);
+            doc.text(outstanding > 0 ? 'Deducted' : 'None', 100, y + 5);
+            doc.text(`Rs. ${outstanding.toLocaleString()}`, 160, y + 5);
+            
+            y += 8;
+            doc.setFillColor(230, 244, 234);
+            doc.rect(20, y, 170, 8, 'F');
+            doc.line(20, y + 8, 190, y + 8);
+            doc.setFont('Helvetica', 'bold');
+            doc.text('TOTAL DEPOSIT REFUND AMOUNT', 23, y + 5);
+            doc.text('Approved for Payout', 100, y + 5);
+            doc.text(`Rs. ${refund.toLocaleString()}`, 160, y + 5);
+            
+            doc.setFont('Helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(colorSubText);
+            doc.text('Note: The security deposit refund is approved and settled after structural room validation and keys hand-over.', 20, y + 16);
+            
+            doc.setFillColor(230, 244, 234);
+            doc.setDrawColor(19, 115, 51);
+            doc.rect(20, y + 25, 170, 18, 'FD');
+            doc.setTextColor(19, 115, 51);
+            doc.setFont('Helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.text('STATUS: CLEARANCE COMPLETED & CHECKED OUT', 45, y + 36);
+            
+            doc.setFontSize(9);
+            doc.setTextColor(colorText);
+            doc.text('Owner Signature', 30, y + 65);
+            doc.line(30, y + 61, 70, y + 61);
+            
+            doc.text('Tenant Signature', 140, y + 65);
+            doc.line(140, y + 61, 180, y + 61);
+            
+            doc.setFont('Helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(colorSubText);
+            doc.text('Confidential receipt generated for Vustela PG Hostels checkout operations.', 20, 282);
+            
+            doc.save(`VUSTELA_Checkout_Receipt_${getDisplayName(tenant.tenant).replace(/\s+/g, '_')}.pdf`);
+            showToast('Receipt Downloaded ✅', 'Tenant checkout receipt PDF generated.');
         }
 
         function renderManagersTable() {
