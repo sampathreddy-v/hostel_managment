@@ -8282,12 +8282,118 @@
                 // Add Chart Image
                 doc.addImage(chartImgData, 'PNG', 20, y + 16, 170, 95);
 
-                // Footer
+                // Footer Page 1
                 doc.setFont('Helvetica', 'normal');
                 doc.setFontSize(8);
                 doc.setTextColor(colorSubText);
                 doc.text('Confidential report generated for Ramesh Sharma, Owner of Vustela PG Hostels.', 20, 282);
-                doc.text('Page 1 of 1', 175, 282);
+                doc.text('Page 1 of 2', 175, 282);
+
+                // Page 2: Detailed Expenses
+                doc.addPage();
+                
+                // Header Bar
+                doc.setFillColor(26, 24, 20);
+                doc.rect(0, 0, 210, 20, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFont('Helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.text('Detailed Expenses Log', 20, 13);
+                
+                // Table Headers
+                let expY = 32;
+                doc.setFillColor(247, 245, 240); // Light cream
+                doc.rect(20, expY, 170, 8, 'F');
+                doc.setDrawColor(colorBorder);
+                doc.line(20, expY, 190, expY);
+                doc.line(20, expY + 8, 190, expY + 8);
+                
+                doc.setTextColor(colorText);
+                doc.setFontSize(9);
+                doc.setFont('Helvetica', 'bold');
+                doc.text('Description', 23, expY + 5);
+                doc.text('Hostel Branch', 85, expY + 5);
+                doc.text('Category', 120, expY + 5);
+                doc.text('Amount', 155, expY + 5);
+                doc.text('Date', 178, expY + 5);
+                
+                doc.setFont('Helvetica', 'normal');
+                
+                let pdfExpenses = expenses;
+                if (period === 'daily') {
+                    const todayMs = new Date().setHours(0,0,0,0);
+                    pdfExpenses = expenses.filter(e => new Date(e.created_at).getTime() >= todayMs);
+                } else if (period === 'yearly') {
+                    const currentYear = new Date().getFullYear();
+                    pdfExpenses = expenses.filter(e => new Date(e.created_at).getFullYear() === currentYear);
+                }
+                
+                if (pdfExpenses.length === 0) {
+                    expY += 8;
+                    doc.text('No expenses logged for this period.', 23, expY + 5);
+                    doc.line(20, expY + 8, 190, expY + 8);
+                } else {
+                    pdfExpenses.forEach((e) => {
+                        expY += 8;
+                        if (expY > 265) {
+                            // Footer for current page
+                            doc.setDrawColor(colorBorder);
+                            doc.line(20, 275, 190, 275);
+                            doc.setFontSize(8);
+                            doc.setTextColor(colorSubText);
+                            doc.text('Confidential report generated for Ramesh Sharma, Owner of Vustela PG Hostels.', 20, 282);
+                            
+                            // Add new page
+                            doc.addPage();
+                            expY = 25;
+                            
+                            // Header Bar on new page
+                            doc.setFillColor(26, 24, 20);
+                            doc.rect(0, 0, 210, 15, 'F');
+                            doc.setTextColor(255, 255, 255);
+                            doc.setFont('Helvetica', 'bold');
+                            doc.setFontSize(10);
+                            doc.text('Detailed Expenses Log (Cont.)', 20, 10);
+                            
+                            // Headers on new page
+                            doc.setFillColor(247, 245, 240);
+                            doc.rect(20, expY, 170, 8, 'F');
+                            doc.setDrawColor(colorBorder);
+                            doc.line(20, expY, 190, expY);
+                            doc.line(20, expY + 8, 190, expY + 8);
+                            doc.setTextColor(colorText);
+                            doc.setFont('Helvetica', 'bold');
+                            doc.text('Description', 23, expY + 5);
+                            doc.text('Hostel Branch', 85, expY + 5);
+                            doc.text('Category', 120, expY + 5);
+                            doc.text('Amount', 155, expY + 5);
+                            doc.text('Date', 178, expY + 5);
+                            
+                            doc.setFont('Helvetica', 'normal');
+                            expY += 8;
+                        }
+                        
+                        const hostelName = hostels[e.hostel_id] ? hostels[e.hostel_id].name.replace('VUSTELA ', '') : `Hostel ${e.hostel_id}`;
+                        const dateStr = new Date(e.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        const truncatedDesc = e.description.length > 30 ? e.description.substring(0, 28) + '..' : e.description;
+                        
+                        doc.line(20, expY + 8, 190, expY + 8);
+                        doc.text(truncatedDesc, 23, expY + 5);
+                        doc.text(hostelName, 85, expY + 5);
+                        doc.text(e.category, 120, expY + 5);
+                        doc.text(`₹${e.amount.toLocaleString()}`, 155, expY + 5);
+                        doc.text(dateStr, 178, expY + 5);
+                    });
+                }
+                
+                // Footer for the last page of expenses
+                doc.setDrawColor(colorBorder);
+                doc.line(20, 275, 190, 275);
+                doc.setFont('Helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.setTextColor(colorSubText);
+                doc.text('Confidential report generated for Ramesh Sharma, Owner of Vustela PG Hostels.', 20, 282);
+                doc.text('Page 2 of 2', 175, 282);
 
                 // Save Document
                 doc.save(fileSaveName);
