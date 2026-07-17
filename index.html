@@ -3726,6 +3726,14 @@
                 <div class="modal-title">Log New Expense</div>
                 <button class="modal-close" onclick="closeModal('log-expense-modal')">×</button>
             </div>
+            <div id="log-exp-hostel-group" class="input-group" style="display:none">
+                <label>Hostel Branch</label>
+                <select id="exp-hostel" class="input">
+                    <option value="1">Hostel 1 — Kokapet</option>
+                    <option value="2">Hostel 2 — Gachibowli</option>
+                    <option value="3">Hostel 3 — Madhapur</option>
+                </select>
+            </div>
             <div class="input-group">
                 <label>Category</label>
                 <select id="exp-category" class="input">
@@ -4216,6 +4224,7 @@
                         </div>
                         <div class="flex align-center gap8">
                             <button class="btn btn-outline btn-sm" onclick="openExpenseFilterModal('owner')">🔍 Filter</button>
+                            <button class="btn btn-primary btn-sm" onclick="openLogExpenseModal()">+ Log New Expense</button>
                             <div class="badge badge-yellow" id="o-exp-total-spent">₹0 spent this month</div>
                         </div>
                     </div>
@@ -4788,7 +4797,7 @@
                         </div>
                         <div class="flex gap8">
                             <button class="btn btn-outline btn-sm" onclick="openExpenseFilterModal('manager')">🔍 Filter</button>
-                            <button class="btn btn-primary btn-sm" onclick="openModal('log-expense-modal')">+ Log New Expense</button>
+                            <button class="btn btn-primary btn-sm" onclick="openLogExpenseModal()">+ Log New Expense</button>
                         </div>
                     </div>
 
@@ -7622,6 +7631,16 @@
             });
         }
 
+        function openLogExpenseModal() {
+            const hostelGroup = document.getElementById('log-exp-hostel-group');
+            if (currentRole === 'owner') {
+                hostelGroup.style.display = 'block';
+            } else {
+                hostelGroup.style.display = 'none';
+            }
+            openModal('log-expense-modal');
+        }
+
         async function logExpense() {
             const cat = document.getElementById('exp-category').value;
             const amt = document.getElementById('exp-amount').value;
@@ -7645,13 +7664,20 @@
                 }
             }
             
+            let expenseHostelId = currentHostel;
+            let creatorName = document.getElementById('mgr-name-sb')?.textContent || 'Manager';
+            if (currentRole === 'owner') {
+                expenseHostelId = parseInt(document.getElementById('exp-hostel').value);
+                creatorName = 'Owner (Ramesh Sharma)';
+            }
+            
             const newExp = {
-                hostel_id: currentHostel,
+                hostel_id: expenseHostelId,
                 category: cat,
                 amount: parseFloat(amt),
                 description: desc,
                 bill_url: billUrl,
-                created_by: document.getElementById('mgr-name-sb').textContent,
+                created_by: creatorName,
                 created_at: new Date().toISOString()
             };
             
@@ -7667,13 +7693,18 @@
             // Prepend to local array for instant UI update
             expenses.unshift(newExp);
             
-            renderMgrExpenses();
+            if (currentRole === 'owner') {
+                renderOwnerExpenses();
+            } else {
+                renderMgrExpenses();
+            }
             closeModal('log-expense-modal');
             
             // Clear form
             document.getElementById('exp-amount').value = '';
             document.getElementById('exp-desc').value = '';
             document.getElementById('exp-bill').value = '';
+            document.getElementById('exp-hostel').value = '1';
             
             showToast('Success ✅', 'Expense logged successfully');
         }
