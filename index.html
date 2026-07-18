@@ -5208,7 +5208,7 @@
                 <!-- SECTION: Room & Payment -->
                 <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;">Room & Payment</div>
                 <div class="input-group"><label>Room Number *</label>
-                    <select id="at-room"><!-- Populated by JS --></select>
+                    <select id="at-room" onchange="updateDojDateRestriction()"><!-- Populated by JS --></select>
                 </div>
                 <div class="input-group"><label>Rent Amount (Rs.) *</label><input type="number" id="at-rent" placeholder="5500" value="5500"></div>
                 <div class="input-group"><label>Advance Deposit (Rs.) *</label><input type="number" id="at-deposit" placeholder="11000" value="11000"></div>
@@ -5851,14 +5851,65 @@
         // ============================================================
         // NAVIGATION
         // ============================================================
+        function updateDojDateRestriction() {
+            const select = document.getElementById('at-room');
+            const dojInput = document.getElementById('at-doj');
+            if (!select || !dojInput) return;
+
+            const roomNum = select.value;
+            if (!roomNum) {
+                dojInput.removeAttribute('max');
+                return;
+            }
+
+            const r = rooms[currentHostel].find(rm => rm.num === roomNum);
+            if (!r || !r.beds) {
+                dojInput.removeAttribute('max');
+                return;
+            }
+
+            // Find the earliest future booking joining date in this room
+            const today = new Date(); today.setHours(0,0,0,0);
+            const futureBeds = r.beds.filter(b => {
+                if (!b.tenant || b.tenant.startsWith('PENDING:') || !b.date_of_joining) return false;
+                const dojDate = new Date(b.date_of_joining); dojDate.setHours(0,0,0,0);
+                return dojDate > today;
+            });
+
+            if (futureBeds.length > 0) {
+                const earliestDoj = futureBeds.map(b => new Date(b.date_of_joining)).sort((a,b) => a-b)[0];
+                const maxDate = new Date(earliestDoj);
+                maxDate.setDate(maxDate.getDate() - 1);
+                
+                const yyyy = maxDate.getFullYear();
+                const mm = String(maxDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(maxDate.getDate()).padStart(2, '0');
+                
+                dojInput.setAttribute('max', `${yyyy}-${mm}-${dd}`);
+            } else {
+                dojInput.removeAttribute('max');
+            }
+        }
+
         function openAddTenantModal(prefillRoomNum = '') {
             const select = document.getElementById('at-room');
             select.innerHTML = '';
             let hasVacant = false;
 
             rooms[currentHostel].forEach(r => {
-                const filledCount = r.beds.filter(b => b.tenant).length;
-                const freeCount = r.capacity - filledCount;
+                // Determine if there is at least one slot vacant today in this room
+                const databaseBeds = (r.beds || []).filter(b => b._id || b.tenant);
+                const today = new Date(); today.setHours(0,0,0,0);
+                const activeBeds = databaseBeds.filter(b => {
+                    if (b.tenant && b.tenant.startsWith('PENDING:')) return false;
+                    if (!b.date_of_joining) return true;
+                    const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
+                    return doj <= today;
+                });
+                const pendingBeds = databaseBeds.filter(b => b.tenant && b.tenant.startsWith('PENDING:'));
+                const activeAndPendingCount = activeBeds.length + pendingBeds.length;
+                const freeCount = r.capacity - activeAndPendingCount;
+
                 if (freeCount > 0) {
                     hasVacant = true;
                     const opt = document.createElement('option');
@@ -5874,6 +5925,7 @@
                 return;
             }
 
+            updateDojDateRestriction();
             openModal('add-tenant-modal');
         }
         function goTo(id) {
@@ -9259,6 +9311,8 @@
             ['at-name','at-email','at-phone','at-father-phone','at-father-email','at-doj','at-rent','at-deposit'].forEach(id => {
                 const el = document.getElementById(id); if (el) el.value = '';
             });
+            const dojInput = document.getElementById('at-doj');
+            if (dojInput) dojInput.removeAttribute('max');
             ['at-pay-style','at-id-type'].forEach(id => {
                 const el = document.getElementById(id); if (el) el.selectedIndex = 0;
             });
