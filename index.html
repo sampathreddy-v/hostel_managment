@@ -4211,6 +4211,7 @@
                                     <th>Hostel</th>
                                     <th>Expected Rent</th>
                                     <th>Collected</th>
+                                    <th>Late Fee Collected</th>
                                     <th>Pending</th>
                                     <th>Maintenance</th>
                                     <th>Advance Deposits</th>
@@ -5840,7 +5841,8 @@
                         id_proof_type: b.id_proof_type,
                         photo_url: b.photo_url,
                         notice_status: b.notice_status,
-                        deposit_status: b.deposit_status
+                        deposit_status: b.deposit_status,
+                        late_fee_collected: b.late_fee_collected || 0
                     }));
                     while (filledBeds.length < r.capacity) filledBeds.push({ tenant: '', rent: defaultRent, rentStatus: null });
                     return { _roomId: r.id, num: r.num, floor: r.floor, type: r.type, capacity: r.capacity, beds: filledBeds };
@@ -6374,7 +6376,8 @@
                                 id_proof_type: b.id_proof_type || '',
                                 photo_url: b.photo_url || '',
                                 notice_status: b.notice_status || null,
-                                deposit_status: b.deposit_status || 'Paid'
+                                deposit_status: b.deposit_status || 'Paid',
+                                late_fee_collected: b.late_fee_collected || 0
                             };
                         });
                         while (filledBeds.length < r.capacity) {
@@ -6646,6 +6649,7 @@
 
             let expectedTotal = 0;
             let collectedTotal = 0;
+            let lateFeeTotal = 0;
             let pendingTotal = 0;
             let maintenanceTotal = 0;
             let netTotal = 0;
@@ -6658,6 +6662,7 @@
             hostelIds.forEach(hid => {
                 let expected = 0;
                 let collected = 0;
+                let lateFee = 0;
                 let pending = 0;
                 let maintenance = 0;
                 let unpaidCount = 0;
@@ -6675,6 +6680,7 @@
                                         pending += b.rent || 0;
                                         unpaidCount++;
                                     }
+                                    lateFee += b.late_fee_collected || 0;
                                     // Sum advance deposits for all occupied beds
                                     advanceDeposit += b.advance_deposit || 0;
                                 }
@@ -6689,10 +6695,11 @@
                         .reduce((sum, e) => sum + (e.amount || 0), 0);
                 }
 
-                const net = collected - maintenance;
+                const net = collected + lateFee - maintenance;
 
                 expectedTotal += expected;
                 collectedTotal += collected;
+                lateFeeTotal += lateFee;
                 pendingTotal += pending;
                 maintenanceTotal += maintenance;
                 netTotal += net;
@@ -6706,6 +6713,7 @@
                         <td><strong>${hName}</strong></td>
                         <td>₹${expected.toLocaleString()}</td>
                         <td style="color:var(--green);font-weight:700">₹${collected.toLocaleString()}</td>
+                        <td style="color:var(--green);font-weight:700">₹${lateFee.toLocaleString()}</td>
                         <td style="color:var(--red);font-weight:700">₹${pending.toLocaleString()}</td>
                         <td style="color:var(--yellow)">₹${maintenance.toLocaleString()}</td>
                         <td style="color:#1565c0;font-weight:700">₹${advanceDeposit.toLocaleString()}</td>
@@ -6720,6 +6728,7 @@
                     <td><strong>TOTAL</strong></td>
                     <td><strong>₹${expectedTotal.toLocaleString()}</strong></td>
                     <td style="color:var(--green);font-weight:800;font-size:16px">₹${collectedTotal.toLocaleString()}</td>
+                    <td style="color:var(--green);font-weight:800;font-size:16px">₹${lateFeeTotal.toLocaleString()}</td>
                     <td style="color:var(--red);font-weight:800">₹${pendingTotal.toLocaleString()}</td>
                     <td style="color:var(--yellow);font-weight:800">₹${maintenanceTotal.toLocaleString()}</td>
                     <td style="color:#1565c0;font-weight:800">₹${advanceDepositTotal.toLocaleString()}</td>
@@ -7114,10 +7123,27 @@
             const bed = room.beds[bedIndex];
             const bedId = bed._id;
 
-            const finalRent = includeLateFee ? (bed.rent + (getLateFeeForBed(bed))) : bed.rent;
+            const lateFeeCharged = includeLateFee ? getLateFeeForBed(bed) : 0;
+            const finalRent = bed.rent || 0; // Keep rent amount as base rent in history, or base+late fee depending on record preference. Base rent is best since rent_amount is base rent, and we store late fee separately! Or we can sum them. Let's make rent_amount equal base rent + late fee (which is the actual total collected rent).
 
             bed.rentStatus = 'paid';
-            if (bedId) await db.from('beds').update({ rent_status: 'paid' }).eq('id', bedId);
+            bed.late_fee_collected = lateFeeCharged;
+
+            const updatePayload = { rent_status: 'paid' };
+            try {
+                // Attempt to update with late_fee_collected column
+                if (bedId) {
+                    await db.from('beds').update({
+                        ...updatePayload,
+                        late_fee_collected: lateFeeCharged
+                    }).eq('id', bedId);
+                }
+            } catch (err) {
+                // Fallback if column does not exist in beds table yet
+                if (bedId) {
+                    await db.from('beds').update(updatePayload).eq('id', bedId);
+                }
+            }
             
             // Auto-save history record
             const now = new Date();
@@ -7135,7 +7161,7 @@
                 .eq('year', year);
             
             if (!existing || existing.length === 0) {
-                await db.from('rent_history').insert({
+                const historyPayload = {
                     bed_id: bedId,
                     tenant_name: bed.tenant,
                     tenant_email: bed.tenant_email || '',
@@ -7146,9 +7172,20 @@
                     year: year,
                     start_date: `${monthName} 01, ${year}`,
                     end_date: `${monthName} ${daysInMonth}, ${year}`,
-                    rent_amount: finalRent || 0,
+                    rent_amount: finalRent,
                     rent_status: 'paid'
-                });
+                };
+
+                try {
+                    // Try inserting with late_fee_amount
+                    await db.from('rent_history').insert({
+                        ...historyPayload,
+                        late_fee_amount: lateFeeCharged
+                    });
+                } catch (err) {
+                    // Fallback without late_fee_amount
+                    await db.from('rent_history').insert(historyPayload);
+                }
             }
             
             closeRoomPopup();
@@ -7172,7 +7209,7 @@
                 await archiveTenant(bed, roomNum, hostelId);
                 
                 if (bedId) {
-                    await db.from('beds').update({
+                    const resetPayload = {
                         tenant_name: null,
                         tenant_email: null,
                         tenant_password: null,
@@ -7185,12 +7222,20 @@
                         payment_style: null,
                         id_proof_type: null,
                         photo_url: null
-                    }).eq('id', bedId);
+                    };
+                    try {
+                        await db.from('beds').update({
+                            ...resetPayload,
+                            late_fee_collected: 0
+                        }).eq('id', bedId);
+                    } catch (err) {
+                        await db.from('beds').update(resetPayload).eq('id', bedId);
+                    }
                 }
                 
                 // Reset bed locally
                 const defaultRent = room.beds[0]?.rent || 5500;
-                room.beds[bedIndex] = { tenant: '', rent: defaultRent, rentStatus: null };
+                room.beds[bedIndex] = { tenant: '', rent: defaultRent, rentStatus: null, late_fee_collected: 0 };
             }
             closeRoomPopup();
             renderManagerOccupancy();
