@@ -4181,16 +4181,15 @@
                     <div class="dash-header">
                         <div>
                             <div class="dash-title">Good Morning, Ramesh 👋</div>
-                            <div class="dash-subtitle" style="display:flex; align-items:center; gap:8px;">
-                                <span id="owner-overview-subtitle">Here's your hostel overview for June 2025</span>
-                                <button class="btn btn-outline btn-sm" onclick="openOwnerMonthPicker()" style="padding:4px 8px; font-size:12px; display:flex; align-items:center; gap:4px; height:28px;">
-                                    📅 Change Month
-                                </button>
-                            </div>
+                            <div class="dash-subtitle" id="owner-overview-subtitle">Here's your hostel overview for June 2025</div>
                         </div>
-                        <div class="flex gap8">
-                            <button id="btn-export-report" class="btn btn-outline btn-sm"
-                                onclick="openModal('export-options-modal')">⬇ Export Report</button>
+                        <div class="flex gap8" style="align-items:center;">
+                            <button class="btn btn-outline" onclick="openOwnerMonthPicker()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
+                                📅 Change Month
+                            </button>
+                            <button id="btn-export-report" class="btn btn-outline" onclick="openModal('export-options-modal')" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
+                                ⬇ Export Report
+                            </button>
                         </div>
                     </div>
 
