@@ -336,6 +336,116 @@ async function sendEmailDirect(to, subject, html, attachment = null) {
     });
 }
 
+function getTemplatePayload(toPhone, rawMessage) {
+    // 1. Welcome / Registration Pattern
+    const welcomeRegex = /Welcome to VUSTELA![\s\S]*?Hi\s+([^\n,]+),[\s\S]*?registered at \*([^*]+)\* \(Room ([^)]+)\)[\s\S]*?🔑 Login:\s*([^\n\s]+)[\s\S]*?🔑 Password:\s*([^\n\s]+)[\s\S]*?Login here:\s*([^\n\s]+)/i;
+    // 1b. Booking Confirmed Welcome Pattern
+    const bookingRegex = /Booking Confirmed![\s\S]*?Hi\s+([^\n,]+),[\s\S]*?booking at \*([^*]+)\* \(Room ([^)]+)\)[\s\S]*?🔑 Login:\s*([^\n\s]+)[\s\S]*?🔑 Password:\s*([^\n\s]+)/i;
+    
+    // 2. Rent Reminder Pattern
+    const rentRegex = /Rent Reminder[\s\S]*?Hi\s+([^\n,]+),[\s\S]*?monthly rent of \*₹([^*]+)\* for \*Room ([^*]+)\* at \*([^*]+)\* is currently pending/i;
+    
+    // 3. Notice Pattern
+    const noticeRegex = /📢 \*VUSTELA Notice:\s*([^*]+)\*\n\n([\s\S]+)/i;
+
+    if (welcomeRegex.test(rawMessage)) {
+        const match = rawMessage.match(welcomeRegex);
+        return {
+            messaging_product: "whatsapp",
+            to: toPhone,
+            type: "template",
+            template: {
+                name: "welcome_tenant",
+                language: { code: "en" },
+                components: [{
+                    type: "body",
+                    parameters: [
+                        { type: "text", text: match[1].trim() },
+                        { type: "text", text: match[2].trim() },
+                        { type: "text", text: match[3].trim() },
+                        { type: "text", text: match[4].trim() },
+                        { type: "text", text: match[5].trim() },
+                        { type: "text", text: match[6].trim() }
+                    ]
+                }]
+            }
+        };
+    }
+    
+    if (bookingRegex.test(rawMessage)) {
+        const match = rawMessage.match(bookingRegex);
+        return {
+            messaging_product: "whatsapp",
+            to: toPhone,
+            type: "template",
+            template: {
+                name: "welcome_tenant",
+                language: { code: "en" },
+                components: [{
+                    type: "body",
+                    parameters: [
+                        { type: "text", text: match[1].trim() },
+                        { type: "text", text: match[2].trim() },
+                        { type: "text", text: match[3].trim() },
+                        { type: "text", text: match[4].trim() },
+                        { type: "text", text: match[5].trim() },
+                        { type: "text", text: "https://financepro.life" }
+                    ]
+                }]
+            }
+        };
+    }
+
+    if (rentRegex.test(rawMessage)) {
+        const match = rawMessage.match(rentRegex);
+        return {
+            messaging_product: "whatsapp",
+            to: toPhone,
+            type: "template",
+            template: {
+                name: "rent_payment_reminder",
+                language: { code: "en" },
+                components: [{
+                    type: "body",
+                    parameters: [
+                        { type: "text", text: match[1].trim() },
+                        { type: "text", text: match[2].trim() },
+                        { type: "text", text: match[3].trim() },
+                        { type: "text", text: "pending" }
+                    ]
+                }]
+            }
+        };
+    }
+
+    if (noticeRegex.test(rawMessage)) {
+        const match = rawMessage.match(noticeRegex);
+        return {
+            messaging_product: "whatsapp",
+            to: toPhone,
+            type: "template",
+            template: {
+                name: "hostel_general_notice",
+                language: { code: "en" },
+                components: [{
+                    type: "body",
+                    parameters: [
+                        { type: "text", text: match[1].trim() },
+                        { type: "text", text: match[2].trim().substring(0, 1024) }
+                    ]
+                }]
+            }
+        };
+    }
+
+    return {
+        messaging_product: "whatsapp",
+        to: toPhone,
+        type: "text",
+        text: { body: rawMessage }
+    };
+}
+
 async function sendWhatsappDirect(to, message) {
     return new Promise((resolve, reject) => {
         let formattedTo = to.replace(/\D/g, '');
@@ -343,14 +453,8 @@ async function sendWhatsappDirect(to, message) {
             formattedTo = '91' + formattedTo;
         }
 
-        const postData = JSON.stringify({
-            messaging_product: "whatsapp",
-            to: formattedTo,
-            type: "text",
-            text: {
-                body: message
-            }
-        });
+        const payloadObj = getTemplatePayload(formattedTo, message);
+        const postData = JSON.stringify(payloadObj);
 
         const options = {
             hostname: 'graph.facebook.com',
@@ -671,14 +775,8 @@ const server = http.createServer((req, res) => {
                         formattedTo = '91' + formattedTo; // Default to India country code if 10 digits
                     }
 
-                    const postData = JSON.stringify({
-                        messaging_product: "whatsapp",
-                        to: formattedTo,
-                        type: "text",
-                        text: {
-                            body: message
-                        }
-                    });
+                    const payloadObj = getTemplatePayload(formattedTo, message);
+                    const postData = JSON.stringify(payloadObj);
 
                     const options = {
                         hostname: 'graph.facebook.com',
