@@ -4181,7 +4181,12 @@
                     <div class="dash-header">
                         <div>
                             <div class="dash-title">Good Morning, Ramesh 👋</div>
-                            <div class="dash-subtitle">Here's your hostel overview for June 2025</div>
+                            <div class="dash-subtitle" style="display:flex; align-items:center; gap:8px;">
+                                <span id="owner-overview-subtitle">Here's your hostel overview for June 2025</span>
+                                <button class="btn btn-outline btn-sm" onclick="openOwnerMonthPicker()" style="padding:4px 8px; font-size:12px; display:flex; align-items:center; gap:4px; height:28px;">
+                                    📅 Change Month
+                                </button>
+                            </div>
                         </div>
                         <div class="flex gap8">
                             <button id="btn-export-report" class="btn btn-outline btn-sm"
@@ -4202,7 +4207,7 @@
                     <!-- MONTHLY SUMMARY TABLE - MOST IMPORTANT -->
                     <div class="monthly-table">
                         <div class="mt-header">
-                            <div class="mt-title">June 2025 — Financial Summary</div>
+                            <div class="mt-title" id="owner-financial-title">June 2025 — Financial Summary</div>
                             <div class="badge badge-green">Live</div>
                         </div>
                         <table>
@@ -5268,6 +5273,45 @@
 
             </div>
             <button class="btn-full" style="margin-top:16px;" onclick="addTenant()">Add Tenant</button>
+        </div>
+    </div>
+
+    <!-- OWNER MONTH PICKER MODAL -->
+    <div class="modal-overlay" id="owner-month-picker-modal" style="z-index: 10000;">
+        <div class="modal" style="max-width:320px; width:90vw;">
+            <div class="modal-header">
+                <div class="modal-title">Select Month & Year</div>
+                <button class="modal-close" onclick="closeModal('owner-month-picker-modal')">×</button>
+            </div>
+            <div style="padding:8px 0;">
+                <div class="input-group">
+                    <label>Select Month</label>
+                    <select id="omp-month" style="width:100%;">
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+                <div class="input-group" style="margin-top:12px;">
+                    <label>Select Year</label>
+                    <select id="omp-year" style="width:100%;">
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn-full" onclick="applyOwnerMonthPicker()" style="margin-top:16px;">Apply Filter</button>
         </div>
     </div>
 
@@ -6674,14 +6718,6 @@
                             r.beds.forEach(b => {
                                 if (b.tenant) {
                                     expected += b.rent || 0;
-                                    if (b.rentStatus === 'paid') {
-                                        collected += b.rent || 0;
-                                    } else {
-                                        pending += b.rent || 0;
-                                        unpaidCount++;
-                                    }
-                                    lateFee += b.late_fee_collected || 0;
-                                    // Sum advance deposits for all occupied beds
                                     advanceDeposit += b.advance_deposit || 0;
                                 }
                             });
@@ -6689,9 +6725,36 @@
                     });
                 }
 
+                if (isCurrent) {
+                    if (rooms[hid]) {
+                        rooms[hid].forEach(r => {
+                            if (r.beds) {
+                                r.beds.forEach(b => {
+                                    if (b.tenant) {
+                                        if (b.rentStatus === 'paid') {
+                                            collected += b.rent || 0;
+                                        } else {
+                                            pending += b.rent || 0;
+                                            unpaidCount++;
+                                        }
+                                        lateFee += b.late_fee_collected || 0;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                } else {
+                    const hostelHist = historicalRentHistory.filter(h => h.hostel_id === hid);
+                    hostelHist.forEach(h => {
+                        collected += h.rent_amount || 0;
+                        lateFee += h.late_fee_amount || 0;
+                    });
+                    pending = Math.max(0, expected - collected);
+                }
+
                 if (expenses) {
                     maintenance = expenses
-                        .filter(e => e.hostel_id === hid)
+                        .filter(e => e.hostel_id === hid && matchesMonthYear(e.created_at, ownerSelectedMonth, ownerSelectedYear))
                         .reduce((sum, e) => sum + (e.amount || 0), 0);
                 }
 
@@ -6756,14 +6819,20 @@
 
             if (pendNumEl) pendNumEl.textContent = `₹${pendingTotal.toLocaleString()}`;
             if (pendFillEl) pendFillEl.style.width = `${pendingPct}%`;
-            if (pendSubEl) pendSubEl.textContent = `${unpaidCountTotal} tenant${unpaidCountTotal !== 1 ? 's' : ''} unpaid`;
+            if (pendSubEl) {
+                if (isCurrent) {
+                    pendSubEl.textContent = `${unpaidCountTotal} tenant${unpaidCountTotal !== 1 ? 's' : ''} unpaid`;
+                } else {
+                    pendSubEl.textContent = `Historical unpaid estimate`;
+                }
+            }
 
             const maintNumEl = document.getElementById('owner-stat-maintenance');
             const maintSubEl = document.getElementById('owner-stat-maintenance-sub');
 
             if (maintNumEl) maintNumEl.textContent = `₹${maintenanceTotal.toLocaleString()}`;
             if (maintSubEl) {
-                const resolvedCount = complaints.filter(c => c.status === 'resolved').length;
+                const resolvedCount = complaints.filter(c => c.status === 'resolved' && matchesMonthYear(c.date, ownerSelectedMonth, ownerSelectedYear)).length;
                 maintSubEl.textContent = `${resolvedCount} complaint${resolvedCount !== 1 ? 's' : ''} resolved`;
             }
 
@@ -6774,6 +6843,61 @@
             if (netSubEl) {
                 netSubEl.textContent = `↑ ₹12,000 vs last month`;
             }
+        }
+
+        let ownerSelectedMonth = new Date().getMonth() + 1;
+        let ownerSelectedYear = new Date().getFullYear();
+        let historicalRentHistory = [];
+
+        function matchesMonthYear(dateStr, monthNum, year) {
+            if (!dateStr) return false;
+            const d = new Date(dateStr);
+            return (d.getMonth() + 1) === monthNum && d.getFullYear() === year;
+        }
+
+        async function loadOwnerFinancialsForSelectedMonth() {
+            const today = new Date();
+            const isCurrent = (ownerSelectedMonth === (today.getMonth() + 1)) && (ownerSelectedYear === today.getFullYear());
+            
+            if (isCurrent) {
+                historicalRentHistory = [];
+                renderOwnerFinancials();
+            } else {
+                const tbody = document.getElementById('owner-financial-tbody');
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--ink3);">Loading historical records...</td></tr>`;
+                }
+                
+                try {
+                    const { data, error } = await db.from('rent_history')
+                        .select('*')
+                        .eq('month_num', ownerSelectedMonth)
+                        .eq('year', ownerSelectedYear);
+                    
+                    if (error) throw error;
+                    historicalRentHistory = data || [];
+                } catch (err) {
+                    console.error('Error fetching historical rent:', err);
+                    showToast('DB Error', 'Could not load historical rent records.');
+                    historicalRentHistory = [];
+                }
+                renderOwnerFinancials();
+            }
+        }
+
+        function openOwnerMonthPicker() {
+            document.getElementById('omp-month').value = ownerSelectedMonth;
+            document.getElementById('omp-year').value = ownerSelectedYear;
+            openModal('owner-month-picker-modal');
+        }
+
+        function applyOwnerMonthPicker() {
+            const m = parseInt(document.getElementById('omp-month').value, 10);
+            const y = parseInt(document.getElementById('omp-year').value, 10);
+            ownerSelectedMonth = m;
+            ownerSelectedYear = y;
+            closeModal('owner-month-picker-modal');
+            loadOwnerFinancialsForSelectedMonth();
         }
 
         function renderManagerOccupancy() {
