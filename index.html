@@ -6887,10 +6887,55 @@
             }
         }
 
+        function updateMonthPickerLimits() {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth() + 1;
+            
+            const yearSelect = document.getElementById('omp-year');
+            const monthSelect = document.getElementById('omp-month');
+            if (!yearSelect || !monthSelect) return;
+            
+            // Build year options from 2024 up to currentYear
+            yearSelect.innerHTML = '';
+            for (let y = 2024; y <= currentYear; y++) {
+                yearSelect.appendChild(new Option(y, y));
+            }
+            yearSelect.value = ownerSelectedYear;
+            
+            const syncMonths = () => {
+                const selectedYear = parseInt(yearSelect.value, 10);
+                const monthOptions = monthSelect.options;
+                
+                for (let i = 0; i < monthOptions.length; i++) {
+                    const mVal = parseInt(monthOptions[i].value, 10);
+                    if (selectedYear === currentYear) {
+                        if (mVal > currentMonth) {
+                            monthOptions[i].disabled = true;
+                            monthOptions[i].style.display = 'none';
+                        } else {
+                            monthOptions[i].disabled = false;
+                            monthOptions[i].style.display = 'block';
+                        }
+                    } else {
+                        monthOptions[i].disabled = false;
+                        monthOptions[i].style.display = 'block';
+                    }
+                }
+                
+                if (monthSelect.selectedOptions[0]?.disabled) {
+                    monthSelect.value = selectedYear === currentYear ? currentMonth : 1;
+                }
+            };
+            
+            yearSelect.onchange = syncMonths;
+            syncMonths();
+            monthSelect.value = ownerSelectedMonth;
+        }
+
         function openOwnerMonthPicker() {
-            document.getElementById('omp-month').value = ownerSelectedMonth;
-            document.getElementById('omp-year').value = ownerSelectedYear;
             openModal('owner-month-picker-modal');
+            updateMonthPickerLimits();
         }
 
         function applyOwnerMonthPicker() {
