@@ -355,7 +355,7 @@ function getTemplatePayload(toPhone, rawMessage) {
             to: toPhone,
             type: "template",
             template: {
-                name: "welcome_tenant",
+                name: "welcome_student",
                 language: { code: "en" },
                 components: [{
                     type: "body",
@@ -379,7 +379,7 @@ function getTemplatePayload(toPhone, rawMessage) {
             to: toPhone,
             type: "template",
             template: {
-                name: "welcome_tenant",
+                name: "welcome_student",
                 language: { code: "en" },
                 components: [{
                     type: "body",
