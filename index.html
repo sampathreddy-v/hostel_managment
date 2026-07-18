@@ -2034,7 +2034,81 @@
             border-radius: var(--rs);
             padding: 16px;
             margin-bottom: 10px;
-            border-left: 4px solid var(--yellow)
+            border-left: 4px solid var(--yellow);
+            position: relative;
+        }
+
+        .notice-actions {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            display: inline-block;
+        }
+
+        .notice-dots-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--ink3);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .notice-dots-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--ink1);
+        }
+
+        .notice-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 28px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--rs);
+            box-shadow: var(--shadow);
+            z-index: 100;
+            min-width: 100px;
+            overflow: hidden;
+        }
+
+        .notice-dropdown.show {
+            display: block;
+        }
+
+        .notice-dropdown-item {
+            padding: 8px 14px;
+            font-size: 13px;
+            color: var(--ink1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-align: left;
+            width: 100%;
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+
+        .notice-dropdown-item:hover {
+            background: var(--bg);
+        }
+
+        .notice-dropdown-item.delete {
+            color: var(--red);
+        }
+
+        .notice-dropdown-item.delete:hover {
+            background: var(--red-bg);
         }
 
         .nc-title {
@@ -9236,14 +9310,86 @@
             }
         }
 
+        function toggleNoticeDropdown(event, noticeId) {
+            event.stopPropagation();
+            document.querySelectorAll('.notice-dropdown').forEach(el => {
+                if (el.id !== `notice-dropdown-${noticeId}`) {
+                    el.classList.remove('show');
+                }
+            });
+            const dd = document.getElementById(`notice-dropdown-${noticeId}`);
+            if (dd) dd.classList.toggle('show');
+        }
+
+        // Close dropdowns on click outside
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.notice-dropdown').forEach(el => el.classList.remove('show'));
+        });
+
+        function copyNoticeText(event, bodyText) {
+            event.stopPropagation();
+            navigator.clipboard.writeText(bodyText).then(() => {
+                showToast('Copied 📋', 'Notice content copied to clipboard.');
+            }).catch(err => {
+                console.error('Copy failed:', err);
+            });
+            document.querySelectorAll('.notice-dropdown').forEach(el => el.classList.remove('show'));
+        }
+
+        async function deleteNotice(event, noticeId) {
+            event.stopPropagation();
+            if (!confirm('Are you sure you want to delete this notice? This will remove it from all portals.')) return;
+
+            try {
+                const { error } = await db.from('notices').delete().eq('id', noticeId);
+                if (error) throw error;
+
+                // Delete from local state
+                notices = notices.filter(n => n.id !== noticeId);
+
+                // Re-render notices
+                renderNotices();
+                if (typeof renderOwnerNotices === 'function') {
+                    renderOwnerNotices();
+                }
+
+                showToast('Deleted 🗑️', 'Notice deleted successfully.');
+            } catch (err) {
+                console.error('Delete notice error:', err);
+                showToast('Error ❌', 'Failed to delete notice.');
+            }
+        }
+
+        function getNoticeActionsHtml(n, showDelete) {
+            const escapedBody = (n.body || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+            return `
+                <div class="notice-actions">
+                    <button class="notice-dots-btn" onclick="toggleNoticeDropdown(event, ${n.id})">⋮</button>
+                    <div class="notice-dropdown" id="notice-dropdown-${n.id}">
+                        <button class="notice-dropdown-item" onclick="copyNoticeText(event, '${escapedBody}')">
+                            <span>📋</span> Copy
+                        </button>
+                        ${showDelete ? `
+                            <button class="notice-dropdown-item delete" onclick="deleteNotice(event, ${n.id})">
+                                <span>🗑️</span> Delete
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
         function renderNotices() {
             const relevantNotices = notices.filter(n => n.hostel_id === currentHostel || n.hostel_id === 0);
             const html = relevantNotices.map(n => {
                 const date = new Date(n.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                 const globalBadge = n.hostel_id === 0 ? `<span class="badge" style="background:#C84B31; color:white; font-size:10px;">GLOBAL</span>` : '';
+                const showDelete = (currentRole !== 'tenant');
+                const actionsHtml = getNoticeActionsHtml(n, showDelete);
                 return `
                     <div class="notice-card" ${n.hostel_id === 0 ? 'style="border-left: 4px solid #C84B31; background: #fff5f3;"' : ''}>
-                        <div class="nc-title" style="display:flex; justify-content:space-between; align-items:center;">
+                        ${actionsHtml}
+                        <div class="nc-title" style="display:flex; justify-content:space-between; align-items:center; padding-right: 24px;">
                             <span>📌 ${n.title}</span>
                             ${globalBadge}
                         </div>
@@ -9367,13 +9513,17 @@
             let globalHtml = '';
             if (globalNotices.length > 0) {
                 globalHtml = `<h3 style="font-size: 15px; margin-bottom: 16px; color: var(--accent); display:flex; align-items:center; gap:8px;"><span>🌐</span> Global Announcements</h3>` +
-                    globalNotices.map(n => `
-                    <div class="notice-card" style="border-left: 4px solid var(--accent); box-shadow: 0 4px 15px rgba(200,75,49,0.1); margin-bottom: 12px; background: white;">
-                        <div class="nc-title" style="color:var(--accent);">📌 ${n.title}</div>
-                        <div class="nc-body">${n.body}</div>
-                        <div class="nc-meta">Posted by ${n.author} · ${new Date(n.created_at).toLocaleDateString()}</div>
-                    </div>
-                `).join('');
+                    globalNotices.map(n => {
+                        const actionsHtml = getNoticeActionsHtml(n, true);
+                        return `
+                        <div class="notice-card" style="border-left: 4px solid var(--accent); box-shadow: 0 4px 15px rgba(200,75,49,0.1); margin-bottom: 12px; background: white;">
+                            ${actionsHtml}
+                            <div class="nc-title" style="color:var(--accent); padding-right: 24px;">📌 ${n.title}</div>
+                            <div class="nc-body">${n.body}</div>
+                            <div class="nc-meta">Posted by ${n.author} · ${new Date(n.created_at).toLocaleDateString()}</div>
+                        </div>
+                        `;
+                    }).join('');
                 document.getElementById('owner-global-notices').innerHTML = globalHtml;
             } else {
                 document.getElementById('owner-global-notices').innerHTML = '';
@@ -9382,13 +9532,17 @@
             // Hostel Specific Columns
             [1, 2, 3].forEach(hid => {
                 const hostelNotices = notices.filter(n => n.hostel_id === hid);
-                const html = hostelNotices.map(n => `
+                const html = hostelNotices.map(n => {
+                    const actionsHtml = getNoticeActionsHtml(n, true);
+                    return `
                     <div class="notice-card" style="margin-bottom:0; background: #f8f9fa;">
-                        <div class="nc-title" style="font-size:14px;">📌 ${n.title}</div>
+                        ${actionsHtml}
+                        <div class="nc-title" style="font-size:14px; padding-right: 24px;">📌 ${n.title}</div>
                         <div class="nc-body" style="font-size:13px;">${n.body}</div>
                         <div class="nc-meta" style="font-size:11px;">${n.author} · ${new Date(n.created_at).toLocaleDateString()}</div>
                     </div>
-                `).join('') || '<div style="font-size:13px; color:var(--ink3); text-align:center; padding:16px;">No notices posted</div>';
+                    `;
+                }).join('') || '<div style="font-size:13px; color:var(--ink3); text-align:center; padding:16px;">No notices posted</div>';
                 const el = document.getElementById(`o-notices-h${hid}`);
                 if (el) el.innerHTML = html;
             });
