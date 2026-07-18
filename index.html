@@ -6691,6 +6691,9 @@
             const tbody = document.getElementById('owner-financial-tbody');
             if (!tbody) return;
 
+            const today = new Date();
+            const isCurrent = (ownerSelectedMonth === (today.getMonth() + 1)) && (ownerSelectedYear === today.getFullYear());
+
             let expectedTotal = 0;
             let collectedTotal = 0;
             let lateFeeTotal = 0;
