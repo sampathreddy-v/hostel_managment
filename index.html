@@ -7009,6 +7009,8 @@
                 const cleanName = b.tenant ? b.tenant.replace('PENDING: ', '') : '';
                 const isAdvanceBed = (type === 'future');
                 const advanceDojStr = isAdvanceBed ? new Date(b.date_of_joining).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '';
+                const lateFee = getLateFeeForBed(b);
+                const lateFeeStr = lateFee > 0 ? ` <span style="color:var(--red); font-weight:600;">+late fee:${lateFee}</span>` : '';
 
                 // Find local bed index for DB update/remove functions
                 const localBedIdx = room.beds.findIndex(orgBed => orgBed._id === b._id);
