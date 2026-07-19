@@ -893,7 +893,7 @@ const server = http.createServer((req, res) => {
             } catch (err) {
                 console.error('[Server] Request error:', err);
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Invalid JSON' }));
+                res.end(JSON.stringify({ error: 'Invalid JSON', receivedBody: body, parseError: err.message }));
             }
         });
     } else {
