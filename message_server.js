@@ -462,7 +462,7 @@ async function sendWhatsappDirect(to, message) {
             path: `/v20.0/${process.env.META_PHONE_NUMBER_ID}/messages`,
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${process.env.META_ACCESS_TOKEN}`,
+                'Authorization': `Bearer ${(process.env.META_ACCESS_TOKEN || '').trim()}`,
                 'Content-Type': 'application/json',
                 'Content-Length': Buffer.byteLength(postData)
             }
@@ -784,7 +784,7 @@ const server = http.createServer((req, res) => {
                         path: `/v20.0/${process.env.META_PHONE_NUMBER_ID}/messages`,
                         method: 'POST',
                         headers: {
-                            'Authorization': `Bearer ${process.env.META_ACCESS_TOKEN}`,
+                            'Authorization': `Bearer ${(process.env.META_ACCESS_TOKEN || '').trim()}`,
                             'Content-Type': 'application/json',
                             'Content-Length': Buffer.byteLength(postData)
                         }
