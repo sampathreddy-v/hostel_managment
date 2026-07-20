@@ -3950,60 +3950,94 @@
                         <tbody>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); width: 40%; background: var(--bg2);">Room Number</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none; border-bottom: none;">
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
                                     <span id="tp-room"></span>
                                     <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="openChangeRoomGrid()">✏️ Edit</button>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Rent Amount</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none; border-bottom: none;">
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
                                     <span id="tp-rent-amount"></span>
                                     <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantRent()">✏️ Edit</button>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Rent Status</td>
-                                <td id="tp-rent-status" style="padding: 12px 16px; font-weight: 600;"></td>
+                                <td style="padding: 12px 16px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; border: none;">
+                                    <span id="tp-rent-status"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantRentStatus()">✏️ Edit</button>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Late Fee / Fine</td>
+                                <td style="padding: 12px 16px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; border: none;">
+                                    <span id="tp-late-fee" style="color:var(--danger)"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantLateFee()">✏️ Edit</button>
+                                </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Phone Number</td>
-                                <td id="tp-phone" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
+                                    <span id="tp-phone"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantPhone()">✏️ Edit</button>
+                                </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Parent Phone Number</td>
-                                <td id="tp-parent-phone" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
+                                    <span id="tp-parent-phone"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantParentPhone()">✏️ Edit</button>
+                                </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Father Email</td>
-                                <td id="tp-father-email" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
+                                    <span id="tp-father-email"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantFatherEmail()">✏️ Edit</button>
+                                </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Email Address</td>
-                                <td id="tp-email" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
+                                    <span id="tp-email"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantEmail()">✏️ Edit</button>
+                                </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Date of Joining</td>
-                                <td id="tp-joining-date" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
+                                    <span id="tp-joining-date"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantDOJ()">✏️ Edit</button>
+                                </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Advance Deposit</td>
-                                <td id="tp-advance-deposit" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
+                                    <span id="tp-advance-deposit"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantDepositAmount()">✏️ Edit</button>
+                                </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Deposit Status</td>
                                 <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
                                     <span id="tp-deposit-status"></span>
-                                    <button class="btn-sm btn-ghost" style="padding: 2px 6px; font-size: 11px; margin-left: 8px;" onclick="editDepositStatus()">✏️ Edit</button>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editDepositStatus()">✏️ Edit</button>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Payment Style</td>
-                                <td id="tp-payment-style" style="padding: 12px 16px; font-weight: 600; color: var(--ink); text-transform: capitalize;"></td>
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none; text-transform: capitalize;">
+                                    <span id="tp-payment-style"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantPaymentStyle()">✏️ Edit</button>
+                                </td>
                             </tr>
                             <tr>
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">ID Proof Type</td>
-                                <td id="tp-id-type" style="padding: 12px 16px; font-weight: 600; color: var(--ink);"></td>
+                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
+                                    <span id="tp-id-type"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantIDProofType()">✏️ Edit</button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -7306,6 +7340,9 @@
 
         function getLateFeeForBed(b) {
             if (!b || b.rentStatus === 'paid' || b.rentStatus === 'Request' || !b.tenant || b.tenant.startsWith('PENDING:')) return 0;
+            if (b.custom_late_fee !== undefined && b.custom_late_fee !== null) {
+                return Number(b.custom_late_fee);
+            }
             const today = new Date(); today.setHours(0,0,0,0);
             if (b.date_of_joining) {
                 const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
@@ -8092,7 +8129,148 @@
                 statusEl.innerHTML = '<span class="badge badge-yellow" style="background:#fef7e0; color:#b06000; border: 1px solid #b06000;">Pending</span>';
             }
             
+            const lateFeeVal = getLateFeeForBed(tenant);
+            const lateFeeEl = document.getElementById('tp-late-fee');
+            if (lateFeeEl) {
+                lateFeeEl.textContent = lateFeeVal > 0 ? `Rs. ${lateFeeVal.toLocaleString()} (Overdue ⚠️)` : 'Rs. 0 (No Fine)';
+            }
+            
             openModal('tenant-profile-modal');
+        }
+
+        async function updateTenantProfileField(fieldKey, dbCol, labelName, isNumber = false) {
+            if (!activeProfileTenant) return;
+            const name = getDisplayName(activeProfileTenant.tenant);
+            const currentVal = activeProfileTenant[fieldKey] || '';
+            const input = prompt(`Update ${labelName} for ${name}:`, currentVal);
+            if (input === null) return;
+
+            let newVal = input.trim();
+            if (isNumber) {
+                newVal = Number(newVal);
+                if (isNaN(newVal) || newVal < 0) {
+                    showToast('Invalid Number ❌', 'Please enter a valid numeric value.');
+                    return;
+                }
+            }
+
+            showToast('Saving...', `Updating ${labelName}...`);
+
+            try {
+                if (activeProfileTenant._id && dbCol) {
+                    const { error } = await db.from('beds')
+                        .update({ [dbCol]: newVal })
+                        .eq('id', activeProfileTenant._id);
+                    if (error) console.warn('[TenantProfile] DB update notice:', error.message);
+                }
+
+                // Update memory bed
+                const hostelId = activeProfileTenant.hostel;
+                const roomNum = activeProfileTenant.num;
+                const rm = rooms[hostelId]?.find(r => r.num === roomNum);
+                if (rm && rm.beds) {
+                    const bed = rm.beds.find(b => b.tenant === activeProfileTenant.tenant);
+                    if (bed) {
+                        bed[fieldKey] = newVal;
+                        if (dbCol) bed[dbCol] = newVal;
+                    }
+                }
+
+                activeProfileTenant[fieldKey] = newVal;
+                if (dbCol) activeProfileTenant[dbCol] = newVal;
+
+                openTenantProfile(activeProfileTenant);
+                renderOwnerAllTenants();
+                if (typeof renderRentTracker === 'function') renderRentTracker();
+                if (typeof renderOwnerRentTable === 'function') renderOwnerRentTable('all');
+                if (typeof updateDashboardStats === 'function') updateDashboardStats();
+
+                showToast('Updated! ✅', `${labelName} updated successfully.`);
+            } catch (err) {
+                console.error('[TenantProfile] Update error:', err);
+                showToast('Error ❌', `Failed to update ${labelName}: ` + err.message);
+            }
+        }
+
+        function editTenantPhone() { updateTenantProfileField('tenant_phone', 'tenant_phone', 'Phone Number'); }
+        function editTenantParentPhone() { updateTenantProfileField('father_phone', 'father_phone', 'Parent Phone Number'); }
+        function editTenantFatherEmail() { updateTenantProfileField('father_email', 'father_email', 'Father Email'); }
+        function editTenantEmail() { updateTenantProfileField('tenant_email', 'tenant_email', 'Email Address'); }
+        function editTenantDOJ() { updateTenantProfileField('date_of_joining', 'date_of_joining', 'Date of Joining'); }
+        function editTenantDepositAmount() { updateTenantProfileField('advance_deposit', 'advance_deposit', 'Advance Deposit Amount', true); }
+        function editTenantPaymentStyle() { updateTenantProfileField('payment_style', 'payment_style', 'Payment Style'); }
+        function editTenantIDProofType() { updateTenantProfileField('id_proof_type', 'id_proof_type', 'ID Proof Type'); }
+
+        async function editTenantRentStatus() {
+            if (!activeProfileTenant) return;
+            const name = getDisplayName(activeProfileTenant.tenant);
+            const currentStatus = activeProfileTenant.rentStatus || 'pending';
+            const choice = prompt(`Update Rent Status for ${name}:\nType 'paid', 'pending', or 'overdue':`, currentStatus);
+            if (choice === null) return;
+
+            const newStatus = choice.trim().toLowerCase();
+            if (!['paid', 'pending', 'overdue'].includes(newStatus)) {
+                showToast('Invalid Status ❌', 'Status must be paid, pending, or overdue.');
+                return;
+            }
+
+            try {
+                if (activeProfileTenant._id) {
+                    await db.from('beds').update({ rent_status: newStatus }).eq('id', activeProfileTenant._id);
+                }
+
+                const hostelId = activeProfileTenant.hostel;
+                const roomNum = activeProfileTenant.num;
+                const rm = rooms[hostelId]?.find(r => r.num === roomNum);
+                if (rm && rm.beds) {
+                    const bed = rm.beds.find(b => b.tenant === activeProfileTenant.tenant);
+                    if (bed) {
+                        bed.rentStatus = newStatus;
+                        bed.rent_status = newStatus;
+                    }
+                }
+
+                activeProfileTenant.rentStatus = newStatus;
+                activeProfileTenant.rent_status = newStatus;
+
+                openTenantProfile(activeProfileTenant);
+                renderOwnerAllTenants();
+                if (typeof renderRentTracker === 'function') renderRentTracker();
+                if (typeof renderOwnerRentTable === 'function') renderOwnerRentTable('all');
+                showToast('Updated! ✅', `Rent status set to ${newStatus.toUpperCase()}.`);
+            } catch (err) {
+                showToast('Error ❌', err.message);
+            }
+        }
+
+        async function editTenantLateFee() {
+            if (!activeProfileTenant) return;
+            const name = getDisplayName(activeProfileTenant.tenant);
+            const currentFee = getLateFeeForBed(activeProfileTenant);
+            const input = prompt(`Update Late Fee / Fine for ${name} (Enter amount in Rs, or 0 for no fine):`, currentFee);
+            if (input === null) return;
+
+            const newFee = Number(input.trim());
+            if (isNaN(newFee) || newFee < 0) {
+                showToast('Invalid Fine ❌', 'Please enter a valid non-negative number.');
+                return;
+            }
+
+            activeProfileTenant.custom_late_fee = newFee;
+
+            const hostelId = activeProfileTenant.hostel;
+            const roomNum = activeProfileTenant.num;
+            const rm = rooms[hostelId]?.find(r => r.num === roomNum);
+            if (rm && rm.beds) {
+                const bed = rm.beds.find(b => b.tenant === activeProfileTenant.tenant);
+                if (bed) bed.custom_late_fee = newFee;
+            }
+
+            openTenantProfile(activeProfileTenant);
+            renderOwnerAllTenants();
+            if (typeof renderRentTracker === 'function') renderRentTracker();
+            if (typeof renderOwnerRentTable === 'function') renderOwnerRentTable('all');
+            showToast('Updated! ✅', `Late fee fine set to Rs. ${newFee.toLocaleString()}.`);
         }
 
         async function editTenantRent() {
