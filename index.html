@@ -4841,6 +4841,9 @@
                 <div class="sb-link" onclick="mgrTab(this,'m-notice-requests')"><span class="sb-icon">⏰</span> Notice Requests <span
                         id="mgr-notice-badge" class="badge badge-orange"
                         style="display:none; padding: 2px 6px; font-size: 10px; margin-left: 4px;">0</span></div>
+                <div class="sb-link" onclick="mgrTab(this,'m-payments')"><span class="sb-icon">💳</span> Verify UPI Payments <span
+                        id="mgr-upi-badge" class="badge badge-orange"
+                        style="display:none; padding: 2px 6px; font-size: 10px; margin-left: 4px;">0</span></div>
                 <div class="sb-link" onclick="mgrTab(this,'m-rent')"><span class="sb-icon">💰</span> Rent</div>
                 <div class="sb-link" onclick="mgrTab(this,'m-tenants')"><span class="sb-icon">👥</span> Tenants</div>
                 <div class="sb-link" onclick="mgrTab(this,'m-complaints')"><span class="sb-icon">📋</span> Complaints
@@ -5033,6 +5036,25 @@
                     <div id="mgr-no-notice-msg" style="display:none; text-align:center; padding: 40px; color: var(--ink3);">
                         <div style="font-size: 40px; margin-bottom: 12px;">⏰</div>
                         <p>No pending notice period requests.</p>
+                    </div>
+                </div>
+
+                <!-- M: VERIFY UPI PAYMENTS -->
+                <div class="dash-section" id="m-payments">
+                    <div class="dash-header">
+                        <div>
+                            <div class="dash-title">Verify UPI Payments</div>
+                            <div class="dash-subtitle">Review pending tenant UPI submissions or batch paste bank statements</div>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="openBatchReconcileModal()">📋 Paste Bank Statement</button>
+                    </div>
+
+                    <!-- Pending Queue Container -->
+                    <div id="m-upi-pending-container" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:16px;">
+                        <div style="grid-column:1/-1; padding:32px; text-align:center; background:var(--bg); border-radius:12px; color:var(--ink3);">
+                            <div style="font-size:24px; margin-bottom:8px;">⏳</div>
+                            <div style="font-size:14px; font-weight:600; color:var(--ink);">Loading UPI Submissions...</div>
+                        </div>
                     </div>
                 </div>
 
@@ -6380,6 +6402,8 @@
                 renderMgrBookings();
             } else if (secId === 'm-notice-requests') {
                 renderNoticeRequests('manager');
+            } else if (secId === 'm-payments') {
+                renderManagerUpiPayments();
             }
         }
 
@@ -6389,7 +6413,9 @@
             document.querySelectorAll('#pg-tenant .dash-section').forEach(s => s.classList.remove('on'));
             document.getElementById(secId).classList.add('on');
 
-            if (secId === 't-notices') {
+            if (secId === 't-pay') {
+                checkTenantPendingPayment();
+            } else if (secId === 't-notices') {
                 const badge = document.getElementById('tenant-notice-badge');
                 if (badge && badge.style.display !== 'none') {
                     badge.style.display = 'none';
@@ -9487,13 +9513,375 @@
         // ============================================================
         // TENANT ACTIONS
         // ============================================================
+        let currentUpiScreenshotBase64 = null;
+
         function selectPay(el) {
             document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
             el.classList.add('selected');
         }
 
         function payRent() {
-            showToast('Payment Successful! 💳', '₹5,500 paid for June 2025. Receipt sent to your email.');
+            openTenantUpiModal();
+        }
+
+        async function openTenantUpiModal() {
+            const modal = document.getElementById('tenant-upi-modal');
+            if (!modal) return;
+            modal.style.display = 'flex';
+
+            const rentAmt = Number((currentTenantBed && currentTenantBed.rent) ? currentTenantBed.rent : 5500);
+            const roomNum = (currentTenantBed && currentTenantBed.room_num) ? currentTenantBed.room_num : '105';
+            const upiId = (currentHostelData && currentHostelData.upi_id) ? currentHostelData.upi_id : 'vustela@upi';
+            const upiName = (currentHostelData && currentHostelData.upi_name) ? currentHostelData.upi_name : 'VUSTELA PG Hostels';
+
+            document.getElementById('t-upi-amount-display').textContent = `₹${rentAmt.toLocaleString()}`;
+            document.getElementById('t-upi-id-text').textContent = upiId;
+
+            // Generate UPI Intent URI
+            const params = new URLSearchParams({
+                pa: upiId,
+                pn: upiName,
+                am: rentAmt.toFixed(2),
+                cu: "INR",
+                tn: `Rent Room ${roomNum}`,
+                mc: "7011"
+            });
+            const upiUri = `upi://pay?${params.toString()}`;
+
+            // Generate QR Image URL using QRServer API
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUri)}`;
+            document.getElementById('t-upi-qr-img').src = qrUrl;
+
+            // Set app direct link
+            const appLink = document.getElementById('t-upi-app-link');
+            appLink.href = upiUri;
+
+            // Check if tenant already has a pending submission
+            await checkTenantPendingPayment();
+        }
+
+        function closeTenantUpiModal(e) {
+            const modal = document.getElementById('tenant-upi-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function copyUpiId() {
+            const upiId = document.getElementById('t-upi-id-text').textContent;
+            navigator.clipboard.writeText(upiId);
+            showToast('Copied! 📋', `UPI ID ${upiId} copied to clipboard.`);
+        }
+
+        function validateUtrInput(input) {
+            input.value = input.value.replace(/\D/g, '');
+            const btn = document.getElementById('t-upi-submit-btn');
+            const hint = document.getElementById('t-upi-utr-hint');
+
+            if (/^\d{12}$/.test(input.value)) {
+                btn.disabled = false;
+                hint.style.color = 'var(--accent)';
+                hint.textContent = '✅ Valid 12-digit UTR number format.';
+            } else {
+                btn.disabled = true;
+                hint.style.color = 'var(--ink3)';
+                hint.textContent = `Enter exactly 12 numeric digits (${input.value.length}/12).`;
+            }
+        }
+
+        function previewPaymentScreenshot(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    currentUpiScreenshotBase64 = e.target.result;
+                    const img = document.getElementById('t-upi-screenshot-preview');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function checkTenantPendingPayment() {
+            if (!currentTenantBed) return;
+            const pendingBanner = document.getElementById('t-upi-pending-banner');
+            const pendingText = document.getElementById('t-upi-pending-text');
+
+            try {
+                const { data, error } = await db
+                    .from('payment_submissions')
+                    .select('*')
+                    .eq('bed_id', currentTenantBed.id)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+
+                if (!error && data && data.length > 0) {
+                    const sub = data[0];
+                    if (pendingBanner) pendingBanner.style.display = 'block';
+                    if (pendingText) pendingText.textContent = `Submitted UTR: ${sub.utr_number} (₹${Number(sub.amount_claimed).toLocaleString()}). Submitted on ${new Date(sub.created_at).toLocaleDateString()}. Verification in progress.`;
+                    
+                    document.getElementById('t-upi-utr-input').value = sub.utr_number;
+                    document.getElementById('t-upi-utr-input').disabled = true;
+                    document.getElementById('t-upi-submit-btn').disabled = true;
+                    document.getElementById('t-upi-submit-btn').textContent = 'Verification Pending ⏳';
+                } else {
+                    if (pendingBanner) pendingBanner.style.display = 'none';
+                    document.getElementById('t-upi-utr-input').disabled = false;
+                    document.getElementById('t-upi-submit-btn').textContent = 'Submit for Verification';
+                }
+            } catch (err) {
+                console.error('[TenantUPI] Check pending error:', err);
+            }
+        }
+
+        async function submitUpiPayment() {
+            if (!currentTenantBed) {
+                showToast('Error', 'Tenant session expired. Please log in again.');
+                return;
+            }
+            const utr = document.getElementById('t-upi-utr-input').value.trim();
+            if (!/^\d{12}$/.test(utr)) {
+                showToast('Invalid UTR', 'Please enter a valid 12-digit numeric UTR number.');
+                return;
+            }
+
+            const btn = document.getElementById('t-upi-submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+
+            const rentAmt = Number(currentTenantBed.rent || 5500);
+
+            try {
+                const { data, error } = await db.from('payment_submissions').insert([{
+                    bed_id: currentTenantBed.id,
+                    hostel_id: currentTenantBed.hostel_id || 1,
+                    tenant_name: currentTenantBed.tenant_name,
+                    tenant_email: currentTenantBed.tenant_email,
+                    room_num: currentTenantBed.room_num || '105',
+                    amount_claimed: rentAmt,
+                    utr_number: utr,
+                    screenshot_url: currentUpiScreenshotBase64 || null,
+                    status: 'pending'
+                }]);
+
+                if (error) {
+                    if (error.code === '23505' || error.message.includes('unique constraint') || error.message.includes('duplicate')) {
+                        showToast('Duplicate UTR! ❌', 'This UTR reference number has already been submitted.');
+                    } else {
+                        showToast('Submission Failed', error.message);
+                    }
+                    btn.disabled = false;
+                    btn.textContent = 'Submit for Verification';
+                    return;
+                }
+
+                showToast('Payment Submitted! ⏳', 'Your UTR has been logged for verification. Receipt will be issued upon bank match.');
+                await checkTenantPendingPayment();
+            } catch (err) {
+                console.error('[TenantUPI] Submit error:', err);
+                showToast('Submission Error', err.message);
+                btn.disabled = false;
+                btn.textContent = 'Submit for Verification';
+            }
+        }
+
+        async function renderManagerUpiPayments() {
+            const container = document.getElementById('m-upi-pending-container');
+            const badge = document.getElementById('mgr-upi-badge');
+            if (!container) return;
+
+            try {
+                const { data: pendingList, error } = await db
+                    .from('payment_submissions')
+                    .select('*')
+                    .eq('hostel_id', currentHostel)
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    container.innerHTML = `<div style="grid-column:1/-1; padding:24px; text-align:center; color:var(--ink3);">Note: Run Supabase SQL migration to create payment_submissions table.</div>`;
+                    if (badge) badge.style.display = 'none';
+                    return;
+                }
+
+                if (!pendingList || pendingList.length === 0) {
+                    container.innerHTML = `<div style="grid-column:1/-1; padding:32px; text-align:center; background:var(--bg); border-radius:12px; color:var(--ink3);">
+                        <div style="font-size:24px; margin-bottom:8px;">✅</div>
+                        <div style="font-size:14px; font-weight:600; color:var(--ink);">No Pending UPI Payments</div>
+                        <div style="font-size:12px;">All tenant payment submissions for this hostel have been reconciled!</div>
+                    </div>`;
+                    if (badge) badge.style.display = 'none';
+                    return;
+                }
+
+                if (badge) {
+                    badge.style.display = 'inline-block';
+                    badge.textContent = pendingList.length;
+                }
+
+                container.innerHTML = pendingList.map(sub => `
+                    <div class="card" style="position:relative; display:flex; flex-direction:column; justify-content:space-between;">
+                        <div>
+                            <div class="flex between" style="margin-bottom:8px;">
+                                <div style="font-size:15px; font-weight:700; color:var(--ink);">${sub.tenant_name || 'Tenant'}</div>
+                                <span class="badge badge-orange">Room ${sub.room_num || 'N/A'}</span>
+                            </div>
+
+                            <div style="font-size:20px; font-weight:800; color:var(--accent); font-family:var(--font-display); margin-bottom:8px;">
+                                ₹${Number(sub.amount_claimed).toLocaleString()}
+                            </div>
+
+                            <div style="background:var(--bg); padding:8px 10px; border-radius:6px; margin-bottom:12px;" class="flex between">
+                                <div style="font-size:12px; font-weight:700; font-family:monospace; letter-spacing:1px; color:var(--ink);">UTR: ${sub.utr_number}</div>
+                                <button class="btn-ghost" style="padding:2px 6px; font-size:10px;" onclick="copyUtrNumber('${sub.utr_number}')">📋 Copy</button>
+                            </div>
+
+                            ${sub.screenshot_url ? `
+                                <div style="margin-bottom:12px; text-align:center;">
+                                    <img src="${sub.screenshot_url}" style="width:100%; max-height:100px; object-fit:cover; border-radius:6px; border:1px solid var(--border); cursor:pointer;" onclick="openLightbox('${sub.screenshot_url}')" title="Click to view full image">
+                                </div>
+                            ` : ''}
+
+                            <div style="font-size:11px; color:var(--ink3);">Submitted: ${new Date(sub.created_at).toLocaleString()}</div>
+                        </div>
+
+                        <div class="flex" style="gap:8px; margin-top:16px;">
+                            <button class="btn-sm" style="flex:1; background:#10b981; color:#fff;" onclick="approvePaymentSubmission(${sub.id})">✅ Approve</button>
+                            <button class="btn-sm btn-ghost" style="flex:1; color:var(--danger);" onclick="rejectPaymentSubmission(${sub.id})">❌ Reject</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('[ManagerUPI] Render error:', err);
+            }
+        }
+
+        function copyUtrNumber(utr) {
+            navigator.clipboard.writeText(utr);
+            showToast('Copied! 📋', `UTR number ${utr} copied to clipboard.`);
+        }
+
+        function openLightbox(imgUrl) {
+            const modal = document.getElementById('image-lightbox-modal');
+            const img = document.getElementById('lightbox-img');
+            if (modal && img) {
+                img.src = imgUrl;
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeLightbox(e) {
+            const modal = document.getElementById('image-lightbox-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function approvePaymentSubmission(subId) {
+            try {
+                const { data: sub, error } = await db.from('payment_submissions').select('*').eq('id', subId).single();
+                if (error || !sub) {
+                    showToast('Error', 'Submission not found.');
+                    return;
+                }
+
+                // 1. Update submission status to approved
+                await db.from('payment_submissions').update({ status: 'approved', amount_approved: sub.amount_claimed }).eq('id', subId);
+
+                // 2. Update bed status to paid
+                if (sub.bed_id) {
+                    await db.from('beds').update({ rent_status: 'paid' }).eq('id', sub.bed_id);
+                }
+
+                // 3. Log in rent_history
+                const now = new Date();
+                await db.from('rent_history').insert({
+                    bed_id: sub.bed_id,
+                    tenant_name: sub.tenant_name,
+                    tenant_email: sub.tenant_email,
+                    room_num: sub.room_num,
+                    hostel_id: sub.hostel_id,
+                    month: sub.payment_month || now.toLocaleString('default', { month: 'short' }),
+                    month_num: now.getMonth() + 1,
+                    year: now.getFullYear(),
+                    rent_amount: sub.amount_claimed,
+                    rent_status: 'paid'
+                });
+
+                // 4. Send WhatsApp receipt
+                const receiptMsg = `🎉 *Payment Confirmed!*\n\nDear ${sub.tenant_name}, your rent payment of *₹${Number(sub.amount_claimed).toLocaleString()}* for Room *${sub.room_num}* has been verified and confirmed.\n\nUTR: ${sub.utr_number}\nStatus: Paid ✅\n\n— VUSTELA PG Hostels`;
+                
+                fetch(API_BASE_URL + '/send-whatsapp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ to: sub.tenant_email || sub.tenant_name, message: receiptMsg })
+                }).catch(e => console.error(e));
+
+                showToast('Approved! ✅', `Payment of ₹${Number(sub.amount_claimed).toLocaleString()} verified for ${sub.tenant_name}.`);
+                renderManagerUpiPayments();
+                loadData([currentHostel]).then(() => { renderManagerOccupancy(); renderMgrTenants(); });
+            } catch (err) {
+                console.error('[ManagerUPI] Approve error:', err);
+                showToast('Approval Failed', err.message);
+            }
+        }
+
+        async function rejectPaymentSubmission(subId) {
+            const reason = prompt('Enter rejection reason for tenant (e.g. UTR not found in bank statement):', 'UTR reference number not found in bank statement');
+            if (reason === null) return;
+
+            try {
+                await db.from('payment_submissions').update({ status: 'rejected', rejection_reason: reason }).eq('id', subId);
+                showToast('Rejected', 'Payment submission rejected. Tenant portal unlocked.');
+                renderManagerUpiPayments();
+            } catch (err) {
+                console.error('[ManagerUPI] Reject error:', err);
+                showToast('Rejection Error', err.message);
+            }
+        }
+
+        function openBatchReconcileModal() {
+            const modal = document.getElementById('batch-reconcile-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeBatchReconcileModal(e) {
+            const modal = document.getElementById('batch-reconcile-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function submitBatchReconciliation() {
+            const text = document.getElementById('batch-bank-text').value;
+            if (!text || text.trim() === '') {
+                showToast('Empty Input', 'Please paste bank statement or credit SMS text.');
+                return;
+            }
+
+            const btn = document.getElementById('batch-reconcile-btn');
+            btn.disabled = true;
+            btn.textContent = 'Processing Text...';
+
+            try {
+                const res = await fetch(API_BASE_URL + '/api/reconcile-bank-text', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+                const result = await res.json();
+
+                if (result.success) {
+                    showToast('Reconciliation Complete! 🎉', `Scanned ${result.utrsFound?.length || 0} UTRs. Auto-approved ${result.matchedCount} matching tenant payments!`);
+                    document.getElementById('batch-bank-text').value = '';
+                    closeBatchReconcileModal();
+                    renderManagerUpiPayments();
+                    loadData([currentHostel]).then(() => { renderManagerOccupancy(); renderMgrTenants(); });
+                } else {
+                    showToast('Reconciliation Error', result.error || 'Failed to process statement');
+                }
+            } catch (err) {
+                console.error('[BatchReconcile] Error:', err);
+                showToast('Network Error', err.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Auto-Match & Approve Payments →';
+            }
         }
 
         function showPayStyleHint() {
@@ -12018,6 +12406,90 @@
                 <input type="number" id="edit-room-rent" placeholder="e.g. 6000">
             </div>
             <button class="btn-full" onclick="saveEditedRoom()">Save Room Details</button>
+        </div>
+    </div>
+
+    <!-- UPI PAYMENT MODAL FOR TENANT -->
+    <div class="modal-overlay" id="tenant-upi-modal" onclick="closeTenantUpiModal(event)">
+        <div class="modal" style="max-width:480px; text-align:center;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title" style="width:100%;">Pay Rent via UPI</div>
+                <button class="modal-close" onclick="closeTenantUpiModal()">×</button>
+            </div>
+            <div style="font-size:13px; color:var(--ink3); margin-bottom:16px;" id="t-upi-subtitle">Scan QR or use UPI ID to pay exact rent</div>
+
+            <!-- Pending Banner (if already submitted) -->
+            <div id="t-upi-pending-banner" style="display:none; background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.3); border-radius:8px; padding:12px; margin-bottom:16px; text-align:left;">
+                <div style="font-size:14px; font-weight:700; color:#b45309; margin-bottom:4px;">⏳ Verification Pending</div>
+                <div style="font-size:12px; color:var(--ink);" id="t-upi-pending-text">Submitted UTR: XXXXXXXXXXXX (₹5,500). Please wait for bank reconciliation.</div>
+            </div>
+
+            <div id="t-upi-form-body">
+                <!-- QR & UPI ID BOX -->
+                <div style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:16px;">
+                    <div style="display:inline-block; padding:8px; background:#fff; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:12px;">
+                        <img id="t-upi-qr-img" src="" alt="UPI QR Code" style="width:180px; height:180px; display:block;">
+                    </div>
+                    <div style="font-size:22px; font-weight:800; color:var(--accent); font-family:var(--font-display);" id="t-upi-amount-display">₹5,500</div>
+                    <div style="font-size:11px; color:var(--ink3); margin-bottom:10px;">Exact Pending Rent (Locked)</div>
+                    
+                    <div class="flex center" style="gap:8px; font-size:13px; font-weight:600; color:var(--ink); background:#fff; padding:8px 12px; border-radius:6px; border:1px solid var(--border); display:inline-flex;">
+                        <span id="t-upi-id-text">vustela@upi</span>
+                        <button class="btn-ghost" style="padding:2px 6px; font-size:11px;" onclick="copyUpiId()">📋 Copy</button>
+                    </div>
+                    
+                    <div style="margin-top:12px;">
+                        <a id="t-upi-app-link" href="#" class="btn-ghost" style="display:inline-block; text-decoration:none; font-size:12px; font-weight:700; color:var(--accent);">📱 Tap to Open GPay / PhonePe</a>
+                    </div>
+                </div>
+
+                <!-- UTR & SCREENSHOT INPUT FORM -->
+                <div style="text-align:left;">
+                    <div class="input-group">
+                        <label>12-Digit UTR / Transaction Ref No. <span style="color:var(--danger)">*</span></label>
+                        <input type="text" id="t-upi-utr-input" placeholder="e.g. 420198765432" maxlength="12" oninput="validateUtrInput(this)" style="font-family:monospace; font-size:15px; letter-spacing:1px;">
+                        <div id="t-upi-utr-hint" style="font-size:11px; color:var(--ink3); margin-top:4px;">Enter exactly 12 numeric digits from your UPI payment success screen.</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Payment Screenshot <span style="color:var(--ink3); font-weight:400;">(Optional)</span></label>
+                        <input type="file" id="t-upi-screenshot-input" accept="image/*" onchange="previewPaymentScreenshot(this)">
+                        <img id="t-upi-screenshot-preview" src="" style="display:none; width:100%; max-height:120px; object-fit:contain; border-radius:6px; margin-top:8px; border:1px solid var(--border);">
+                    </div>
+
+                    <button class="btn-full" id="t-upi-submit-btn" onclick="submitUpiPayment()" style="margin-top:8px;" disabled>Submit for Verification</button>
+                </div>
+            </div>
+
+            <button class="btn-ghost" onclick="closeTenantUpiModal()" style="margin-top:16px;">Close</button>
+        </div>
+    </div>
+
+    <!-- BATCH BANK RECONCILE MODAL -->
+    <div class="modal-overlay" id="batch-reconcile-modal" onclick="closeBatchReconcileModal(event)">
+        <div class="modal" style="max-width:520px;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title">Batch Bank Statement Reconciler</div>
+                <button class="modal-close" onclick="closeBatchReconcileModal()">×</button>
+            </div>
+            <div style="font-size:13px; color:var(--ink3); margin-bottom:16px;">Paste raw SMS alerts or bank statement lines. All 12-digit UTRs will be extracted and matched instantly!</div>
+
+            <div class="input-group">
+                <label>Raw Bank Statement / SMS Text</label>
+                <textarea id="batch-bank-text" rows="6" placeholder="Paste bank statement text or credit SMS messages here..." style="font-family:monospace; font-size:13px;"></textarea>
+            </div>
+
+            <button class="btn-full" onclick="submitBatchReconciliation()" id="batch-reconcile-btn">Auto-Match & Approve Payments →</button>
+            <button class="btn-ghost" onclick="closeBatchReconcileModal()" style="margin-top:12px; width:100%;">Close</button>
+        </div>
+    </div>
+
+    <!-- SCREENSHOT LIGHTBOX MODAL -->
+    <div class="modal-overlay" id="image-lightbox-modal" onclick="closeLightbox(event)">
+        <div class="modal" style="max-width:640px; padding:12px; background:transparent; border:none; box-shadow:none; text-align:center;" onclick="event.stopPropagation()">
+            <img id="lightbox-img" src="" style="max-width:100%; max-height:80vh; border-radius:8px; border:2px solid #fff; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+            <br>
+            <button class="btn-ghost" onclick="closeLightbox()" style="margin-top:12px; background:#fff; color:#000;">✕ Close Image</button>
         </div>
     </div>
 

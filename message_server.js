@@ -734,6 +734,125 @@ async function checkScheduler() {
     }
 }
 
+async function processBankAlertText(rawText) {
+    if (!rawText || typeof rawText !== 'string') return { matched: [], count: 0, utrsFound: [] };
+    
+    // Extract all 12-digit numeric sequences (UTRs)
+    const utrMatches = rawText.match(/\b\d{12}\b/g) || [];
+    const uniqueUtrs = [...new Set(utrMatches)];
+    
+    if (uniqueUtrs.length === 0) {
+        return { matched: [], count: 0, utrsFound: [] };
+    }
+
+    console.log(`[BankReconcile] Scanning text for UTRs. Extracted:`, uniqueUtrs);
+
+    let approvedSubmissions = [];
+
+    for (const utr of uniqueUtrs) {
+        try {
+            // Find matching pending submission in payment_submissions
+            const { data: pendingList, error: queryErr } = await supabase
+                .from('payment_submissions')
+                .select('*')
+                .eq('utr_number', utr)
+                .eq('status', 'pending');
+
+            if (queryErr || !pendingList || pendingList.length === 0) {
+                continue; // Not found or already approved/rejected
+            }
+
+            for (const sub of pendingList) {
+                // 1. Mark submission as approved
+                await supabase
+                    .from('payment_submissions')
+                    .update({ 
+                        status: 'approved', 
+                        amount_approved: sub.amount_claimed,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', sub.id);
+
+                // 2. Mark bed rent as paid
+                if (sub.bed_id) {
+                    await supabase
+                        .from('beds')
+                        .update({ rent_status: 'paid' })
+                        .eq('id', sub.bed_id);
+                }
+
+                // 3. Log in rent_history
+                const now = new Date();
+                const monthName = now.toLocaleString('default', { month: 'short' });
+                const monthNum = now.getMonth() + 1;
+                const year = now.getFullYear();
+
+                await supabase.from('rent_history').insert({
+                    bed_id: sub.bed_id,
+                    tenant_name: sub.tenant_name,
+                    tenant_email: sub.tenant_email,
+                    room_num: sub.room_num,
+                    hostel_id: sub.hostel_id,
+                    month: sub.payment_month || monthName,
+                    month_num: monthNum,
+                    year: sub.payment_year || year,
+                    rent_amount: sub.amount_claimed,
+                    rent_status: 'paid',
+                    start_date: new Date(year, monthNum - 1, 1).toISOString().split('T')[0],
+                    end_date: new Date(year, monthNum, 0).toISOString().split('T')[0]
+                });
+
+                // 4. Send WhatsApp & Email receipt if phone / email exists
+                const receiptMsg = `🎉 *Payment Confirmed!*\n\nDear ${sub.tenant_name}, your rent payment of *₹${Number(sub.amount_claimed).toLocaleString()}* for Room *${sub.room_num}* has been verified and confirmed.\n\nUTR: ${sub.utr_number}\nStatus: Paid ✅\n\n— VUSTELA PG Hostels`;
+
+                // Send WhatsApp
+                if (sub.tenant_phone) {
+                    try {
+                        await sendWhatsappDirect(sub.tenant_phone, receiptMsg);
+                    } catch (waErr) {
+                        console.error('[BankReconcile] WhatsApp receipt error:', waErr);
+                    }
+                }
+
+                // Send Email
+                if (sub.tenant_email) {
+                    try {
+                        const emailHtml = `<div style="font-family:sans-serif; padding:20px; border:1px solid #e2e8f0; border-radius:8px;">
+                            <h2 style="color:#10b981;">Payment Verified & Confirmed ✅</h2>
+                            <p>Hi <strong>${sub.tenant_name}</strong>,</p>
+                            <p>Your rent payment of <strong>₹${Number(sub.amount_claimed).toLocaleString()}</strong> for Room <strong>${sub.room_num}</strong> has been verified and logged successfully.</p>
+                            <hr style="border:none; border-top:1px solid #e2e8f0; margin:20px 0;">
+                            <p><strong>UTR Reference:</strong> ${sub.utr_number}</p>
+                            <p><strong>Status:</strong> Paid</p>
+                            <br>
+                            <p>Thank you,<br><strong>VUSTELA Hostels</strong></p>
+                        </div>`;
+                        await sendEmailDirect(sub.tenant_email, `Payment Receipt — Room ${sub.room_num}`, emailHtml);
+                    } catch (emErr) {
+                        console.error('[BankReconcile] Email receipt error:', emErr);
+                    }
+                }
+
+                approvedSubmissions.push({
+                    id: sub.id,
+                    tenant_name: sub.tenant_name,
+                    room_num: sub.room_num,
+                    utr: sub.utr_number,
+                    amount: sub.amount_claimed
+                });
+            }
+        } catch (err) {
+            console.error(`[BankReconcile] Error processing UTR ${utr}:`, err);
+        }
+    }
+
+    return {
+        matched: approvedSubmissions,
+        count: approvedSubmissions.length,
+        utrsFound: uniqueUtrs
+    };
+}
+
 function startScheduler() {
     console.log('[Scheduler] Starting automated reports background scheduler loop...');
     setInterval(checkScheduler, 60 * 60 * 1000); // 1 hour
@@ -757,7 +876,23 @@ const server = http.createServer((req, res) => {
         req.on('data', chunk => { body += chunk.toString(); });
         req.on('end', async () => {
             try {
-                const data = JSON.parse(body);
+                let data = {};
+                try { data = JSON.parse(body); } catch (e) {}
+
+                // --- BANK SMS / EMAIL RECONCILIATION ENDPOINTS ---
+                if (req.url === '/api/bank-sms' || req.url === '/api/inbound-bank-email' || req.url === '/api/reconcile-bank-text') {
+                    const alertText = data.text || data.body || data.message || body || '';
+                    console.log(`\n[Server] Received Bank Alert Text on ${req.url}:`, alertText.substring(0, 100));
+                    
+                    const result = await processBankAlertText(alertText);
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    return res.end(JSON.stringify({ 
+                        success: true, 
+                        matchedCount: result.count,
+                        approved: result.matched,
+                        utrsFound: result.utrsFound 
+                    }));
+                }
 
                 // --- WHATSAPP (META CLOUD API) ---
                 if (req.url === '/send-whatsapp') {
