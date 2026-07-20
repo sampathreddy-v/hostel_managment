@@ -6066,7 +6066,7 @@
 
             rooms[currentHostel].forEach(r => {
                 // Determine if there is at least one slot vacant today in this room
-                const databaseBeds = (r.beds || []).filter(b => b._id || b.tenant);
+                const databaseBeds = (r.beds || []).filter(b => b.tenant && typeof b.tenant === 'string' && b.tenant.trim().length > 0);
                 const today = new Date(); today.setHours(0,0,0,0);
                 const activeBeds = databaseBeds.filter(b => {
                     if (b.tenant && b.tenant.startsWith('PENDING:')) return false;
@@ -7241,7 +7241,7 @@
             const hasComplaint = complaints.find(c => c.hostel === hostelId && c.room === roomNum && c.status !== 'resolved');
 
             const todayDate = new Date(); todayDate.setHours(0,0,0,0);
-            const databaseBeds = (room.beds || []).filter(b => b._id || b.tenant);
+            const databaseBeds = (room.beds || []).filter(b => b.tenant && typeof b.tenant === 'string' && b.tenant.trim().length > 0);
 
             const activeBeds = databaseBeds.filter(b => {
                 if (b.tenant && b.tenant.startsWith('PENDING:')) return false;
