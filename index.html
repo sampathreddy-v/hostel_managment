@@ -4586,13 +4586,61 @@
                 <div class="dash-section" id="o-salaries">
                     <div class="dash-header">
                         <div>
-                            <div class="dash-title">Salaries</div>
-                            <div class="dash-subtitle">Manage employee and staff salaries</div>
+                            <div class="dash-title">Salaries & Staff Management</div>
+                            <div class="dash-subtitle">Manage employee and staff salaries, payroll, and pay records</div>
+                        </div>
+                        <button class="btn btn-primary" onclick="openAddWorkerModal()" style="font-weight:700;">+ Add Worker</button>
+                    </div>
+
+                    <!-- Salary Stats -->
+                    <div class="dash-stats" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Staff</div>
+                            <div class="stat-value" id="salary-total-staff">0</div>
+                            <div class="stat-sub">Active Employees</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Monthly Payroll</div>
+                            <div class="stat-value" id="salary-total-payroll">₹0</div>
+                            <div class="stat-sub">Base Total / Month</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Paid This Month</div>
+                            <div class="stat-value" style="color:var(--green);" id="salary-paid-amount">₹0</div>
+                            <div class="stat-sub" id="salary-paid-count">0 Paid</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Pending Payroll</div>
+                            <div class="stat-value" style="color:var(--red);" id="salary-pending-amount">₹0</div>
+                            <div class="stat-sub" id="salary-pending-count">0 Pending</div>
                         </div>
                     </div>
-                    <div style="background:var(--white); border:1px solid var(--border); border-radius:var(--rs); padding:40px; text-align:center; color:var(--ink3); font-weight:500;">
-                        <div style="font-size:36px; margin-bottom:12px;">💵</div>
-                        Salary Management feature coming soon.
+
+                    <!-- Filter Bar -->
+                    <div class="filter-bar" style="margin-bottom: 16px;">
+                        <button class="fb on" onclick="filterSalaries('all', this)">All Staff</button>
+                        <button class="fb" onclick="filterSalaries('pending', this)">⏳ Pending Salary</button>
+                        <button class="fb" onclick="filterSalaries('paid', this)">✅ Paid Salary</button>
+                        <button class="fb" onclick="filterSalaries('h1', this)">Hostel 1</button>
+                        <button class="fb" onclick="filterSalaries('h2', this)">Hostel 2</button>
+                        <button class="fb" onclick="filterSalaries('h3', this)">Hostel 3</button>
+                    </div>
+
+                    <div class="card" style="padding:0; overflow:hidden;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Worker Name</th>
+                                    <th>Role / Designation</th>
+                                    <th>Assigned Hostel</th>
+                                    <th>Monthly Salary</th>
+                                    <th>Phone</th>
+                                    <th>Salary Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salaries-table-body"></tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -5261,6 +5309,62 @@
                 </div>
 
             </main>
+        </div>
+    </div>
+
+    <!-- ADD WORKER MODAL -->
+    <div class="modal-overlay" id="add-worker-modal">
+        <div class="modal" style="max-width: 500px; width:92vw;">
+            <div class="modal-header">
+                <div class="modal-title">👷 Add New Worker / Staff Member</div>
+                <button class="modal-close" onclick="closeModal('add-worker-modal')">×</button>
+            </div>
+            <form onsubmit="submitAddWorker(event)">
+                <div class="input-group">
+                    <label>Worker Name *</label>
+                    <input type="text" id="aw-name" placeholder="e.g. Ramesh Kumar" required>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                    <div class="input-group">
+                        <label>Role / Designation *</label>
+                        <select id="aw-role" required>
+                            <option value="Cook">🍳 Cook / Kitchen Staff</option>
+                            <option value="Housekeeping">🧹 Housekeeping / Cleaning</option>
+                            <option value="Security">🛡️ Security / Watchman</option>
+                            <option value="Maintenance">⚡ Electrician / Plumber</option>
+                            <option value="Manager">👔 Hostel Manager</option>
+                            <option value="Other">👤 Other Staff</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Assigned Hostel *</label>
+                        <select id="aw-hostel" required>
+                            <option value="1">VUSTELA Kokapet (H1)</option>
+                            <option value="2">VUSTELA Gachibowli (H2)</option>
+                            <option value="3">VUSTELA Hitech (H3)</option>
+                            <option value="0">All Hostels (Global Staff)</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                    <div class="input-group">
+                        <label>Monthly Salary (Rs.) *</label>
+                        <input type="number" id="aw-salary" placeholder="e.g. 15000" min="0" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="aw-phone" placeholder="e.g. 9876543210" maxlength="10" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Joining Date</label>
+                    <input type="date" id="aw-doj">
+                </div>
+                <div class="flex gap12" style="margin-top: 20px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('add-worker-modal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Worker</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -6286,6 +6390,7 @@
                         renderOwnerOccupancy();
                         renderOwnerRentTable('all');
                         renderOwnerExpenses();
+                        renderSalaries();
                         renderOwnerComplaints();
                         renderOwnerAllTenants();
                         renderOwnerNotices();
@@ -6457,6 +6562,8 @@
                 renderEditDashboard();
             } else if (secId === 'o-notice-requests') {
                 renderNoticeRequests('owner');
+            } else if (secId === 'o-salaries') {
+                if (typeof renderSalaries === 'function') renderSalaries();
             }
         }
 
@@ -11359,6 +11466,216 @@
                     btn.innerHTML = '🗑️ Delete';
                 }
             }
+        }
+
+        // ============================================================
+        // SALARIES & STAFF MANAGEMENT
+        // ============================================================
+        let workers = [
+            { id: 1, name: 'Suresh Kumar', role: 'Cook', hostel_id: 1, salary: 18000, phone: '9876543210', status: 'pending', last_paid_month: '', doj: '2025-01-10' },
+            { id: 2, name: 'Lakshmi Devi', role: 'Housekeeping', hostel_id: 1, salary: 12000, phone: '9876543211', status: 'paid', last_paid_month: 'July 2026', doj: '2025-03-01' },
+            { id: 3, name: 'Raju Watchman', role: 'Security', hostel_id: 1, salary: 14000, phone: '9876543212', status: 'pending', last_paid_month: '', doj: '2024-11-15' },
+            { id: 4, name: 'Venkatesh Plumbing', role: 'Maintenance', hostel_id: 2, salary: 15000, phone: '9876543213', status: 'paid', last_paid_month: 'July 2026', doj: '2025-02-20' },
+            { id: 5, name: 'Anil Kumar', role: 'Manager', hostel_id: 1, salary: 25000, phone: '9876543214', status: 'paid', last_paid_month: 'July 2026', doj: '2024-06-01' }
+        ];
+        let currentSalaryFilter = 'all';
+
+        function getRoleBadge(role) {
+            if (role === 'Cook') return '<span class="badge badge-yellow">🍳 Cook</span>';
+            if (role === 'Housekeeping') return '<span class="badge badge-blue">🧹 Housekeeping</span>';
+            if (role === 'Security') return '<span class="badge" style="background:#4b5563;color:white;">🛡️ Security</span>';
+            if (role === 'Maintenance') return '<span class="badge" style="background:#8b5cf6;color:white;">⚡ Maintenance</span>';
+            if (role === 'Manager') return '<span class="badge badge-purple">👔 Manager</span>';
+            return '<span class="badge badge-ghost">👤 Staff</span>';
+        }
+
+        function renderSalaries(filter = currentSalaryFilter) {
+            currentSalaryFilter = filter;
+            const tbody = document.getElementById('salaries-table-body');
+            if (!tbody) return;
+
+            let filtered = [...workers];
+            if (filter === 'pending') filtered = filtered.filter(w => w.status === 'pending');
+            else if (filter === 'paid') filtered = filtered.filter(w => w.status === 'paid');
+            else if (filter === 'h1') filtered = filtered.filter(w => w.hostel_id === 1);
+            else if (filter === 'h2') filtered = filtered.filter(w => w.hostel_id === 2);
+            else if (filter === 'h3') filtered = filtered.filter(w => w.hostel_id === 3);
+
+            // Summary stats
+            const totalStaff = workers.length;
+            const totalPayroll = workers.reduce((sum, w) => sum + Number(w.salary || 0), 0);
+            const paidWorkers = workers.filter(w => w.status === 'paid');
+            const paidAmount = paidWorkers.reduce((sum, w) => sum + Number(w.salary || 0), 0);
+            const pendingWorkers = workers.filter(w => w.status === 'pending');
+            const pendingAmount = pendingWorkers.reduce((sum, w) => sum + Number(w.salary || 0), 0);
+
+            const staffEl = document.getElementById('salary-total-staff');
+            const payrollEl = document.getElementById('salary-total-payroll');
+            const paidAmtEl = document.getElementById('salary-paid-amount');
+            const paidCntEl = document.getElementById('salary-paid-count');
+            const pendAmtEl = document.getElementById('salary-pending-amount');
+            const pendCntEl = document.getElementById('salary-pending-count');
+
+            if (staffEl) staffEl.textContent = totalStaff;
+            if (payrollEl) payrollEl.textContent = `₹${totalPayroll.toLocaleString()}`;
+            if (paidAmtEl) paidAmtEl.textContent = `₹${paidAmount.toLocaleString()}`;
+            if (paidCntEl) paidCntEl.textContent = `${paidWorkers.length} Paid`;
+            if (pendAmtEl) pendAmtEl.textContent = `₹${pendingAmount.toLocaleString()}`;
+            if (pendCntEl) pendCntEl.textContent = `${pendingWorkers.length} Pending`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--ink3);">No staff records found for this filter.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(w => {
+                const hostelName = w.hostel_id === 0 ? 'All Hostels (Global)' : (hostels[w.hostel_id]?.name || `Hostel ${w.hostel_id}`);
+                const statusBadge = w.status === 'paid' 
+                    ? `<span class="badge badge-green">✅ Paid (${w.last_paid_month || 'Current'})</span>` 
+                    : `<span class="badge badge-red">⏳ Pending</span>`;
+                
+                const inits = w.name.split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase();
+
+                return `
+                <tr>
+                    <td>
+                        <div class="flex gap8" style="align-items:center;">
+                            <div class="ava" style="width:32px; height:32px; font-size:11px; font-weight:700; background:var(--accent); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center;">${inits}</div>
+                            <div>
+                                <div style="font-weight:600; color:var(--ink);">${w.name}</div>
+                                <div style="font-size:11px; color:var(--ink3);">Joined ${w.doj || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${getRoleBadge(w.role)}</td>
+                    <td><span class="badge badge-ghost">${hostelName}</span></td>
+                    <td style="font-weight:700; color:var(--ink);">₹${Number(w.salary).toLocaleString()} / mo</td>
+                    <td class="mono">${w.phone || 'N/A'}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <div class="flex gap8" style="align-items:center;">
+                            ${w.status !== 'paid' ? `<button class="btn-sm btn-green" onclick="payWorkerSalary(${w.id})">💸 Pay Salary</button>` : `<button class="btn-sm btn-ghost" onclick="showToast('Paid ✅','Salary paid for ${w.last_paid_month || 'this month'}')">Receipt</button>`}
+                            <button class="btn-sm btn-ghost" onclick="editWorkerSalary(${w.id})">✏️ Edit</button>
+                            <button class="btn-sm btn-ghost" style="color:var(--red);" onclick="removeWorker(${w.id})">🗑️</button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function filterSalaries(filter, btn) {
+            document.querySelectorAll('#o-salaries .filter-bar .fb').forEach(b => b.classList.remove('on'));
+            if (btn) btn.classList.add('on');
+            renderSalaries(filter);
+        }
+
+        function openAddWorkerModal() {
+            document.getElementById('aw-name').value = '';
+            document.getElementById('aw-role').selectedIndex = 0;
+            document.getElementById('aw-hostel').selectedIndex = 0;
+            document.getElementById('aw-salary').value = '';
+            document.getElementById('aw-phone').value = '';
+            document.getElementById('aw-doj').value = new Date().toISOString().split('T')[0];
+            openModal('add-worker-modal');
+        }
+
+        function submitAddWorker(e) {
+            e.preventDefault();
+            const name = document.getElementById('aw-name').value.trim();
+            const role = document.getElementById('aw-role').value;
+            const hostelId = parseInt(document.getElementById('aw-hostel').value);
+            const salary = parseFloat(document.getElementById('aw-salary').value);
+            const phone = document.getElementById('aw-phone').value.trim();
+            const doj = document.getElementById('aw-doj').value;
+
+            if (!name || isNaN(salary) || salary <= 0) {
+                showToast('Error', 'Please enter valid name and salary amount.');
+                return;
+            }
+
+            const newWorker = {
+                id: Date.now(),
+                name: name,
+                role: role,
+                hostel_id: hostelId,
+                salary: salary,
+                phone: phone,
+                doj: doj,
+                status: 'pending',
+                last_paid_month: ''
+            };
+
+            workers.unshift(newWorker);
+            closeModal('add-worker-modal');
+            renderSalaries();
+            showToast('Worker Added ✅', `${name} (${role}) added to staff list.`);
+        }
+
+        async function payWorkerSalary(workerId) {
+            const worker = workers.find(w => w.id === workerId);
+            if (!worker) return;
+
+            if (!confirm(`Confirm paying salary of ₹${worker.salary.toLocaleString()} to ${worker.name} (${worker.role})?`)) return;
+
+            showToast('Processing...', `Recording salary payment for ${worker.name}...`);
+
+            const currentMonthName = new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+            worker.status = 'paid';
+            worker.last_paid_month = currentMonthName;
+
+            // Auto log into expenses!
+            const newExp = {
+                hostel_id: worker.hostel_id === 0 ? 1 : worker.hostel_id,
+                category: 'staff salary',
+                amount: parseFloat(worker.salary),
+                description: `Salary paid to ${worker.name} (${worker.role}) for ${currentMonthName}`,
+                created_by: 'Owner (Ramesh Sharma)',
+                created_at: new Date().toISOString()
+            };
+
+            try {
+                const { data: expResult, error: expError } = await db.from('expenses').insert([newExp]).select();
+                if (!expError && expResult && expResult[0]) {
+                    newExp.id = expResult[0].id;
+                }
+                expenses.unshift(newExp);
+                if (typeof renderOwnerExpenses === 'function') renderOwnerExpenses();
+                if (typeof renderMgrExpenses === 'function') renderMgrExpenses();
+            } catch (e) {
+                console.warn('DB expense insert notice:', e);
+            }
+
+            renderSalaries();
+            showToast('Salary Paid ✅', `₹${worker.salary.toLocaleString()} paid to ${worker.name}. Expense logged!`);
+        }
+
+        function editWorkerSalary(workerId) {
+            const worker = workers.find(w => w.id === workerId);
+            if (!worker) return;
+
+            const input = prompt(`Update monthly salary for ${worker.name} (${worker.role}):`, worker.salary);
+            if (input === null) return;
+
+            const newSal = parseFloat(input.trim());
+            if (isNaN(newSal) || newSal <= 0) {
+                showToast('Error', 'Please enter a valid salary amount.');
+                return;
+            }
+
+            worker.salary = newSal;
+            renderSalaries();
+            showToast('Salary Updated ✅', `${worker.name}'s salary updated to ₹${newSal.toLocaleString()}.`);
+        }
+
+        function removeWorker(workerId) {
+            const worker = workers.find(w => w.id === workerId);
+            if (!worker) return;
+
+            if (!confirm(`Are you sure you want to remove ${worker.name} (${worker.role}) from staff list?`)) return;
+
+            workers = workers.filter(w => w.id !== workerId);
+            renderSalaries();
+            showToast('Worker Removed 🗑️', `${worker.name} removed from staff list.`);
         }
 
         // ============================================================
