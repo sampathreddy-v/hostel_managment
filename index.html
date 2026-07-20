@@ -9562,11 +9562,18 @@
             const tenant = getLoggedTenantObj();
             const rentAmt = (overrideRent !== null && overrideRent !== undefined && !isNaN(Number(overrideRent))) ? Number(overrideRent) : getTenantDueRentAmount();
             const roomNum = (tenant && (tenant.room_num || tenant.rooms?.num)) ? (tenant.room_num || tenant.rooms?.num) : '105';
-            const upiId = (currentHostelData && currentHostelData.upi_id) ? currentHostelData.upi_id : 'vustela@upi';
-            const upiName = (currentHostelData && currentHostelData.upi_name) ? currentHostelData.upi_name : 'VUSTELA PG Hostels';
+            
+            const hostelId = (tenant && tenant.rooms && tenant.rooms.hostel_id) ? tenant.rooms.hostel_id : (typeof currentHostel !== 'undefined' ? currentHostel : 1);
+            const hostelObj = (typeof hostels !== 'undefined' && hostels && hostels[hostelId]) ? hostels[hostelId] : null;
 
-            document.getElementById('t-upi-amount-display').textContent = `₹${rentAmt.toLocaleString()}`;
-            document.getElementById('t-upi-id-text').textContent = upiId;
+            const upiId = (hostelObj && hostelObj.upi_id) ? hostelObj.upi_id : '9505835157@ybl';
+            const upiName = (hostelObj && hostelObj.upi_name) ? hostelObj.upi_name : 'VUSTELA PG Hostels';
+
+            const amtEl = document.getElementById('t-upi-amount-display');
+            if (amtEl) amtEl.textContent = `₹${rentAmt.toLocaleString()}`;
+
+            const upiIdEl = document.getElementById('t-upi-id-text');
+            if (upiIdEl) upiIdEl.textContent = upiId;
 
             // Generate UPI Intent URI
             const params = new URLSearchParams({
@@ -9581,11 +9588,12 @@
 
             // Generate QR Image URL using QRServer API
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUri)}`;
-            document.getElementById('t-upi-qr-img').src = qrUrl;
+            const qrImgEl = document.getElementById('t-upi-qr-img');
+            if (qrImgEl) qrImgEl.src = qrUrl;
 
             // Set app direct link
             const appLink = document.getElementById('t-upi-app-link');
-            appLink.href = upiUri;
+            if (appLink) appLink.href = upiUri;
 
             // Check if tenant already has a pending submission
             await checkTenantPendingPayment();
