@@ -9888,11 +9888,7 @@
 
                 // 1. Update submission status to approved
                 const { error: updateErr } = await db.from('payment_submissions')
-                    .update({ 
-                        status: 'approved', 
-                        amount_approved: sub.amount_claimed,
-                        updated_at: new Date().toISOString()
-                    })
+                    .update({ status: 'approved' })
                     .eq('id', subId);
 
                 if (updateErr) {
@@ -10005,7 +10001,7 @@
                     .select('*')
                     .eq('hostel_id', currentHostel)
                     .eq('status', 'approved')
-                    .order('updated_at', { ascending: false });
+                    .order('created_at', { ascending: false });
 
                 if (error) {
                     container.innerHTML = `<div style="padding:24px; text-align:center; color:var(--danger);">Error loading approved payments: ${error.message}</div>`;
