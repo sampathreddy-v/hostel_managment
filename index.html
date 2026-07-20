@@ -9660,15 +9660,24 @@
             const payBtn = document.getElementById('tp-pay-btn');
 
             try {
-                const { data, error } = await db
-                    .from('payment_submissions')
-                    .select('*')
-                    .eq('bed_id', tenant.id)
-                    .eq('status', 'pending')
-                    .order('created_at', { ascending: false })
-                    .limit(1);
+                let query = db.from('payment_submissions').select('*').eq('status', 'pending');
+                if (tenant.tenant_email) {
+                    query = query.ilike('tenant_email', tenant.tenant_email);
+                } else if (tenant.id) {
+                    query = query.eq('bed_id', tenant.id);
+                }
 
-                if (!error && data && data.length > 0) {
+                const { data, error } = await query.order('created_at', { ascending: false }).limit(1);
+
+                if (error) {
+                    console.warn('[TenantUPI] Supabase table error:', error.message);
+                    if (error.code === '42P01' || error.message.includes('does not exist')) {
+                        showToast('Database Notice ⚠️', 'Run Supabase SQL migration script to enable UPI payment verification.');
+                    }
+                    return;
+                }
+
+                if (data && data.length > 0) {
                     const sub = data[0];
                     if (pendingBanner) pendingBanner.style.display = 'block';
                     if (pendingText) pendingText.textContent = `Submitted UTR: ${sub.utr_number} (₹${Number(sub.amount_claimed).toLocaleString()}). Submitted on ${new Date(sub.created_at).toLocaleDateString()}. Verification in progress.`;
@@ -9739,8 +9748,11 @@
             const roomNum = tenant.room_num || (tenant.rooms ? tenant.rooms.num : '105');
 
             try {
+                const rawBedId = tenant.id || tenant._id;
+                const numericBedId = (rawBedId && !isNaN(Number(rawBedId))) ? Number(rawBedId) : 1;
+
                 const { data, error } = await db.from('payment_submissions').insert([{
-                    bed_id: tenant.id,
+                    bed_id: numericBedId,
                     hostel_id: tenant.hostel_id || currentHostel || 1,
                     tenant_name: tenant.tenant_name,
                     tenant_email: tenant.tenant_email,
