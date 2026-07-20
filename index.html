@@ -5590,6 +5590,9 @@
                             <div class="flex between" style="margin-bottom:8px"><span
                                     style="font-size:13px;color:var(--ink3)">Monthly Rent</span><span
                                     style="font-size:14px;font-weight:600" id="tp-pay-sub">₹5,500</span></div>
+                            <div class="flex between" style="margin-bottom:8px; display:none;" id="tp-fine-row"><span
+                                    style="font-size:13px;color:var(--danger);font-weight:600;">Late Fee (Fine ⚠️)</span><span
+                                    style="font-size:14px;font-weight:700;color:var(--danger)" id="tp-pay-fine">₹0</span></div>
                             <div class="flex between" style="margin-bottom:8px"><span
                                     style="font-size:13px;color:var(--ink3)">Processing Fee</span><span
                                     style="font-size:14px;font-weight:600">₹0</span></div>
@@ -6332,9 +6335,13 @@
             const inits = name.split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase();
             const rnum = currentTenant.rooms.num;
             const hname = hostels[currentHostel].name;
-            const roomStr = `Room ${rnum} · ${hname}`;
-            const rentStr = `₹${(currentTenant.rent || 5500).toLocaleString()}`;
-            const depStr = `₹${((currentTenant.rent || 5500) * 2).toLocaleString()}`;
+            const baseRent = Number(currentTenant.rent || 5500);
+            const lateFee = getLateFeeForBed(currentTenant);
+            const totalDue = (currentTenant.rent_status === 'paid') ? 0 : (baseRent + lateFee);
+
+            const rentStr = `₹${totalDue.toLocaleString()}`;
+            const baseRentStr = `₹${baseRent.toLocaleString()}`;
+            const depStr = `₹${(baseRent * 2).toLocaleString()}`;
 
             document.getElementById('tp-sb-name').textContent = name;
             document.getElementById('tp-sb-room').textContent = `Room ${rnum} · Hostel ${currentHostel}`;
@@ -6347,8 +6354,20 @@
 
             document.getElementById('tp-hero-rent').textContent = rentStr;
             document.getElementById('tp-pay-amt').textContent = rentStr;
-            document.getElementById('tp-pay-sub').textContent = rentStr;
+            document.getElementById('tp-pay-sub').textContent = baseRentStr;
             document.getElementById('tp-pay-total').textContent = rentStr;
+
+            const fineRow = document.getElementById('tp-fine-row');
+            const fineVal = document.getElementById('tp-pay-fine');
+            if (fineRow && fineVal) {
+                if (lateFee > 0 && currentTenant.rent_status !== 'paid') {
+                    fineRow.style.display = 'flex';
+                    fineVal.textContent = `+ ₹${lateFee.toLocaleString()}`;
+                } else {
+                    fineRow.style.display = 'none';
+                }
+            }
+
             document.getElementById('tp-pay-btn').textContent = `Pay ${rentStr} →`;
             document.getElementById('tp-pay-due').textContent = `${roomStr} · Due June 5, 2025`;
 
