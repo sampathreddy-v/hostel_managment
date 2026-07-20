@@ -888,16 +888,26 @@ function startScheduler() {
     setTimeout(checkScheduler, 5000); // Trigger check 5 seconds after boot
 }
 
+const receivedBankSmsCache = []; // Global in-memory cache of incoming bank SMS UTRs
+
 const server = http.createServer((req, res) => {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
         res.writeHead(204);
         res.end();
         return;
+    }
+
+    if (req.url.startsWith('/api/check-utr-status')) {
+        const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+        const utr = urlObj.searchParams.get('utr');
+        const isMatched = receivedBankSmsCache.some(item => item.utr === utr);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ matched: isMatched, utr }));
     }
 
     if (req.method === 'POST') {
@@ -913,6 +923,12 @@ const server = http.createServer((req, res) => {
                     const alertText = data.text || data.body || data.message || body || '';
                     console.log(`\n[Server] Received Bank Alert Text on ${req.url}:`, alertText.substring(0, 100));
                     
+                    // Log UTRs in memory cache for reverse lookup
+                    const utrMatches = alertText.match(/\b\d{12}\b/g) || [];
+                    utrMatches.forEach(utr => {
+                        receivedBankSmsCache.push({ utr, time: Date.now() });
+                    });
+
                     const result = await processBankAlertText(alertText);
                     res.writeHead(200, { 'Content-Type': 'application/json' });
                     return res.end(JSON.stringify({ 
