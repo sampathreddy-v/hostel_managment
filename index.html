@@ -9521,6 +9521,23 @@
             return null;
         }
 
+        function getTenantDueRentAmount() {
+            // 1. Read from DOM element tp-pay-amt (which is rendered directly on tenant page)
+            const payAmtEl = document.getElementById('tp-pay-amt');
+            if (payAmtEl && payAmtEl.textContent) {
+                const cleanText = payAmtEl.textContent.replace(/[^\d.]/g, '');
+                const amt = Number(cleanText);
+                if (!isNaN(amt) && amt > 0) return amt;
+            }
+            // 2. Read from currentTenant object
+            const tenant = getLoggedTenantObj();
+            if (tenant && tenant.rent !== undefined && tenant.rent !== null) {
+                const amt = Number(tenant.rent);
+                if (!isNaN(amt) && amt > 0) return amt;
+            }
+            return 5500;
+        }
+
         function selectPay(el) {
             document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
             el.classList.add('selected');
@@ -9536,7 +9553,7 @@
             modal.style.display = 'flex';
 
             const tenant = getLoggedTenantObj();
-            const rentAmt = Number((tenant && tenant.rent !== undefined && tenant.rent !== null) ? tenant.rent : 5500);
+            const rentAmt = getTenantDueRentAmount();
             const roomNum = (tenant && (tenant.room_num || tenant.rooms?.num)) ? (tenant.room_num || tenant.rooms?.num) : '105';
             const upiId = (currentHostelData && currentHostelData.upi_id) ? currentHostelData.upi_id : 'vustela@upi';
             const upiName = (currentHostelData && currentHostelData.upi_name) ? currentHostelData.upi_name : 'VUSTELA PG Hostels';
@@ -9657,7 +9674,7 @@
             btn.disabled = true;
             btn.textContent = 'Submitting...';
 
-            const rentAmt = Number(tenant.rent !== undefined && tenant.rent !== null ? tenant.rent : 5500);
+            const rentAmt = getTenantDueRentAmount();
             const roomNum = tenant.room_num || (tenant.rooms ? tenant.rooms.num : '105');
 
             try {
