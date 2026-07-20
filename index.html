@@ -10615,33 +10615,7 @@
 
             // Welcome WhatsApp
             if (phone && phone !== 'undefined') {
-                const hostelName = hostels[currentHostel]?.name || 'VUSTELA PG Hostel';
-                const siteUrl = window.location.origin;
-                const waMessage = `🎉 *Welcome to VUSTELA!*\n\nHi ${name}, you have been registered at *${hostelName}* (Room ${roomNum}).\n\n🔑 Login: ${email}\n🔑 Password: ${pwd}\n\nLogin here: ${siteUrl}\n\n— VUSTELA`;
-
-                fetch(API_BASE_URL + '/send-whatsapp', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        to:      phone,
-                        message: waMessage
-                    })
-                }).then(res => res.json()).then(result => {
-                    if (result.success) {
-                        showToast('WhatsApp Sent ✅', `Welcome message sent to ${phone}`);
-                    } else {
-                        let cleanPhone = phone.replace(/\D/g, '');
-                        if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
-                        const manualUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
-                        const errMsg = result.error || 'Meta API Error';
-                        showToast('WhatsApp Failed ❌', `${errMsg}. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to send manually</a>`, 12000);
-                    }
-                }).catch(e => {
-                    let cleanPhone = phone.replace(/\D/g, '');
-                    if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
-                    const manualUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
-                    showToast('WhatsApp Error ❌', `Could not reach server. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to send manually</a>`, 10000);
-                });
+                sendTenantWelcomeWhatsApp(name, email, pwd, phone, roomNum);
             }
         }
 
@@ -10754,6 +10728,31 @@
             }
         }
 
+        function sendTenantWelcomeWhatsApp(name, email, pwd, phone, roomNum) {
+            if (!phone) return;
+            let cleanPhone = phone.replace(/\D/g, '');
+            if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+            const hostelName = hostels[currentHostel]?.name || 'VUSTELA PG Hostel';
+            const siteUrl = window.location.origin;
+            const waMessage = `🎉 *Welcome to VUSTELA!*\n\nHi ${name}, you have been registered at *${hostelName}* (Room ${roomNum}).\n\n🔑 Login: ${email}\n🔑 Password: ${pwd}\n\nLogin here: ${siteUrl}\n\n— VUSTELA`;
+
+            fetch(API_BASE_URL + '/send-whatsapp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ to: cleanPhone, message: waMessage })
+            }).then(res => res.json()).then(result => {
+                const manualUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
+                if (result.success) {
+                    showToast('WhatsApp Sent ✅', `Welcome message sent to ${cleanPhone}. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to open WhatsApp</a>`, 10000);
+                } else {
+                    showToast('WhatsApp Notice 📱', `Meta API notice: ${result.error || 'Recipient window closed'}. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline; background:#e6f4ea; padding:4px 8px; border-radius:4px;">Click to Send WhatsApp Credentials to ${name}</a>`, 15000);
+                }
+            }).catch(e => {
+                const manualUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
+                showToast('WhatsApp Direct 📱', `<a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to Send WhatsApp Credentials to ${name}</a>`, 15000);
+            });
+        }
+
         async function postNotice() {
             const title = document.getElementById('notice-title').value.trim();
             const body = document.getElementById('notice-body').value.trim();
@@ -10765,7 +10764,6 @@
 
             if (error) { 
                 console.warn('DB Error:', error.message);
-                // Fallback to local state if DB fails
                 newNotice.id = Date.now();
                 newNotice.created_at = new Date().toISOString();
                 notices.unshift(newNotice);
@@ -10778,17 +10776,27 @@
             document.getElementById('notice-title').value = '';
             document.getElementById('notice-body').value = '';
 
-            // SIMULATE NOTIFICATIONS & LIVE WHATSAPP
-            // 1. Fetch all tenants in this hostel
-            const { data: tenantBeds } = await db.from('beds')
-                .select('tenant_name, tenant_email, tenant_phone, rooms!inner(hostel_id)')
-                .not('tenant_name', 'is', null)
-                .eq('rooms.hostel_id', currentHostel);
+            // 1. Retrieve all active tenants in currentHostel from memory rooms
+            let tenantBeds = [];
+            if (rooms[currentHostel]) {
+                rooms[currentHostel].forEach(r => {
+                    r.beds.forEach(b => {
+                        if (b.tenant && b.tenant.trim().length > 0 && !b.tenant.startsWith('PENDING:')) {
+                            tenantBeds.push({ 
+                                tenant_name: b.tenant, 
+                                tenant_email: b.tenant_email, 
+                                tenant_phone: b.tenant_phone,
+                                roomNum: r.num 
+                            });
+                        }
+                    });
+                });
+            }
 
             let emailsSent = 0;
             let whatsappSent = 0;
 
-            if (tenantBeds) {
+            if (tenantBeds.length > 0) {
                 for (const bed of tenantBeds) {
                     if (bed.tenant_phone) {
                         try {
@@ -10839,7 +10847,7 @@
                 }
             }
 
-            showToast('Notice Posted 📢', `Sent via WhatsApp (${whatsappSent}) and Email (${emailsSent}).`);
+            showToast('Notice Posted 📢', `Broadcasting notice to all active tenants in Hostel ${currentHostel}.`);
         }
 
         function renderOwnerNotices() {
