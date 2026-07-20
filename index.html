@@ -11796,12 +11796,12 @@
             worker.payments.unshift(paymentRec);
 
             // Auto log into expenses!
-            const monthStr = new Date(date).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
             const newExp = {
                 hostel_id: worker.hostel_id === 0 ? 1 : worker.hostel_id,
-                category: 'staff salary',
+                category: 'salaries',
                 amount: amount,
-                description: `Salary/Payment to ${worker.name} (${worker.role}) - ${note}`,
+                description: `${worker.name} (${worker.role})${note ? ' - ' + note : ''}`,
+                bill_url: currentWorkerPaymentProof || '',
                 created_by: 'Owner (Ramesh Sharma)',
                 created_at: new Date(date).toISOString()
             };
