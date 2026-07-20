@@ -9515,6 +9515,12 @@
         // ============================================================
         let currentUpiScreenshotBase64 = null;
 
+        function getLoggedTenantObj() {
+            if (typeof currentTenant !== 'undefined' && currentTenant) return currentTenant;
+            if (typeof currentTenantBed !== 'undefined' && currentTenantBed) return currentTenantBed;
+            return null;
+        }
+
         function selectPay(el) {
             document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
             el.classList.add('selected');
@@ -9529,8 +9535,9 @@
             if (!modal) return;
             modal.style.display = 'flex';
 
-            const rentAmt = Number((currentTenantBed && currentTenantBed.rent) ? currentTenantBed.rent : 5500);
-            const roomNum = (currentTenantBed && currentTenantBed.room_num) ? currentTenantBed.room_num : '105';
+            const tenant = getLoggedTenantObj();
+            const rentAmt = Number((tenant && tenant.rent !== undefined && tenant.rent !== null) ? tenant.rent : 5500);
+            const roomNum = (tenant && (tenant.room_num || tenant.rooms?.num)) ? (tenant.room_num || tenant.rooms?.num) : '105';
             const upiId = (currentHostelData && currentHostelData.upi_id) ? currentHostelData.upi_id : 'vustela@upi';
             const upiName = (currentHostelData && currentHostelData.upi_name) ? currentHostelData.upi_name : 'VUSTELA PG Hostels';
 
@@ -9601,7 +9608,8 @@
         }
 
         async function checkTenantPendingPayment() {
-            if (!currentTenantBed) return;
+            const tenant = getLoggedTenantObj();
+            if (!tenant) return;
             const pendingBanner = document.getElementById('t-upi-pending-banner');
             const pendingText = document.getElementById('t-upi-pending-text');
 
@@ -9609,7 +9617,7 @@
                 const { data, error } = await db
                     .from('payment_submissions')
                     .select('*')
-                    .eq('bed_id', currentTenantBed.id)
+                    .eq('bed_id', tenant.id)
                     .eq('status', 'pending')
                     .order('created_at', { ascending: false })
                     .limit(1);
@@ -9634,7 +9642,8 @@
         }
 
         async function submitUpiPayment() {
-            if (!currentTenantBed) {
+            const tenant = getLoggedTenantObj();
+            if (!tenant) {
                 showToast('Error', 'Tenant session expired. Please log in again.');
                 return;
             }
@@ -9648,15 +9657,16 @@
             btn.disabled = true;
             btn.textContent = 'Submitting...';
 
-            const rentAmt = Number(currentTenantBed.rent || 5500);
+            const rentAmt = Number(tenant.rent !== undefined && tenant.rent !== null ? tenant.rent : 5500);
+            const roomNum = tenant.room_num || (tenant.rooms ? tenant.rooms.num : '105');
 
             try {
                 const { data, error } = await db.from('payment_submissions').insert([{
-                    bed_id: currentTenantBed.id,
-                    hostel_id: currentTenantBed.hostel_id || 1,
-                    tenant_name: currentTenantBed.tenant_name,
-                    tenant_email: currentTenantBed.tenant_email,
-                    room_num: currentTenantBed.room_num || '105',
+                    bed_id: tenant.id,
+                    hostel_id: tenant.hostel_id || currentHostel || 1,
+                    tenant_name: tenant.tenant_name,
+                    tenant_email: tenant.tenant_email,
+                    room_num: roomNum,
                     amount_claimed: rentAmt,
                     utr_number: utr,
                     screenshot_url: currentUpiScreenshotBase64 || null,
