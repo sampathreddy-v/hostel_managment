@@ -6983,6 +6983,15 @@
             const today = new Date();
             const isCurrent = (ownerSelectedMonth === (today.getMonth() + 1)) && (ownerSelectedYear === today.getFullYear());
 
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const currentMonthName = monthNames[ownerSelectedMonth - 1] + ' ' + ownerSelectedYear;
+            
+            const titleEl = document.getElementById('owner-financial-title');
+            if (titleEl) titleEl.textContent = `${currentMonthName} — Financial Summary`;
+            
+            const subTitleEl = document.getElementById('owner-overview-subtitle');
+            if (subTitleEl) subTitleEl.textContent = `Here's your hostel overview for ${currentMonthName}`;
+
             let expectedTotal = 0;
             let collectedTotal = 0;
             let lateFeeTotal = 0;
@@ -7046,8 +7055,8 @@
 
                 if (expenses) {
                     maintenance = expenses
-                        .filter(e => e.hostel_id === hid && matchesMonthYear(e.created_at, ownerSelectedMonth, ownerSelectedYear))
-                        .reduce((sum, e) => sum + (e.amount || 0), 0);
+                        .filter(e => Number(e.hostel_id) === Number(hid) && (isCurrent || matchesMonthYear(e.created_at, ownerSelectedMonth, ownerSelectedYear)))
+                        .reduce((sum, e) => sum + Number(e.amount || 0), 0);
                 }
 
                 const net = collected + lateFee - maintenance;
