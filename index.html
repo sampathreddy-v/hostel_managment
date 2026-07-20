@@ -11608,7 +11608,32 @@
             return worker.payments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
         }
 
+        function syncWorkerPaymentsToExpenses() {
+            if (!workers) return;
+            workers.forEach(w => {
+                if (w.payments && Array.isArray(w.payments)) {
+                    w.payments.forEach(p => {
+                        const desc = `${w.name} (${w.role})${p.note ? ' - ' + p.note : ''}`;
+                        const exists = expenses.some(e => e.description === desc && Number(e.amount) === Number(p.amount) && new Date(e.created_at).toDateString() === new Date(p.date).toDateString());
+                        if (!exists) {
+                            expenses.unshift({
+                                id: p.id || (Date.now() + Math.floor(Math.random()*1000)),
+                                hostel_id: w.hostel_id === 0 ? 1 : w.hostel_id,
+                                category: 'salaries',
+                                amount: Number(p.amount),
+                                description: desc,
+                                bill_url: p.proof || '',
+                                created_by: 'Owner (Ramesh Sharma)',
+                                created_at: new Date(p.date).toISOString()
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
         function renderSalaries(filter = currentSalaryFilter) {
+            syncWorkerPaymentsToExpenses();
             currentSalaryFilter = filter;
             const tbody = document.getElementById('salaries-table-body');
             if (!tbody) return;
