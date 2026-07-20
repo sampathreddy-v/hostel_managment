@@ -3966,7 +3966,7 @@
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Rent Status</td>
                                 <td style="padding: 12px 16px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; border: none;">
                                     <span id="tp-rent-status"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantRentStatus()">✏️ Edit</button>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px; color: #10b981; border-color: #10b981; font-weight:700;" onclick="editTenantRentStatus()">✅ Make Paid</button>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
@@ -8281,19 +8281,23 @@
         async function editTenantRentStatus() {
             if (!activeProfileTenant) return;
             const name = getDisplayName(activeProfileTenant.tenant);
-            const currentStatus = activeProfileTenant.rentStatus || 'pending';
-            const choice = prompt(`Update Rent Status for ${name}:\nType 'paid', 'pending', or 'overdue':`, currentStatus);
-            if (choice === null) return;
-
-            const newStatus = choice.trim().toLowerCase();
-            if (!['paid', 'pending', 'overdue'].includes(newStatus)) {
-                showToast('Invalid Status ❌', 'Status must be paid, pending, or overdue.');
-                return;
+            const currentStatus = (activeProfileTenant.rentStatus || activeProfileTenant.rent_status || 'pending').toLowerCase();
+            
+            let targetStatus = 'paid';
+            let confirmMsg = `Mark rent as PAID for ${name} (Room ${activeProfileTenant.num})?`;
+            
+            if (currentStatus === 'paid') {
+                targetStatus = 'pending';
+                confirmMsg = `Mark rent status back to PENDING for ${name} (Room ${activeProfileTenant.num})?`;
             }
+
+            if (!confirm(confirmMsg)) return;
+
+            showToast('Saving...', `Marking rent as ${targetStatus.toUpperCase()}...`);
 
             try {
                 if (activeProfileTenant._id) {
-                    await db.from('beds').update({ rent_status: newStatus }).eq('id', activeProfileTenant._id);
+                    await db.from('beds').update({ rent_status: targetStatus }).eq('id', activeProfileTenant._id);
                 }
 
                 const hostelId = activeProfileTenant.hostel;
@@ -8302,18 +8306,19 @@
                 if (rm && rm.beds) {
                     const bed = rm.beds.find(b => b.tenant === activeProfileTenant.tenant);
                     if (bed) {
-                        bed.rentStatus = newStatus;
-                        bed.rent_status = newStatus;
+                        bed.rentStatus = targetStatus;
+                        bed.rent_status = targetStatus;
                     }
                 }
 
-                activeProfileTenant.rentStatus = newStatus;
-                activeProfileTenant.rent_status = newStatus;
+                activeProfileTenant.rentStatus = targetStatus;
+                activeProfileTenant.rent_status = targetStatus;
 
                 openTenantProfile(activeProfileTenant);
                 refreshAllPortalsData();
-                showToast('Updated! ✅', `Rent status set to ${newStatus.toUpperCase()}.`);
+                showToast('Marked Paid ✅', `Rent status for ${name} set to ${targetStatus.toUpperCase()}.`);
             } catch (err) {
+                console.error('[TenantProfile] Rent status update error:', err);
                 showToast('Error ❌', err.message);
             }
         }
