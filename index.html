@@ -5046,7 +5046,10 @@
                             <div class="dash-title">Verify UPI Payments</div>
                             <div class="dash-subtitle">Review pending tenant UPI submissions or batch paste bank statements</div>
                         </div>
-                        <button class="btn btn-outline btn-sm" onclick="openBatchReconcileModal()">📋 Paste Bank Statement</button>
+                        <div class="flex" style="gap:8px; align-items:center;">
+                            <button class="btn btn-outline btn-sm" onclick="openPaidUpiModal()" style="border-color:var(--accent); color:var(--accent);">📜 Approved Paid List</button>
+                            <button class="btn btn-outline btn-sm" onclick="openBatchReconcileModal()">📋 Paste Bank Statement</button>
+                        </div>
                     </div>
 
                     <!-- Pending Queue Container -->
@@ -9937,6 +9940,82 @@
             }
         }
 
+        function openPaidUpiModal() {
+            const modal = document.getElementById('paid-upi-modal');
+            if (modal) modal.style.display = 'flex';
+            renderPaidUpiPayments();
+        }
+
+        function closePaidUpiModal(e) {
+            const modal = document.getElementById('paid-upi-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function copyUtrNumber(utr) {
+            navigator.clipboard.writeText(utr);
+            showToast('Copied! 📋', `UTR ${utr} copied to clipboard.`);
+        }
+
+        async function renderPaidUpiPayments() {
+            const container = document.getElementById('m-upi-paid-list-container');
+            if (!container) return;
+
+            try {
+                const { data: approvedList, error } = await db
+                    .from('payment_submissions')
+                    .select('*')
+                    .eq('hostel_id', currentHostel)
+                    .eq('status', 'approved')
+                    .order('updated_at', { ascending: false });
+
+                if (error) {
+                    container.innerHTML = `<div style="padding:24px; text-align:center; color:var(--danger);">Error loading approved payments: ${error.message}</div>`;
+                    return;
+                }
+
+                if (!approvedList || approvedList.length === 0) {
+                    container.innerHTML = `<div style="padding:32px; text-align:center; background:var(--bg); border-radius:12px; color:var(--ink3);">
+                        <div style="font-size:24px; margin-bottom:8px;">📜</div>
+                        <div style="font-size:14px; font-weight:600; color:var(--ink);">No Approved Payments Yet</div>
+                        <div style="font-size:12px;">Verified tenant payment receipts will appear here automatically upon approval.</div>
+                    </div>`;
+                    return;
+                }
+
+                container.innerHTML = approvedList.map(sub => `
+                    <div style="background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:12px;" class="flex between align-center">
+                        <div>
+                            <div class="flex align-center" style="gap:8px; margin-bottom:4px;">
+                                <div style="font-size:15px; font-weight:700; color:var(--ink);">${sub.tenant_name || 'Tenant'}</div>
+                                <span class="badge badge-orange" style="font-size:11px;">Room ${sub.room_num || 'N/A'}</span>
+                                <span class="badge badge-green" style="font-size:11px;">Paid ✅</span>
+                            </div>
+                            <div style="font-size:12px; color:var(--ink2); margin-bottom:4px;">
+                                UTR: <strong style="font-family:monospace; font-size:13px; color:var(--ink);">${sub.utr_number}</strong>
+                                <button class="btn-ghost" style="padding:1px 5px; font-size:10px; margin-left:4px;" onclick="copyUtrNumber('${sub.utr_number}')">📋 Copy</button>
+                            </div>
+                            <div style="font-size:11px; color:var(--ink3);">
+                                Approved: ${new Date(sub.updated_at || sub.created_at).toLocaleString()}
+                            </div>
+                        </div>
+
+                        <div style="text-align:right;">
+                            <div style="font-size:18px; font-weight:800; color:#10b981; font-family:var(--font-display);">
+                                ₹${Number(sub.amount_claimed || sub.amount_approved || 0).toLocaleString()}
+                            </div>
+                            ${sub.screenshot_url ? `
+                                <button class="btn-ghost" style="font-size:11px; padding:2px 6px; color:var(--accent);" onclick="openLightbox('${sub.screenshot_url}')">🖼️ View Receipt</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error('[ManagerUPI] Paid list error:', err);
+                container.innerHTML = `<div style="padding:24px; text-align:center; color:var(--danger);">${err.message}</div>`;
+            }
+        }
+
         function openBatchReconcileModal() {
             const modal = document.getElementById('batch-reconcile-modal');
             if (modal) modal.style.display = 'flex';
@@ -12562,6 +12641,25 @@
             </div>
 
             <button class="btn-ghost" onclick="closeTenantUpiModal()" style="margin-top:16px;">Close</button>
+        </div>
+    </div>
+
+    <!-- MODAL: APPROVED PAID UPI LIST -->
+    <div class="modal-overlay" id="paid-upi-modal" onclick="closePaidUpiModal(event)">
+        <div class="modal" style="max-width:650px; width:95%; max-height:85vh; display:flex; flex-direction:column;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">📜 Approved UPI Payment History</div>
+                    <div style="font-size:12px; color:var(--ink3);">Confirmed and reconciled tenant payment receipts</div>
+                </div>
+                <button class="modal-close" onclick="closePaidUpiModal()">×</button>
+            </div>
+            
+            <div style="flex:1; overflow-y:auto; padding-right:4px; margin-top:12px;" id="m-upi-paid-list-container">
+                <div style="text-align:center; padding:32px; color:var(--ink3);">Loading approved payments...</div>
+            </div>
+
+            <button class="btn-ghost" onclick="closePaidUpiModal()" style="margin-top:16px;">Close</button>
         </div>
     </div>
 
