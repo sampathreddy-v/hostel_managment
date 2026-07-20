@@ -6367,14 +6367,15 @@
             const name = currentTenant.tenant_name;
             const first = name.split(' ')[0];
             const inits = name.split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase();
-            const rnum = currentTenant.rooms.num;
-            const hname = hostels[currentHostel].name;
+            const roomStr = `Room ${rnum} · ${hname}`;
             const baseRent = Number(currentTenant.rent || 5500);
+            const proratedRent = getProratedRentForBed(currentTenant);
             const lateFee = getLateFeeForBed(currentTenant);
-            const totalDue = (currentTenant.rent_status === 'paid') ? 0 : (baseRent + lateFee);
+            const totalDue = (currentTenant.rent_status === 'paid') ? 0 : (proratedRent + lateFee);
 
             const rentStr = `₹${totalDue.toLocaleString()}`;
-            const baseRentStr = `₹${baseRent.toLocaleString()}`;
+            const isProrated = proratedRent < baseRent;
+            const proratedRentStr = isProrated ? `₹${proratedRent.toLocaleString()} (Prorated)` : `₹${baseRent.toLocaleString()}`;
             const depStr = `₹${(baseRent * 2).toLocaleString()}`;
 
             document.getElementById('tp-sb-name').textContent = name;
@@ -6388,7 +6389,7 @@
 
             document.getElementById('tp-hero-rent').textContent = rentStr;
             document.getElementById('tp-pay-amt').textContent = rentStr;
-            document.getElementById('tp-pay-sub').textContent = baseRentStr;
+            document.getElementById('tp-pay-sub').textContent = proratedRentStr;
             document.getElementById('tp-pay-total').textContent = rentStr;
 
             const fineRow = document.getElementById('tp-fine-row');
@@ -7338,6 +7339,31 @@
             popup.classList.add('on');
         }
 
+        function getProratedRentForBed(b) {
+            if (!b) return 5500;
+            const fullRent = Number(b.rent || 5500);
+            if (!b.date_of_joining) return fullRent;
+
+            const doj = new Date(b.date_of_joining);
+            if (isNaN(doj.getTime())) return fullRent;
+
+            const today = new Date();
+            // Prorating applies ONLY during the joining month & year
+            if (doj.getMonth() === today.getMonth() && doj.getFullYear() === today.getFullYear()) {
+                const joinDay = doj.getDate();
+                const totalDaysInMonth = new Date(doj.getFullYear(), doj.getMonth() + 1, 0).getDate();
+                const daysOccupied = totalDaysInMonth - joinDay + 1;
+
+                if (daysOccupied <= 0) return 0;
+                if (daysOccupied >= totalDaysInMonth) return fullRent;
+
+                const prorated = Math.round((fullRent / totalDaysInMonth) * daysOccupied);
+                return prorated;
+            }
+
+            return fullRent;
+        }
+
         function getLateFeeForBed(b) {
             if (!b || b.rentStatus === 'paid' || b.rentStatus === 'Request' || !b.tenant || b.tenant.startsWith('PENDING:')) return 0;
             if (b.custom_late_fee !== undefined && b.custom_late_fee !== null) {
@@ -7347,6 +7373,10 @@
             if (b.date_of_joining) {
                 const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
                 if (doj > today) return 0;
+                // Rule 1: No late fee fine if tenant joined in the current month & year
+                if (doj.getMonth() === today.getMonth() && doj.getFullYear() === today.getFullYear()) {
+                    return 0;
+                }
             }
             const day = new Date().getDate();
             if (day >= 5) {
@@ -7676,6 +7706,9 @@
             else if (filter === 'h2') allBeds = allBeds.filter(b => b.hostel === 2);
             else if (filter === 'h3') allBeds = allBeds.filter(b => b.hostel === 3);
             document.getElementById('owner-rent-table').innerHTML = allBeds.map(b => {
+                const proratedRent = getProratedRentForBed(b);
+                const isProrated = proratedRent < Number(b.rent || 5500);
+                const proratedStr = isProrated ? `<br><span style="font-size:10px;color:var(--accent);font-weight:600;">(Prorated)</span>` : '';
                 const lateFee = getLateFeeForBed(b);
                 const lateFeeStr = lateFee > 0 ? `<br><span style="font-size:11px;color:var(--red)">+ ₹${lateFee} (Fine)</span>` : '';
                 return `
@@ -7683,11 +7716,11 @@
                   <td><div class="flex gap8"><div class="ava" style="width:30px;height:30px;font-size:10px">${getDisplayName(b.tenant).split(' ').map(x => x[0]).join('')}</div><span style="font-weight:500">${getDisplayName(b.tenant)}</span></div></td>
                   <td><span class="badge badge-blue">H${b.hostel}</span></td>
                   <td class="mono">${b.num} <span style="font-size:11px;color:var(--ink3)">(Bed ${b.bedIdx})</span></td>
-                  <td style="font-weight:600">₹${b.rent.toLocaleString()}${lateFeeStr}</td>
+                  <td style="font-weight:600">₹${proratedRent.toLocaleString()}${proratedStr}${lateFeeStr}</td>
                   <td style="color:var(--ink3)">Jun 5, 2025</td>
                   <td>${rentBadge(b.rentStatus)}</td>
                   <td><div class="flex gap8">
-                    ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-ghost" onclick="sendRentReminder(this, '${(b.tenant || '').replace(/'/g, "\\'")}', '${b.tenant_email || ''}', '${b.tenant_phone || ''}', ${b.rent}, ${b.hostel}, '${b.num}')">Remind</button>` : ''}
+                    ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-ghost" onclick="sendRentReminder(this, '${(b.tenant || '').replace(/'/g, "\\'")}', '${b.tenant_email || ''}', '${b.tenant_phone || ''}', ${proratedRent}, ${b.hostel}, '${b.num}')">Remind</button>` : ''}
                   </div></td>
                 </tr>`;
             }).join('');
@@ -7706,17 +7739,20 @@
             else if (filter === 'pending') allBeds = allBeds.filter(b => b.rentStatus === 'pending');
             else if (filter === 'overdue') allBeds = allBeds.filter(b => b.rentStatus === 'overdue');
             document.getElementById('mgr-rent-table').innerHTML = allBeds.map(b => {
+                const proratedRent = getProratedRentForBed(b);
+                const isProrated = proratedRent < Number(b.rent || 5500);
+                const proratedStr = isProrated ? `<br><span style="font-size:10px;color:var(--accent);font-weight:600;">(Prorated)</span>` : '';
                 const lateFee = getLateFeeForBed(b);
                 const lateFeeStr = lateFee > 0 ? `<br><span style="font-size:11px;color:var(--red)">+ ₹${lateFee} (Fine)</span>` : '';
                 return `
                 <tr>
                   <td><div class="flex gap8"><div class="ava" style="width:30px;height:30px;font-size:10px">${getDisplayName(b.tenant).split(' ').map(x => x[0]).join('')}</div><span style="font-weight:500">${getDisplayName(b.tenant)}</span></div></td>
                   <td class="mono">${b.num} <span style="font-size:11px;color:var(--ink3)">(Bed ${b.bedIdx + 1})</span></td>
-                  <td style="font-weight:600">₹${b.rent.toLocaleString()}${lateFeeStr}</td>
+                  <td style="font-weight:600">₹${proratedRent.toLocaleString()}${proratedStr}${lateFeeStr}</td>
                   <td style="color:var(--ink3)">Jun 5, 2025</td>
                   <td>${rentBadge(b.rentStatus)}</td>
                   <td><div class="flex gap8">
-                    ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-green" onclick="openPaymentConfirmModal(${currentHostel}, '${b.num}', ${b.bedIdx})">Mark Paid</button><button class="btn-sm btn-ghost" onclick="sendRentReminder(this, '${(b.tenant || '').replace(/'/g, "\\'")}', '${b.tenant_email || ''}', '${b.tenant_phone || ''}', ${b.rent}, ${currentHostel}, '${b.num}')">Remind</button>` : `<button class="btn-sm btn-ghost" onclick="showToast('Receipt','Receipt sent to ${b.tenant}.')">Receipt</button>`}
+                    ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-green" onclick="openPaymentConfirmModal(${currentHostel}, '${b.num}', ${b.bedIdx})">Mark Paid</button><button class="btn-sm btn-ghost" onclick="sendRentReminder(this, '${(b.tenant || '').replace(/'/g, "\\'")}', '${b.tenant_email || ''}', '${b.tenant_phone || ''}', ${proratedRent}, ${currentHostel}, '${b.num}')">Remind</button>` : `<button class="btn-sm btn-ghost" onclick="showToast('Receipt','Receipt sent to ${b.tenant}.')">Receipt</button>`}
                   </div></td>
                 </tr>`;
             }).join('');
