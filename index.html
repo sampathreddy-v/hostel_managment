@@ -8138,6 +8138,50 @@
             openModal('tenant-profile-modal');
         }
 
+        function refreshAllPortalsData() {
+            // 1. Owner Portal Views
+            if (typeof renderOwnerAllTenants === 'function') renderOwnerAllTenants();
+            if (typeof renderRentTracker === 'function') renderRentTracker();
+            if (typeof renderOwnerRentTable === 'function') renderOwnerRentTable('all');
+            if (typeof renderOwnerOccupancy === 'function') renderOwnerOccupancy();
+            if (typeof updateDashboardStats === 'function') updateDashboardStats();
+
+            // 2. Manager Portal Views
+            if (typeof renderMgrTenants === 'function') renderMgrTenants();
+            if (typeof renderMgrRentTable === 'function') renderMgrRentTable('all');
+            if (typeof renderManagerOccupancy === 'function') renderManagerOccupancy();
+            if (typeof renderManagerUpiPayments === 'function') renderManagerUpiPayments();
+            if (typeof renderPaidUpiPayments === 'function') renderPaidUpiPayments();
+
+            // 3. Room Grid Re-render (Owner & Manager)
+            if (typeof renderOccupancyGrid === 'function') {
+                [1, 2, 3].forEach(hid => {
+                    try { renderOccupancyGrid(hid); } catch (e) {}
+                });
+            }
+
+            // 4. Tenant Portal Sync
+            if (activeProfileTenant) {
+                const logged = getLoggedTenantObj();
+                if (logged) {
+                    const loggedEmail = (logged.tenant_email || '').toLowerCase();
+                    const activeEmail = (activeProfileTenant.tenant_email || '').toLowerCase();
+                    const loggedId = logged.id || logged._id;
+                    const activeId = activeProfileTenant._id || activeProfileTenant.id;
+
+                    if ((loggedId && activeId && String(loggedId) === String(activeId)) || (loggedEmail && activeEmail && loggedEmail === activeEmail)) {
+                        if (activeProfileTenant.rent !== undefined) logged.rent = activeProfileTenant.rent;
+                        if (activeProfileTenant.rentStatus !== undefined) logged.rent_status = activeProfileTenant.rentStatus;
+                        if (activeProfileTenant.rent_status !== undefined) logged.rent_status = activeProfileTenant.rent_status;
+                        if (activeProfileTenant.tenant_phone !== undefined) logged.tenant_phone = activeProfileTenant.tenant_phone;
+                        if (activeProfileTenant.custom_late_fee !== undefined) logged.custom_late_fee = activeProfileTenant.custom_late_fee;
+
+                        if (typeof renderTenantPortal === 'function') renderTenantPortal();
+                    }
+                }
+            }
+        }
+
         async function updateTenantProfileField(fieldKey, dbCol, labelName, isNumber = false) {
             if (!activeProfileTenant) return;
             const name = getDisplayName(activeProfileTenant.tenant);
@@ -8180,10 +8224,7 @@
                 if (dbCol) activeProfileTenant[dbCol] = newVal;
 
                 openTenantProfile(activeProfileTenant);
-                renderOwnerAllTenants();
-                if (typeof renderRentTracker === 'function') renderRentTracker();
-                if (typeof renderOwnerRentTable === 'function') renderOwnerRentTable('all');
-                if (typeof updateDashboardStats === 'function') updateDashboardStats();
+                refreshAllPortalsData();
 
                 showToast('Updated! ✅', `${labelName} updated successfully.`);
             } catch (err) {
@@ -8234,9 +8275,7 @@
                 activeProfileTenant.rent_status = newStatus;
 
                 openTenantProfile(activeProfileTenant);
-                renderOwnerAllTenants();
-                if (typeof renderRentTracker === 'function') renderRentTracker();
-                if (typeof renderOwnerRentTable === 'function') renderOwnerRentTable('all');
+                refreshAllPortalsData();
                 showToast('Updated! ✅', `Rent status set to ${newStatus.toUpperCase()}.`);
             } catch (err) {
                 showToast('Error ❌', err.message);
@@ -8267,9 +8306,7 @@
             }
 
             openTenantProfile(activeProfileTenant);
-            renderOwnerAllTenants();
-            if (typeof renderRentTracker === 'function') renderRentTracker();
-            if (typeof renderOwnerRentTable === 'function') renderOwnerRentTable('all');
+            refreshAllPortalsData();
             showToast('Updated! ✅', `Late fee fine set to Rs. ${newFee.toLocaleString()}.`);
         }
 
@@ -8312,11 +8349,7 @@
                 activeProfileTenant.rent = newRent;
                 document.getElementById('tp-rent-amount').textContent = `Rs. ${newRent.toLocaleString()}`;
                 
-                // Refresh views
-                renderOwnerAllTenants();
-                if (typeof renderRentTracker === 'function') renderRentTracker();
-                if (typeof updateDashboardStats === 'function') updateDashboardStats();
-                
+                refreshAllPortalsData();
                 showToast('Updated ✅', 'Rent amount updated successfully.');
             } catch (err) {
                 console.error('Rent update failed:', err);
@@ -8385,6 +8418,7 @@
                     }
                 }
                 
+                refreshAllPortalsData();
                 showToast('Success ✅', 'Deposit status updated successfully.');
             } catch (err) {
                 console.error(err);
