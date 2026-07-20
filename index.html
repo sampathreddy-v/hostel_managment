@@ -5536,6 +5536,15 @@
                         <div class="dash-subtitle">June 2025</div>
                     </div>
 
+                    <div id="tp-page-pending-banner" style="display:none; background:#fef3c7; border:1px solid #f59e0b; padding:14px 18px; border-radius:12px; margin-bottom:20px;">
+                        <div style="font-size:15px; font-weight:700; color:#92400e; margin-bottom:4px;" class="flex align-center">
+                            <span style="font-size:18px; margin-right:8px;">⏳</span> Payment Verification Pending
+                        </div>
+                        <div style="font-size:13px; color:#78350f;" id="tp-page-pending-text">
+                            Your payment submission has been received and is currently under verification.
+                        </div>
+                    </div>
+
                     <div class="pay-hero">
                         <div class="pay-status">AMOUNT DUE · JUNE 2025</div>
                         <div class="pay-amount" id="tp-pay-amt">₹5,500</div>
@@ -6339,6 +6348,8 @@
             document.getElementById('tp-pay-total').textContent = rentStr;
             document.getElementById('tp-pay-btn').textContent = `Pay ${rentStr} →`;
             document.getElementById('tp-pay-due').textContent = `${roomStr} · Due June 5, 2025`;
+
+            checkTenantPendingPayment();
 
             document.getElementById('tp-prof-ava').textContent = inits;
             document.getElementById('tp-prof-name').textContent = name;
@@ -9644,6 +9655,9 @@
             if (!tenant) return;
             const pendingBanner = document.getElementById('t-upi-pending-banner');
             const pendingText = document.getElementById('t-upi-pending-text');
+            const pageBanner = document.getElementById('tp-page-pending-banner');
+            const pageText = document.getElementById('tp-page-pending-text');
+            const payBtn = document.getElementById('tp-pay-btn');
 
             try {
                 const { data, error } = await db
@@ -9659,14 +9673,46 @@
                     if (pendingBanner) pendingBanner.style.display = 'block';
                     if (pendingText) pendingText.textContent = `Submitted UTR: ${sub.utr_number} (₹${Number(sub.amount_claimed).toLocaleString()}). Submitted on ${new Date(sub.created_at).toLocaleDateString()}. Verification in progress.`;
                     
-                    document.getElementById('t-upi-utr-input').value = sub.utr_number;
-                    document.getElementById('t-upi-utr-input').disabled = true;
-                    document.getElementById('t-upi-submit-btn').disabled = true;
-                    document.getElementById('t-upi-submit-btn').textContent = 'Verification Pending ⏳';
+                    if (pageBanner) pageBanner.style.display = 'block';
+                    if (pageText) pageText.textContent = `Your payment submission of ₹${Number(sub.amount_claimed).toLocaleString()} (UTR: ${sub.utr_number}) was submitted on ${new Date(sub.created_at).toLocaleDateString()}. Your manager is verifying the bank transaction. Your receipt will be issued automatically upon approval.`;
+
+                    if (payBtn) {
+                        payBtn.textContent = 'Verification Pending ⏳';
+                        payBtn.disabled = true;
+                        payBtn.style.background = '#f59e0b';
+                        payBtn.style.cursor = 'not-allowed';
+                    }
+
+                    const utrInput = document.getElementById('t-upi-utr-input');
+                    if (utrInput) {
+                        utrInput.value = sub.utr_number;
+                        utrInput.disabled = true;
+                    }
+                    const submitBtn = document.getElementById('t-upi-submit-btn');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'Verification Pending ⏳';
+                    }
                 } else {
                     if (pendingBanner) pendingBanner.style.display = 'none';
-                    document.getElementById('t-upi-utr-input').disabled = false;
-                    document.getElementById('t-upi-submit-btn').textContent = 'Submit for Verification';
+                    if (pageBanner) pageBanner.style.display = 'none';
+
+                    if (payBtn) {
+                        const rentAmt = getTenantDueRentAmount();
+                        payBtn.textContent = `Pay ₹${rentAmt.toLocaleString()} →`;
+                        payBtn.disabled = false;
+                        payBtn.style.background = '';
+                        payBtn.style.cursor = 'pointer';
+                    }
+
+                    const utrInput = document.getElementById('t-upi-utr-input');
+                    if (utrInput) utrInput.disabled = false;
+
+                    const submitBtn = document.getElementById('t-upi-submit-btn');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit for Verification';
+                    }
                 }
             } catch (err) {
                 console.error('[TenantUPI] Check pending error:', err);
