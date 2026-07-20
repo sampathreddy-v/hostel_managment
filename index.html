@@ -9522,18 +9522,18 @@
         }
 
         function getTenantDueRentAmount() {
-            // 1. Read from DOM element tp-pay-amt (which is rendered directly on tenant page)
-            const payAmtEl = document.getElementById('tp-pay-amt');
+            // 1. Read from DOM element tp-pay-amt or tp-pay-total (which is rendered directly on tenant page)
+            const payAmtEl = document.getElementById('tp-pay-amt') || document.getElementById('tp-pay-total');
             if (payAmtEl && payAmtEl.textContent) {
                 const cleanText = payAmtEl.textContent.replace(/[^\d.]/g, '');
                 const amt = Number(cleanText);
-                if (!isNaN(amt) && amt > 0) return amt;
+                if (!isNaN(amt) && amt >= 0) return amt;
             }
             // 2. Read from currentTenant object
             const tenant = getLoggedTenantObj();
             if (tenant && tenant.rent !== undefined && tenant.rent !== null) {
                 const amt = Number(tenant.rent);
-                if (!isNaN(amt) && amt > 0) return amt;
+                if (!isNaN(amt) && amt >= 0) return amt;
             }
             return 5500;
         }
@@ -9544,16 +9544,23 @@
         }
 
         function payRent() {
-            openTenantUpiModal();
+            const payAmtEl = document.getElementById('tp-pay-amt') || document.getElementById('tp-pay-total');
+            let rentVal = null;
+            if (payAmtEl && payAmtEl.textContent) {
+                const cleanText = payAmtEl.textContent.replace(/[^\d.]/g, '');
+                const amt = Number(cleanText);
+                if (!isNaN(amt)) rentVal = amt;
+            }
+            openTenantUpiModal(rentVal);
         }
 
-        async function openTenantUpiModal() {
+        async function openTenantUpiModal(overrideRent = null) {
             const modal = document.getElementById('tenant-upi-modal');
             if (!modal) return;
             modal.style.display = 'flex';
 
             const tenant = getLoggedTenantObj();
-            const rentAmt = getTenantDueRentAmount();
+            const rentAmt = (overrideRent !== null && overrideRent !== undefined && !isNaN(Number(overrideRent))) ? Number(overrideRent) : getTenantDueRentAmount();
             const roomNum = (tenant && (tenant.room_num || tenant.rooms?.num)) ? (tenant.room_num || tenant.rooms?.num) : '105';
             const upiId = (currentHostelData && currentHostelData.upi_id) ? currentHostelData.upi_id : 'vustela@upi';
             const upiName = (currentHostelData && currentHostelData.upi_name) ? currentHostelData.upi_name : 'VUSTELA PG Hostels';
@@ -12457,7 +12464,7 @@
                     <div style="display:inline-block; padding:8px; background:#fff; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:12px;">
                         <img id="t-upi-qr-img" src="" alt="UPI QR Code" style="width:180px; height:180px; display:block;">
                     </div>
-                    <div style="font-size:22px; font-weight:800; color:var(--accent); font-family:var(--font-display);" id="t-upi-amount-display">₹5,500</div>
+                    <div style="font-size:22px; font-weight:800; color:var(--accent); font-family:var(--font-display);" id="t-upi-amount-display">₹--</div>
                     <div style="font-size:11px; color:var(--ink3); margin-bottom:10px;">Exact Pending Rent (Locked)</div>
                     
                     <div class="flex center" style="gap:8px; font-size:13px; font-weight:600; color:var(--ink); background:#fff; padding:8px 12px; border-radius:6px; border:1px solid var(--border); display:inline-flex;">
