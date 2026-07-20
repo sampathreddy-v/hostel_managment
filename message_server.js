@@ -741,108 +741,137 @@ async function processBankAlertText(rawText) {
     const utrMatches = rawText.match(/\b\d{12}\b/g) || [];
     const uniqueUtrs = [...new Set(utrMatches)];
     
-    if (uniqueUtrs.length === 0) {
+    // Extract credited amount (e.g. Rs:5.00, Rs. 5, Rs 5000, INR 5500)
+    let extractedAmt = null;
+    const amtRegex = /(?:Rs\.?|INR|₹|Credited for Rs:?)\s*:?\s*([\d,]+(?:\.\d{1,2})?)/i;
+    const amtMatch = rawText.match(amtRegex);
+    if (amtMatch) {
+        const clean = amtMatch[1].replace(/,/g, '');
+        if (!isNaN(Number(clean))) extractedAmt = Number(clean);
+    }
+
+    if (uniqueUtrs.length === 0 && !extractedAmt) {
         return { matched: [], count: 0, utrsFound: [] };
     }
 
-    console.log(`[BankReconcile] Scanning text for UTRs. Extracted:`, uniqueUtrs);
+    console.log(`[BankReconcile] Scanning text. Extracted UTRs: ${uniqueUtrs.join(', ')} | Extracted Amount: ₹${extractedAmt}`);
 
     let approvedSubmissions = [];
 
+    // Helper to approve sub
+    const approveSub = async (sub, utrToUse) => {
+        // 1. Mark submission as approved
+        await supabase
+            .from('payment_submissions')
+            .update({ 
+                status: 'approved',
+                utr_number: utrToUse || sub.utr_number
+            })
+            .eq('id', sub.id);
+
+        // 2. Mark bed rent as paid
+        try {
+            if (sub.tenant_email) {
+                await supabase.from('beds').update({ rent_status: 'paid' }).ilike('tenant_email', sub.tenant_email);
+            } else if (sub.bed_id) {
+                await supabase.from('beds').update({ rent_status: 'paid' }).eq('id', sub.bed_id);
+            }
+        } catch (bedErr) {
+            console.warn('[BankReconcile] Bed update notice:', bedErr);
+        }
+
+        // 3. Log in rent_history safely
+        try {
+            const now = new Date();
+            const monthName = now.toLocaleString('default', { month: 'short' });
+            const monthNum = now.getMonth() + 1;
+            const year = now.getFullYear();
+
+            await supabase.from('rent_history').insert([{
+                bed_id: sub.bed_id || 1,
+                tenant_name: sub.tenant_name,
+                tenant_email: sub.tenant_email,
+                room_num: sub.room_num,
+                hostel_id: sub.hostel_id || 1,
+                month: sub.payment_month || monthName,
+                month_num: monthNum,
+                year: sub.payment_year || year,
+                rent_amount: sub.amount_claimed,
+                rent_status: 'paid',
+                start_date: new Date(year, monthNum - 1, 1).toISOString().split('T')[0],
+                end_date: new Date(year, monthNum, 0).toISOString().split('T')[0]
+            }]);
+        } catch (rhErr) {
+            console.warn('[BankReconcile] Rent history notice:', rhErr);
+        }
+
+        // 4. Send WhatsApp & Email receipt if phone / email exists
+        const receiptMsg = `🎉 *Payment Confirmed!*\n\nDear ${sub.tenant_name}, your rent payment of *₹${Number(sub.amount_claimed).toLocaleString()}* for Room *${sub.room_num}* has been verified and confirmed.\n\nUTR: ${utrToUse || sub.utr_number}\nStatus: Paid ✅\n\n— VUSTELA PG Hostels`;
+
+        if (sub.tenant_phone) {
+            try { await sendWhatsappDirect(sub.tenant_phone, receiptMsg); } catch (waErr) {}
+        }
+        if (sub.tenant_email) {
+            try {
+                const emailHtml = `<div style="font-family:sans-serif; padding:20px; border:1px solid #e2e8f0; border-radius:8px;">
+                    <h2 style="color:#10b981;">Payment Verified & Confirmed ✅</h2>
+                    <p>Hi <strong>${sub.tenant_name}</strong>,</p>
+                    <p>Your rent payment of <strong>₹${Number(sub.amount_claimed).toLocaleString()}</strong> for Room <strong>${sub.room_num}</strong> has been verified and logged successfully.</p>
+                    <hr style="border:none; border-top:1px solid #e2e8f0; margin:20px 0;">
+                    <p><strong>UTR Reference:</strong> ${utrToUse || sub.utr_number}</p>
+                    <p><strong>Status:</strong> Paid</p>
+                    <br>
+                    <p>Thank you,<br><strong>VUSTELA Hostels</strong></p>
+                </div>`;
+                await sendEmailDirect(sub.tenant_email, `Payment Receipt — Room ${sub.room_num}`, emailHtml);
+            } catch (emErr) {}
+        }
+
+        approvedSubmissions.push({
+            id: sub.id,
+            tenant_name: sub.tenant_name,
+            room_num: sub.room_num,
+            utr: utrToUse || sub.utr_number,
+            amount: sub.amount_claimed
+        });
+    };
+
+    // First pass: UTR exact match
     for (const utr of uniqueUtrs) {
         try {
-            // Find matching pending submission in payment_submissions
-            const { data: pendingList, error: queryErr } = await supabase
+            const { data: pendingList } = await supabase
                 .from('payment_submissions')
                 .select('*')
                 .eq('utr_number', utr)
                 .eq('status', 'pending');
 
-            if (queryErr || !pendingList || pendingList.length === 0) {
-                continue; // Not found or already approved/rejected
-            }
-
-            for (const sub of pendingList) {
-                // 1. Mark submission as approved
-                await supabase
-                    .from('payment_submissions')
-                    .update({ 
-                        status: 'approved', 
-                        amount_approved: sub.amount_claimed,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', sub.id);
-
-                // 2. Mark bed rent as paid
-                if (sub.bed_id) {
-                    await supabase
-                        .from('beds')
-                        .update({ rent_status: 'paid' })
-                        .eq('id', sub.bed_id);
+            if (pendingList && pendingList.length > 0) {
+                for (const sub of pendingList) {
+                    await approveSub(sub, utr);
                 }
-
-                // 3. Log in rent_history
-                const now = new Date();
-                const monthName = now.toLocaleString('default', { month: 'short' });
-                const monthNum = now.getMonth() + 1;
-                const year = now.getFullYear();
-
-                await supabase.from('rent_history').insert({
-                    bed_id: sub.bed_id,
-                    tenant_name: sub.tenant_name,
-                    tenant_email: sub.tenant_email,
-                    room_num: sub.room_num,
-                    hostel_id: sub.hostel_id,
-                    month: sub.payment_month || monthName,
-                    month_num: monthNum,
-                    year: sub.payment_year || year,
-                    rent_amount: sub.amount_claimed,
-                    rent_status: 'paid',
-                    start_date: new Date(year, monthNum - 1, 1).toISOString().split('T')[0],
-                    end_date: new Date(year, monthNum, 0).toISOString().split('T')[0]
-                });
-
-                // 4. Send WhatsApp & Email receipt if phone / email exists
-                const receiptMsg = `🎉 *Payment Confirmed!*\n\nDear ${sub.tenant_name}, your rent payment of *₹${Number(sub.amount_claimed).toLocaleString()}* for Room *${sub.room_num}* has been verified and confirmed.\n\nUTR: ${sub.utr_number}\nStatus: Paid ✅\n\n— VUSTELA PG Hostels`;
-
-                // Send WhatsApp
-                if (sub.tenant_phone) {
-                    try {
-                        await sendWhatsappDirect(sub.tenant_phone, receiptMsg);
-                    } catch (waErr) {
-                        console.error('[BankReconcile] WhatsApp receipt error:', waErr);
-                    }
-                }
-
-                // Send Email
-                if (sub.tenant_email) {
-                    try {
-                        const emailHtml = `<div style="font-family:sans-serif; padding:20px; border:1px solid #e2e8f0; border-radius:8px;">
-                            <h2 style="color:#10b981;">Payment Verified & Confirmed ✅</h2>
-                            <p>Hi <strong>${sub.tenant_name}</strong>,</p>
-                            <p>Your rent payment of <strong>₹${Number(sub.amount_claimed).toLocaleString()}</strong> for Room <strong>${sub.room_num}</strong> has been verified and logged successfully.</p>
-                            <hr style="border:none; border-top:1px solid #e2e8f0; margin:20px 0;">
-                            <p><strong>UTR Reference:</strong> ${sub.utr_number}</p>
-                            <p><strong>Status:</strong> Paid</p>
-                            <br>
-                            <p>Thank you,<br><strong>VUSTELA Hostels</strong></p>
-                        </div>`;
-                        await sendEmailDirect(sub.tenant_email, `Payment Receipt — Room ${sub.room_num}`, emailHtml);
-                    } catch (emErr) {
-                        console.error('[BankReconcile] Email receipt error:', emErr);
-                    }
-                }
-
-                approvedSubmissions.push({
-                    id: sub.id,
-                    tenant_name: sub.tenant_name,
-                    room_num: sub.room_num,
-                    utr: sub.utr_number,
-                    amount: sub.amount_claimed
-                });
             }
         } catch (err) {
             console.error(`[BankReconcile] Error processing UTR ${utr}:`, err);
+        }
+    }
+
+    // Second pass: If UTR match found no rows, but amount match exists
+    if (approvedSubmissions.length === 0 && extractedAmt && extractedAmt > 0) {
+        try {
+            const { data: amountList } = await supabase
+                .from('payment_submissions')
+                .select('*')
+                .eq('amount_claimed', extractedAmt)
+                .eq('status', 'pending');
+
+            if (amountList && amountList.length > 0) {
+                const primaryUtr = uniqueUtrs.length > 0 ? uniqueUtrs[0] : null;
+                for (const sub of amountList) {
+                    await approveSub(sub, primaryUtr);
+                }
+            }
+        } catch (err) {
+            console.error(`[BankReconcile] Amount matching error:`, err);
         }
     }
 

@@ -9653,6 +9653,8 @@
             }
         }
 
+        let tenantPendingPoller = null;
+
         async function checkTenantPendingPayment() {
             const tenant = getLoggedTenantObj();
             if (!tenant) return;
@@ -9674,9 +9676,6 @@
 
                 if (error) {
                     console.warn('[TenantUPI] Supabase table error:', error.message);
-                    if (error.code === '42P01' || error.message.includes('does not exist')) {
-                        showToast('Database Notice ⚠️', 'Run Supabase SQL migration script to enable UPI payment verification.');
-                    }
                     return;
                 }
 
@@ -9686,7 +9685,7 @@
                     if (pendingText) pendingText.textContent = `Submitted UTR: ${sub.utr_number} (₹${Number(sub.amount_claimed).toLocaleString()}). Submitted on ${new Date(sub.created_at).toLocaleDateString()}. Verification in progress.`;
                     
                     if (pageBanner) pageBanner.style.display = 'block';
-                    if (pageText) pageText.textContent = `Your payment submission of ₹${Number(sub.amount_claimed).toLocaleString()} (UTR: ${sub.utr_number}) was submitted on ${new Date(sub.created_at).toLocaleDateString()}. Your manager is verifying the bank transaction. Your receipt will be issued automatically upon approval.`;
+                    if (pageText) pageText.textContent = `Your payment submission of ₹${Number(sub.amount_claimed).toLocaleString()} (UTR: ${sub.utr_number}) was submitted on ${new Date(sub.created_at).toLocaleDateString()}. Bank reconciliation in progress...`;
 
                     if (payBtn) {
                         payBtn.textContent = 'Verification Pending ⏳';
@@ -9705,25 +9704,54 @@
                         submitBtn.disabled = true;
                         submitBtn.textContent = 'Verification Pending ⏳';
                     }
+
+                    // Start background 5-second polling while pending
+                    if (!tenantPendingPoller) {
+                        tenantPendingPoller = setInterval(checkTenantPendingPayment, 5000);
+                    }
                 } else {
+                    if (tenantPendingPoller) {
+                        clearInterval(tenantPendingPoller);
+                        tenantPendingPoller = null;
+                    }
+
                     if (pendingBanner) pendingBanner.style.display = 'none';
                     if (pageBanner) pageBanner.style.display = 'none';
 
-                    if (payBtn) {
-                        const rentAmt = getTenantDueRentAmount();
-                        payBtn.textContent = `Pay ₹${rentAmt.toLocaleString()} →`;
-                        payBtn.disabled = false;
-                        payBtn.style.background = '';
-                        payBtn.style.cursor = 'pointer';
-                    }
+                    // Check if payment was approved
+                    let appQuery = db.from('payment_submissions').select('*').eq('status', 'approved');
+                    if (tenant.tenant_email) appQuery = appQuery.ilike('tenant_email', tenant.tenant_email);
+                    const { data: appData } = await appQuery.order('created_at', { ascending: false }).limit(1);
 
-                    const utrInput = document.getElementById('t-upi-utr-input');
-                    if (utrInput) utrInput.disabled = false;
+                    if (appData && appData.length > 0) {
+                        tenant.rent_status = 'paid';
+                        if (payBtn) {
+                            payBtn.textContent = 'Paid ✅';
+                            payBtn.disabled = true;
+                            payBtn.style.background = '#10b981';
+                            payBtn.style.cursor = 'default';
+                        }
+                        const heroRent = document.getElementById('tp-hero-rent');
+                        if (heroRent) heroRent.textContent = '₹0 (Paid ✅)';
+                        const payAmt = document.getElementById('tp-pay-amt');
+                        if (payAmt) payAmt.textContent = '₹0';
+                    } else {
+                        if (payBtn) {
+                            const rentAmt = getTenantDueRentAmount();
+                            payBtn.textContent = `Pay ₹${rentAmt.toLocaleString()} →`;
+                            payBtn.disabled = false;
+                            payBtn.style.background = '';
+                            payBtn.style.cursor = 'pointer';
+                        }
 
-                    const submitBtn = document.getElementById('t-upi-submit-btn');
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Submit for Verification';
+                        const utrInput = document.getElementById('t-upi-utr-input');
+                        if (utrInput) utrInput.disabled = false;
+
+                        const submitBtn = document.getElementById('t-upi-submit-btn');
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Submit for Verification';
+                        }
                     }
                 }
             } catch (err) {
