@@ -6162,6 +6162,24 @@
             if (expData) expenses = expData;
             else expenses = [];
 
+            try {
+                const { data: workerData, error: wErr } = await db.from('workers').select('*').order('created_at', { ascending: false });
+                if (!wErr && workerData && workerData.length > 0) {
+                    workers = workerData.map(w => ({
+                        id: w.id,
+                        name: w.name,
+                        role: w.role,
+                        hostel_id: w.hostel_id,
+                        phone: w.phone,
+                        doj: w.doj,
+                        payments: typeof w.payments === 'string' ? JSON.parse(w.payments) : (w.payments || [])
+                    }));
+                    saveWorkersToStorage();
+                }
+            } catch (err) {
+                console.warn('Worker DB load notice:', err);
+            }
+
             const { data: usersData } = await db.from('users').select('*').eq('role', 'manager');
             if (usersData) managers = usersData;
 
@@ -6747,6 +6765,24 @@
                 const { data: expData } = await db.from('expenses').select('*').in('hostel_id', hostelIds).order('created_at', { ascending: false });
                 if (expData) expenses = expData;
                 else expenses = [];
+
+                try {
+                    const { data: workerData, error: wErr } = await db.from('workers').select('*').order('created_at', { ascending: false });
+                    if (!wErr && workerData && workerData.length > 0) {
+                        workers = workerData.map(w => ({
+                            id: w.id,
+                            name: w.name,
+                            role: w.role,
+                            hostel_id: w.hostel_id,
+                            phone: w.phone,
+                            doj: w.doj,
+                            payments: typeof w.payments === 'string' ? JSON.parse(w.payments) : (w.payments || [])
+                        }));
+                        saveWorkersToStorage();
+                    }
+                } catch (err) {
+                    console.warn('Worker DB load notice:', err);
+                }
 
                 const { data: menuData } = await db.from('food_menu').select('*').in('hostel_id', hostelIds);
                 if (menuData) {
@@ -11577,6 +11613,37 @@
 
         function saveWorkersToStorage() {
             localStorage.setItem('vustela_workers_v3', JSON.stringify(workers));
+            syncAllWorkersToSupabase();
+        }
+
+        async function syncAllWorkersToSupabase() {
+            if (!workers) return;
+            try {
+                const rows = workers.map(w => ({
+                    id: w.id,
+                    name: w.name,
+                    role: w.role,
+                    hostel_id: w.hostel_id,
+                    phone: w.phone || '',
+                    doj: w.doj || '',
+                    payments: JSON.stringify(w.payments || []),
+                    created_at: new Date().toISOString()
+                }));
+                if (rows.length > 0) {
+                    await db.from('workers').upsert(rows);
+                }
+            } catch (err) {
+                console.warn('Supabase workers sync notice:', err);
+            }
+        }
+
+        async function deleteWorkerFromSupabase(workerId) {
+            if (!workerId) return;
+            try {
+                await db.from('workers').delete().eq('id', workerId);
+            } catch (err) {
+                console.warn('Supabase worker delete notice:', err);
+            }
         }
 
         function getRoleBadge(role) {
@@ -11895,13 +11962,15 @@
             showToast('Updated ✅', 'Worker details updated.');
         }
 
-        function removeWorker(workerId) {
+        async function removeWorker(workerId) {
             const worker = workers.find(w => w.id === workerId);
             if (!worker) return;
 
             if (!confirm(`Are you sure you want to remove ${worker.name} (${worker.role}) from staff list?`)) return;
 
             workers = workers.filter(w => w.id !== workerId);
+            saveWorkersToStorage();
+            await deleteWorkerFromSupabase(workerId);
             renderSalaries();
             showToast('Worker Removed 🗑️', `${worker.name} removed from staff list.`);
         }
