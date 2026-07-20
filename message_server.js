@@ -949,58 +949,73 @@ const server = http.createServer((req, res) => {
 
                     console.log(`\n[Server] Received request to send WhatsApp to: ${to}`);
 
-                    // Clean phone number format for Meta (numbers only, e.g., 919876543210)
                     let formattedTo = to.replace(/\D/g, '');
-                    if (formattedTo.length === 10) {
-                        formattedTo = '91' + formattedTo; // Default to India country code if 10 digits
-                    }
+                    if (formattedTo.length === 10) formattedTo = '91' + formattedTo;
 
-                    const payloadObj = getTemplatePayload(formattedTo, message);
-                    const postData = JSON.stringify(payloadObj);
-
-                    const options = {
-                        hostname: 'graph.facebook.com',
-                        port: 443,
-                        path: `/v20.0/${process.env.META_PHONE_NUMBER_ID}/messages`,
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${(process.env.META_ACCESS_TOKEN || '').trim()}`,
-                            'Content-Type': 'application/json',
-                            'Content-Length': Buffer.byteLength(postData)
-                        }
+                    const sendMetaPayload = (payloadObj, callback) => {
+                        const postData = JSON.stringify(payloadObj);
+                        const options = {
+                            hostname: 'graph.facebook.com',
+                            port: 443,
+                            path: `/v20.0/${process.env.META_PHONE_NUMBER_ID}/messages`,
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${(process.env.META_ACCESS_TOKEN || '').trim()}`,
+                                'Content-Type': 'application/json',
+                                'Content-Length': Buffer.byteLength(postData)
+                            }
+                        };
+                        const metaReq = https.request(options, (metaRes) => {
+                            let responseData = '';
+                            metaRes.on('data', (d) => responseData += d);
+                            metaRes.on('end', () => {
+                                let result = {};
+                                try { result = JSON.parse(responseData); } catch (e) {}
+                                if (metaRes.statusCode >= 200 && metaRes.statusCode < 300) {
+                                    callback(null, result);
+                                } else {
+                                    callback(new Error(result.error?.message || `Meta API Error ${metaRes.statusCode}`));
+                                }
+                            });
+                        });
+                        metaReq.on('error', (e) => callback(e));
+                        metaReq.write(postData);
+                        metaReq.end();
                     };
 
-                    const metaReq = https.request(options, (metaRes) => {
-                        let responseData = '';
-                        metaRes.on('data', (d) => responseData += d);
-                        metaRes.on('end', () => {
-                            let result = {};
-                            try {
-                                result = JSON.parse(responseData);
-                            } catch (e) {
-                                console.error('[Server] Failed to parse Meta response:', responseData);
+                    // 1. First attempt: Send freeform text message
+                    const textPayload = {
+                        messaging_product: "whatsapp",
+                        to: formattedTo,
+                        type: "text",
+                        text: { body: message }
+                    };
+
+                    sendMetaPayload(textPayload, (err1, res1) => {
+                        if (!err1 && res1 && res1.messages?.[0]?.id) {
+                            console.log(`[Server] WhatsApp freeform text sent successfully via Meta! ID: ${res1.messages[0].id}`);
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            return res.end(JSON.stringify({ success: true, messageId: res1.messages[0].id }));
+                        }
+
+                        // 2. Second attempt: Send template payload
+                        const templatePayload = getTemplatePayload(formattedTo, message);
+                        sendMetaPayload(templatePayload, (err2, res2) => {
+                            if (!err2 && res2 && res2.messages?.[0]?.id) {
+                                console.log(`[Server] WhatsApp template message sent successfully via Meta! ID: ${res2.messages[0].id}`);
+                                res.writeHead(200, { 'Content-Type': 'application/json' });
+                                return res.end(JSON.stringify({ success: true, messageId: res2.messages[0].id }));
                             }
 
-                            if (metaRes.statusCode >= 200 && metaRes.statusCode < 300) {
-                                console.log(`[Server] WhatsApp Message sent successfully via Meta! Message ID: ${result.messages?.[0]?.id}`);
-                                res.writeHead(200, { 'Content-Type': 'application/json' });
-                                res.end(JSON.stringify({ success: true, messageId: result.messages?.[0]?.id }));
-                            } else {
-                                console.error(`[Server] Meta API Error (Status ${metaRes.statusCode}):`, result.error?.message || responseData);
-                                res.writeHead(metaRes.statusCode, { 'Content-Type': 'application/json' });
-                                res.end(JSON.stringify({ error: result.error?.message || 'Meta API Error' }));
-                            }
+                            console.warn(`[Server] Meta API Notice for ${formattedTo}: ${err2?.message || err1?.message}`);
+                            const manualUrl = `https://wa.me/${formattedTo}?text=${encodeURIComponent(message)}`;
+                            res.writeHead(400, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ 
+                                error: err2?.message || err1?.message || 'Meta 24-hour customer window required.',
+                                fallbackUrl: manualUrl
+                            }));
                         });
                     });
-
-                    metaReq.on('error', (e) => {
-                        console.error('[Server] Meta Request Failed:', e);
-                        res.writeHead(500, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ error: 'Failed to connect to Meta' }));
-                    });
-
-                    metaReq.write(postData);
-                    metaReq.end();
                 }
 
                 // --- EMAIL (BREVO API) ---

@@ -10688,6 +10688,62 @@
             `;
         }
 
+        function openWhatsAppNoticeBroadcast(title, body) {
+            const activeTenants = [];
+            if (rooms[currentHostel]) {
+                rooms[currentHostel].forEach(r => {
+                    r.beds.forEach(b => {
+                        if (b.tenant && b.tenant.trim().length > 0 && !b.tenant.startsWith('PENDING:') && b.tenant_phone) {
+                            activeTenants.push({ name: b.tenant, phone: b.tenant_phone, room: r.num });
+                        }
+                    });
+                });
+            }
+
+            if (activeTenants.length === 0) {
+                showToast('No Tenants', 'No active tenant phone numbers found for this hostel.');
+                return;
+            }
+
+            const text = encodeURIComponent(`📢 *VUSTELA Notice: ${title}*\n\n${body}`);
+
+            if (activeTenants.length === 1) {
+                let p = activeTenants[0].phone.replace(/\D/g, '');
+                if (p.length === 10) p = '91' + p;
+                window.open(`https://wa.me/${p}?text=${text}`, '_blank');
+                return;
+            }
+
+            const existingModal = document.getElementById('wa-broadcast-modal');
+            if (existingModal) existingModal.remove();
+
+            let buttonsHtml = activeTenants.map(t => {
+                let p = t.phone.replace(/\D/g, '');
+                if (p.length === 10) p = '91' + p;
+                const url = `https://wa.me/${p}?text=${text}`;
+                return `<a href="${url}" target="_blank" class="btn btn-outline btn-sm" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; text-decoration:none; margin-bottom:8px; border-color:#10b981; color:#10b981; font-weight:600; border-radius:8px; background:#f0fdf4;">
+                    <span>📲 Send to ${getDisplayName(t.name)} (Room ${t.room})</span>
+                    <span style="font-size:12px; color:var(--ink3)">${p} ↗</span>
+                </a>`;
+            }).join('');
+
+            const modalHtml = `
+            <div class="modal-overlay on" id="wa-broadcast-modal" style="display:flex; z-index:99999;">
+                <div class="modal" style="max-width:450px; width:90vw;">
+                    <div class="modal-header">
+                        <div class="modal-title">📲 WhatsApp Notice Broadcast</div>
+                        <button class="modal-close" onclick="document.getElementById('wa-broadcast-modal').remove()">×</button>
+                    </div>
+                    <div style="padding:16px 0;">
+                        <div style="font-size:13px; color:var(--ink); font-weight:600; margin-bottom:4px;">${title}</div>
+                        <div style="font-size:12px; color:var(--ink3); margin-bottom:14px;">Click any tenant below to open WhatsApp Web/App with notice pre-filled:</div>
+                        <div style="max-height:50vh; overflow-y:auto; padding-right:4px;">${buttonsHtml}</div>
+                    </div>
+                </div>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
         function renderNotices() {
             const relevantNotices = notices.filter(n => n.hostel_id === currentHostel || n.hostel_id === 0);
             const html = relevantNotices.map(n => {
@@ -10695,6 +10751,12 @@
                 const globalBadge = n.hostel_id === 0 ? `<span class="badge" style="background:#C84B31; color:white; font-size:10px;">GLOBAL</span>` : '';
                 const showDelete = (currentRole !== 'tenant');
                 const actionsHtml = getNoticeActionsHtml(n, showDelete);
+                const waBroadcastBtn = (currentRole !== 'tenant') 
+                    ? `<div style="margin-top:10px; border-top:1px dashed var(--border); padding-top:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:11px; font-weight:600; color:var(--ink3);">WhatsApp Broadcast</span>
+                        <button class="btn btn-sm btn-outline" style="padding:2px 8px; font-size:11px; color:#10b981; border-color:#10b981; font-weight:700;" onclick="openWhatsAppNoticeBroadcast('${(n.title||'').replace(/'/g,"\\'")}', '${(n.body||'').replace(/'/g,"\\'")}')">📲 Broadcast on WhatsApp</button>
+                      </div>`
+                    : '';
                 return `
                     <div class="notice-card" ${n.hostel_id === 0 ? 'style="border-left: 4px solid #C84B31; background: #fff5f3;"' : ''}>
                         ${actionsHtml}
@@ -10704,6 +10766,7 @@
                         </div>
                         <div class="nc-body">${n.body}</div>
                         <div class="nc-meta">Posted by ${n.author} · ${date}</div>
+                        ${waBroadcastBtn}
                     </div>
                 `;
             }).join('') || '<div class="card" style="text-align:center;padding:32px;color:var(--ink3)">No notices posted yet</div>';
