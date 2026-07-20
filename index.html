@@ -11506,7 +11506,6 @@
             } else {
                 tbody.innerHTML = html;
             }
-            
             // Update stats
             document.getElementById('o-exp-total-spent').textContent = `₹${totalSpent.toLocaleString()} spent this month`;
             document.getElementById('o-exp-h1-cost').textContent = `₹${h1Cost.toLocaleString()}`;
@@ -11551,44 +11550,34 @@
         }
 
         // ============================================================
-        // SALARIES & STAFF MANAGEMENT
+        // SALARIES & STAFF MANAGEMENT (PERSISTENT & DELETION SYNC)
         // ============================================================
         let currentWorkerPaymentProof = '';
-        let workers = [
-            { 
-                id: 1, name: 'Suresh Kumar', role: 'Cook', hostel_id: 1, phone: '9876543210', doj: '2025-01-10',
-                payments: [
-                    { id: 101, date: '2026-07-05', amount: 9000, note: 'July Salary Part 1 (UPI)', proof: '' },
-                    { id: 102, date: '2026-07-18', amount: 9000, note: 'July Salary Part 2 (Cash)', proof: '' },
-                    { id: 103, date: '2026-06-05', amount: 18000, note: 'June Salary', proof: '' }
-                ]
-            },
-            { 
-                id: 2, name: 'Lakshmi Devi', role: 'Housekeeping', hostel_id: 1, phone: '9876543211', doj: '2025-03-01',
-                payments: [
-                    { id: 104, date: '2026-07-10', amount: 12000, note: 'July Full Salary', proof: '' }
-                ]
-            },
-            { 
-                id: 3, name: 'Raju Watchman', role: 'Security', hostel_id: 1, phone: '9876543212', doj: '2024-11-15',
-                payments: [
-                    { id: 105, date: '2026-06-10', amount: 14000, note: 'June Full Salary', proof: '' }
-                ]
-            },
-            { 
-                id: 4, name: 'Venkatesh Plumbing', role: 'Maintenance', hostel_id: 2, phone: '9876543213', doj: '2025-02-20',
-                payments: [
-                    { id: 106, date: '2026-07-08', amount: 15000, note: 'July Maintenance Advance', proof: '' }
-                ]
-            },
-            { 
-                id: 5, name: 'Anil Kumar', role: 'Manager', hostel_id: 1, phone: '9876543214', doj: '2024-06-01',
-                payments: [
-                    { id: 107, date: '2026-07-01', amount: 25000, note: 'July Manager Salary', proof: '' }
-                ]
-            }
-        ];
+        let workers = loadWorkersFromStorage();
         let currentSalaryFilter = 'all';
+
+        function loadWorkersFromStorage() {
+            const saved = localStorage.getItem('vustela_workers_v3');
+            if (saved !== null) {
+                try {
+                    return JSON.parse(saved);
+                } catch (e) {
+                    console.error('Error parsing stored workers:', e);
+                }
+            }
+            return [
+                { 
+                    id: 1, name: 'Suresh Kumar', role: 'Cook', hostel_id: 1, phone: '9876543210', doj: '2025-01-10',
+                    payments: [
+                        { id: 101, date: '2026-07-05', amount: 9000, note: 'July Salary Part 1 (UPI)', proof: '' }
+                    ]
+                }
+            ];
+        }
+
+        function saveWorkersToStorage() {
+            localStorage.setItem('vustela_workers_v3', JSON.stringify(workers));
+        }
 
         function getRoleBadge(role) {
             if (role === 'Cook') return '<span class="badge badge-yellow">🍳 Cook</span>';
@@ -11617,32 +11606,7 @@
             return worker.payments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
         }
 
-        function syncWorkerPaymentsToExpenses() {
-            if (!workers) return;
-            workers.forEach(w => {
-                if (w.payments && Array.isArray(w.payments)) {
-                    w.payments.forEach(p => {
-                        const desc = `${w.name} (${w.role})${p.note ? ' - ' + p.note : ''}`;
-                        const exists = expenses.some(e => e.description === desc && Number(e.amount) === Number(p.amount) && new Date(e.created_at).toDateString() === new Date(p.date).toDateString());
-                        if (!exists) {
-                            expenses.unshift({
-                                id: p.id || (Date.now() + Math.floor(Math.random()*1000)),
-                                hostel_id: w.hostel_id === 0 ? 1 : w.hostel_id,
-                                category: 'salaries',
-                                amount: Number(p.amount),
-                                description: desc,
-                                bill_url: p.proof || '',
-                                created_by: 'Owner (Ramesh Sharma)',
-                                created_at: new Date(p.date).toISOString()
-                            });
-                        }
-                    });
-                }
-            });
-        }
-
         function renderSalaries(filter = currentSalaryFilter) {
-            syncWorkerPaymentsToExpenses();
             currentSalaryFilter = filter;
             const tbody = document.getElementById('salaries-table-body');
             if (!tbody) return;
@@ -11766,6 +11730,7 @@
             };
 
             workers.unshift(newWorker);
+            saveWorkersToStorage();
             closeModal('add-worker-modal');
             renderSalaries();
             showToast('Worker Added ✅', `${name} (${role}) added to staff list.`);
@@ -11828,6 +11793,7 @@
 
             if (!worker.payments) worker.payments = [];
             worker.payments.unshift(paymentRec);
+            saveWorkersToStorage();
 
             // Auto log into expenses!
             const newExp = {
@@ -11850,6 +11816,8 @@
                 if (typeof renderMgrExpenses === 'function') renderMgrExpenses();
             } catch (err) {
                 console.warn('Expense log notice:', err);
+                expenses.unshift(newExp);
+                if (typeof renderOwnerExpenses === 'function') renderOwnerExpenses();
             }
 
             closeModal('record-worker-payment-modal');
@@ -11897,12 +11865,13 @@
             openModal('view-worker-history-modal');
         }
 
-        function deleteWorkerPayment(workerId, paymentId) {
+        async function deleteWorkerPayment(workerId, paymentId) {
             const worker = workers.find(w => w.id === workerId);
             if (!worker || !worker.payments) return;
 
             if (!confirm('Are you sure you want to delete this payment record?')) return;
 
+            const deletedPmt = worker.payments.find(p => p.id === paymentId);
             worker.payments = worker.payments.filter(p => p.id !== paymentId);
             openViewWorkerHistoryModal(workerId);
             renderSalaries();
