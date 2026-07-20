@@ -9848,8 +9848,8 @@
                         </div>
 
                         <div class="flex" style="gap:8px; margin-top:16px;">
-                            <button class="btn-sm" style="flex:1; background:#10b981; color:#fff;" onclick="approvePaymentSubmission(${sub.id})">✅ Approve</button>
-                            <button class="btn-sm btn-ghost" style="flex:1; color:var(--danger);" onclick="rejectPaymentSubmission(${sub.id})">❌ Reject</button>
+                            <button class="btn-sm" style="flex:1; background:#10b981; color:#fff;" onclick="approvePaymentSubmission('${sub.id}')">✅ Approve</button>
+                            <button class="btn-sm btn-ghost" style="flex:1; color:var(--danger);" onclick="rejectPaymentSubmission('${sub.id}')">❌ Reject</button>
                         </div>
                     </div>
                 `).join('');
@@ -9879,50 +9879,76 @@
 
         async function approvePaymentSubmission(subId) {
             try {
-                const { data: sub, error } = await db.from('payment_submissions').select('*').eq('id', subId).single();
-                if (error || !sub) {
-                    showToast('Error', 'Submission not found.');
+                showToast('Processing...', 'Verifying payment submission...');
+                const { data: sub, error: fetchErr } = await db.from('payment_submissions').select('*').eq('id', subId).single();
+                if (fetchErr || !sub) {
+                    showToast('Error ❌', 'Submission record not found in database.');
                     return;
                 }
 
                 // 1. Update submission status to approved
-                await db.from('payment_submissions').update({ status: 'approved', amount_approved: sub.amount_claimed }).eq('id', subId);
+                const { error: updateErr } = await db.from('payment_submissions')
+                    .update({ 
+                        status: 'approved', 
+                        amount_approved: sub.amount_claimed,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', subId);
 
-                // 2. Update bed status to paid
-                if (sub.bed_id) {
-                    await db.from('beds').update({ rent_status: 'paid' }).eq('id', sub.bed_id);
+                if (updateErr) {
+                    console.error('[ManagerUPI] Update status error:', updateErr);
+                    showToast('Approval Error ❌', updateErr.message);
+                    return;
                 }
 
-                // 3. Log in rent_history
-                const now = new Date();
-                await db.from('rent_history').insert({
-                    bed_id: sub.bed_id,
-                    tenant_name: sub.tenant_name,
-                    tenant_email: sub.tenant_email,
-                    room_num: sub.room_num,
-                    hostel_id: sub.hostel_id,
-                    month: sub.payment_month || now.toLocaleString('default', { month: 'short' }),
-                    month_num: now.getMonth() + 1,
-                    year: now.getFullYear(),
-                    rent_amount: sub.amount_claimed,
-                    rent_status: 'paid'
-                });
+                // 2. Update bed status to paid in beds table safely
+                try {
+                    if (sub.tenant_email) {
+                        await db.from('beds').update({ rent_status: 'paid' }).ilike('tenant_email', sub.tenant_email);
+                    } else if (sub.bed_id) {
+                        await db.from('beds').update({ rent_status: 'paid' }).eq('id', sub.bed_id);
+                    }
+                } catch (bedErr) {
+                    console.warn('[ManagerUPI] Bed update notice:', bedErr);
+                }
+
+                // 3. Log in rent_history safely
+                try {
+                    const now = new Date();
+                    await db.from('rent_history').insert([{
+                        bed_id: sub.bed_id || 1,
+                        tenant_name: sub.tenant_name,
+                        tenant_email: sub.tenant_email,
+                        room_num: sub.room_num,
+                        hostel_id: sub.hostel_id || currentHostel || 1,
+                        month: sub.payment_month || now.toLocaleString('default', { month: 'short' }),
+                        month_num: now.getMonth() + 1,
+                        year: now.getFullYear(),
+                        rent_amount: sub.amount_claimed,
+                        rent_status: 'paid'
+                    }]);
+                } catch (rhErr) {
+                    console.warn('[ManagerUPI] Rent history notice:', rhErr);
+                }
 
                 // 4. Send WhatsApp receipt
-                const receiptMsg = `🎉 *Payment Confirmed!*\n\nDear ${sub.tenant_name}, your rent payment of *₹${Number(sub.amount_claimed).toLocaleString()}* for Room *${sub.room_num}* has been verified and confirmed.\n\nUTR: ${sub.utr_number}\nStatus: Paid ✅\n\n— VUSTELA PG Hostels`;
-                
-                fetch(API_BASE_URL + '/send-whatsapp', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ to: sub.tenant_email || sub.tenant_name, message: receiptMsg })
-                }).catch(e => console.error(e));
+                if (sub.tenant_email || sub.tenant_name) {
+                    const receiptMsg = `🎉 *Payment Confirmed!*\n\nDear ${sub.tenant_name}, your rent payment of *₹${Number(sub.amount_claimed).toLocaleString()}* for Room *${sub.room_num}* has been verified and confirmed.\n\nUTR: ${sub.utr_number}\nStatus: Paid ✅\n\n— VUSTELA PG Hostels`;
+                    fetch(API_BASE_URL + '/send-whatsapp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ to: sub.tenant_email || sub.tenant_name, message: receiptMsg })
+                    }).catch(e => console.error(e));
+                }
 
                 showToast('Approved! ✅', `Payment of ₹${Number(sub.amount_claimed).toLocaleString()} verified for ${sub.tenant_name}.`);
-                renderManagerUpiPayments();
+                
+                await renderManagerUpiPayments();
+                await renderPaidUpiPayments();
                 loadData([currentHostel]).then(() => { renderManagerOccupancy(); renderMgrTenants(); });
             } catch (err) {
                 console.error('[ManagerUPI] Approve error:', err);
-                showToast('Approval Failed', err.message);
+                showToast('Approval Failed ❌', err.message);
             }
         }
 
@@ -9931,12 +9957,25 @@
             if (reason === null) return;
 
             try {
-                await db.from('payment_submissions').update({ status: 'rejected', rejection_reason: reason }).eq('id', subId);
+                const { error } = await db.from('payment_submissions')
+                    .update({ 
+                        status: 'rejected', 
+                        rejection_reason: reason,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', subId);
+
+                if (error) {
+                    showToast('Rejection Error ❌', error.message);
+                    return;
+                }
+
                 showToast('Rejected', 'Payment submission rejected. Tenant portal unlocked.');
-                renderManagerUpiPayments();
+                await renderManagerUpiPayments();
+                await renderPaidUpiPayments();
             } catch (err) {
                 console.error('[ManagerUPI] Reject error:', err);
-                showToast('Rejection Error', err.message);
+                showToast('Rejection Error ❌', err.message);
             }
         }
 
