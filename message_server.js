@@ -771,10 +771,11 @@ async function processBankAlertText(rawText) {
 
         // 2. Mark bed rent as paid
         try {
-            if (sub.tenant_email) {
-                await supabase.from('beds').update({ rent_status: 'paid' }).ilike('tenant_email', sub.tenant_email);
-            } else if (sub.bed_id) {
+            if (sub.bed_id) {
                 await supabase.from('beds').update({ rent_status: 'paid' }).eq('id', sub.bed_id);
+            }
+            if (sub.tenant_email) {
+                await supabase.from('beds').update({ rent_status: 'paid' }).ilike('tenant_email', sub.tenant_email.trim());
             }
         } catch (bedErr) {
             console.warn('[BankReconcile] Bed update notice:', bedErr);

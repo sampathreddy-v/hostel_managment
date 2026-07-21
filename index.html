@@ -6188,7 +6188,39 @@
                     while (filledBeds.length < r.capacity) filledBeds.push({ tenant: '', rent: defaultRent, rentStatus: null });
                     return { _roomId: r.id, num: r.num, floor: r.floor, type: r.type, capacity: r.capacity, beds: filledBeds };
                 });
+            // Reconcile approved payment submissions with beds rentStatus automatically
+            try {
+                const { data: approvedSubs } = await db
+                    .from('payment_submissions')
+                    .select('*')
+                    .in('hostel_id', hostelIds)
+                    .eq('status', 'approved');
+
+                if (approvedSubs && approvedSubs.length > 0) {
+                    approvedSubs.forEach(sub => {
+                        hostelIds.forEach(hid => {
+                            if (rooms[hid]) {
+                                rooms[hid].forEach(r => {
+                                    r.beds.forEach(b => {
+                                        if (b.tenant && (
+                                            (sub.bed_id && (b._id == sub.bed_id || b.id == sub.bed_id)) ||
+                                            (sub.tenant_email && b.tenant_email && b.tenant_email.toLowerCase().trim() === sub.tenant_email.toLowerCase().trim())
+                                        )) {
+                                            b.rentStatus = 'paid';
+                                            if (b._id) {
+                                                db.from('beds').update({ rent_status: 'paid' }).eq('id', b._id).then(() => {}).catch(() => {});
+                                            }
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    });
+                }
+            } catch (reconErr) {
+                console.warn('Payment submission reconciliation notice:', reconErr);
             }
+
             const { data: compData } = await db.from('complaints').select('*').in('hostel_id', hostelIds);
             if (compData) complaints = compData.map(c => ({ id: c.id, hostel: c.hostel_id, room: c.room_num, tenant: c.tenant_name, category: c.category, subject: c.subject, desc: c.description, status: c.status, date: c.created_date, cost: c.cost, bill: c.bill }));
 
@@ -10488,10 +10520,11 @@
 
                 // 2. Update bed status to paid in beds table safely
                 try {
-                    if (sub.tenant_email) {
-                        await db.from('beds').update({ rent_status: 'paid' }).ilike('tenant_email', sub.tenant_email);
-                    } else if (sub.bed_id) {
+                    if (sub.bed_id) {
                         await db.from('beds').update({ rent_status: 'paid' }).eq('id', sub.bed_id);
+                    }
+                    if (sub.tenant_email) {
+                        await db.from('beds').update({ rent_status: 'paid' }).ilike('tenant_email', sub.tenant_email.trim());
                     }
                 } catch (bedErr) {
                     console.warn('[ManagerUPI] Bed update notice:', bedErr);
