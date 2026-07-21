@@ -6594,9 +6594,14 @@
 
         function renderTenantPortal() {
             if (!currentTenant) return;
-            const name = currentTenant.tenant_name;
-            const first = name.split(' ')[0];
-            const inits = name.split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase();
+            const name = getDisplayName(currentTenant.tenant_name || currentTenant.tenant);
+            const first = name.split(' ')[0] || 'Tenant';
+            const inits = name.split(' ').filter(Boolean).map(x => x[0]).join('').substring(0, 2).toUpperCase() || 'TN';
+            
+            const rnum = currentTenant.rooms?.num || currentTenant.num || 'N/A';
+            const hid = currentTenant.rooms?.hostel_id || currentTenant.hostel || currentHostel || 1;
+            const hname = hostels[hid] ? hostels[hid].name : `Hostel ${hid}`;
+
             const roomStr = `Room ${rnum} · ${hname}`;
             const baseRent = Number(currentTenant.rent || 5500);
             const proratedRent = getProratedRentForBed(currentTenant);
@@ -6608,19 +6613,21 @@
             const proratedRentStr = isProrated ? `₹${proratedRent.toLocaleString()} (Prorated)` : `₹${baseRent.toLocaleString()}`;
             const depStr = `₹${(baseRent * 2).toLocaleString()}`;
 
-            document.getElementById('tp-sb-name').textContent = name;
-            document.getElementById('tp-sb-room').textContent = `Room ${rnum} · Hostel ${currentHostel}`;
-            document.getElementById('tp-title').textContent = `Hi ${first}! 👋`;
-            document.getElementById('tp-subtitle').textContent = roomStr;
+            const setElText = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
 
-            document.getElementById('tp-stay-hostel').textContent = hname;
-            document.getElementById('tp-stay-room').textContent = `${rnum} — Occupied`;
-            document.getElementById('tp-stay-deposit').textContent = `${depStr} (refundable)`;
+            setElText('tp-sb-name', name);
+            setElText('tp-sb-room', `Room ${rnum} · Hostel ${hid}`);
+            setElText('tp-title', `Hi ${first}! 👋`);
+            setElText('tp-subtitle', roomStr);
 
-            document.getElementById('tp-hero-rent').textContent = rentStr;
-            document.getElementById('tp-pay-amt').textContent = rentStr;
-            document.getElementById('tp-pay-sub').textContent = proratedRentStr;
-            document.getElementById('tp-pay-total').textContent = rentStr;
+            setElText('tp-stay-hostel', hname);
+            setElText('tp-stay-room', `${rnum} — Occupied`);
+            setElText('tp-stay-deposit', `${depStr} (refundable)`);
+
+            setElText('tp-hero-rent', rentStr);
+            setElText('tp-pay-amt', rentStr);
+            setElText('tp-pay-sub', proratedRentStr);
+            setElText('tp-pay-total', rentStr);
 
             const fineRow = document.getElementById('tp-fine-row');
             const fineVal = document.getElementById('tp-pay-fine');
@@ -6633,20 +6640,20 @@
                 }
             }
 
-            document.getElementById('tp-pay-btn').textContent = `Pay ${rentStr} →`;
-            document.getElementById('tp-pay-due').textContent = `${roomStr} · Due June 5, 2025`;
+            setElText('tp-pay-btn', `Pay ${rentStr} →`);
+            setElText('tp-pay-due', `${roomStr} · Due June 5, 2025`);
 
             checkTenantPendingPayment();
 
-            document.getElementById('tp-prof-ava').textContent = inits;
-            document.getElementById('tp-prof-name').textContent = name;
-            document.getElementById('tp-prof-sub').textContent = `${roomStr} · Tenant`;
+            setElText('tp-prof-ava', inits);
+            setElText('tp-prof-name', name);
+            setElText('tp-prof-sub', `${roomStr} · Tenant`);
 
-            document.getElementById('tp-info-name').textContent = name;
-            document.getElementById('tp-info-email').textContent = currentTenant.tenant_email;
-            document.getElementById('tp-info-hostel').textContent = hname;
-            document.getElementById('tp-info-room').textContent = rnum;
-            document.getElementById('tp-info-rent').textContent = rentStr;
+            setElText('tp-info-name', name);
+            setElText('tp-info-email', currentTenant.tenant_email || 'N/A');
+            setElText('tp-info-hostel', hname);
+            setElText('tp-info-room', rnum);
+            setElText('tp-info-rent', rentStr);
 
             const noticeBtn = document.getElementById('tenant-notice-btn');
             if (noticeBtn) {
