@@ -6181,7 +6181,7 @@
                         payment_style: b.payment_style,
                         id_proof_type: b.id_proof_type,
                         photo_url: b.photo_url,
-                        notice_status: b.notice_status,
+                        notice_status: (b.tenant_name && b.tenant_name.trim().length > 0) ? b.notice_status : null,
                         deposit_status: b.deposit_status,
                         late_fee_collected: b.late_fee_collected || 0
                     }));
@@ -6958,9 +6958,10 @@
 
                         const isFull = (occupiedBeds + pendingBookings) === r.capacity;
                         const isEmpty = (occupiedBeds + pendingBookings) === 0;
-                        const hasOverdue = beds.some(b => b.rentStatus === 'overdue');
-                        const hasPendingPayment = beds.some(b => b.rentStatus === 'pending');
-                        const hasNotice = beds.some(b => b.notice_status === 'accepted');
+                        const activeBedsForRoom = beds.filter(b => b.tenant && typeof b.tenant === 'string' && b.tenant.trim().length > 0 && !b.tenant.startsWith('PENDING:'));
+                        const hasOverdue = activeBedsForRoom.some(b => b.rentStatus === 'overdue');
+                        const hasPendingPayment = activeBedsForRoom.some(b => b.rentStatus === 'pending');
+                        const hasNotice = activeBedsForRoom.some(b => b.notice_status === 'accepted');
 
                         let cls = hasAdvanceBooking ? 'advance-booking' : isEmpty ? 'vacant' : (hasNotice ? 'notice-period' : (hasOverdue || hasPendingPayment) ? 'warning' : pendingBookings > 0 ? 'warning' : 'occupied');
 
@@ -6980,13 +6981,14 @@
 
                         const hasComplaint = complaints.some(c => c.hostel === hid && c.room === r.num && c.status !== 'resolved');
                         let bedDots = beds.map(b => {
-                            const isReq = b.rentStatus === 'Request' || (b.tenant && b.tenant.startsWith('PENDING:'));
-                            const isNotice = b.notice_status === 'accepted';
-                            const isNoticePending = b.notice_status === 'pending';
-                            const isOcc = b.tenant && !isReq;
+                            const hasTenant = b.tenant && typeof b.tenant === 'string' && b.tenant.trim().length > 0;
+                            const isReq = b.rentStatus === 'Request' || (hasTenant && b.tenant.startsWith('PENDING:'));
+                            const isNotice = hasTenant && !b.tenant.startsWith('PENDING:') && b.notice_status === 'accepted';
+                            const isNoticePending = hasTenant && !b.tenant.startsWith('PENDING:') && b.notice_status === 'pending';
+                            const isOcc = hasTenant && !isReq;
                             // Check if this specific bed is an advance booking
                             let isAdvance = false;
-                            if (b.tenant && !b.tenant.startsWith('PENDING:') && b.date_of_joining) {
+                            if (hasTenant && !b.tenant.startsWith('PENDING:') && b.date_of_joining) {
                                 const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
                                 isAdvance = doj > today;
                             }
@@ -7793,7 +7795,8 @@
                         advance_deposit: null,
                         payment_style: null,
                         id_proof_type: null,
-                        photo_url: null
+                        photo_url: null,
+                        notice_status: null
                     };
                     try {
                         await db.from('beds').update({
@@ -7807,10 +7810,12 @@
                 
                 // Reset bed locally
                 const defaultRent = room.beds[0]?.rent || 5500;
-                room.beds[bedIndex] = { tenant: '', rent: defaultRent, rentStatus: null, late_fee_collected: 0 };
+                room.beds[bedIndex] = { tenant: '', rent: defaultRent, rentStatus: null, late_fee_collected: 0, notice_status: null };
             }
             closeRoomPopup();
             renderManagerOccupancy();
+            renderOwnerOccupancy();
+            if (typeof renderNoticeRequests === 'function') renderNoticeRequests(currentRole);
             renderMgrRentTable('all');
             renderMgrTenants();
             showToast('Tenant Removed', `The tenant has been successfully removed from Room ${roomNum}.`);
@@ -8130,18 +8135,21 @@
                     advance_deposit: null,
                     payment_style: null,
                     id_proof_type: null,
-                    photo_url: null
+                    photo_url: null,
+                    notice_status: null
                 }).eq('id', bedId);
 
                 if (error) throw error;
 
                 // Update local state
                 if (r) {
-                    r.beds[bedIdx] = { tenant: '', rent: 5500, rentStatus: null };
+                    r.beds[bedIdx] = { tenant: '', rent: 5500, rentStatus: null, notice_status: null };
                 }
 
                 renderMgrTenants();
                 renderManagerOccupancy();
+                renderOwnerOccupancy();
+                if (typeof renderNoticeRequests === 'function') renderNoticeRequests(currentRole);
                 showToast('Removed ✅', `${name} has been removed.`);
             } catch (err) {
                 console.error(err);
@@ -8328,7 +8336,8 @@
                     tenant_name: null,
                     tenant_email: null,
                     tenant_phone: null,
-                    rent_status: null
+                    rent_status: null,
+                    notice_status: null
                 }).eq('id', bedId);
 
                 if (error) throw error;
@@ -8971,7 +8980,8 @@
                         tenant_email: null,
                         tenant_phone: null,
                         tenant_password: null,
-                        rent_status: null
+                        rent_status: null,
+                        notice_status: null
                     })
                     .eq('id', oldBedId);
                     
@@ -8984,12 +8994,15 @@
                 localNewBed.tenant_password = activeProfileTenant.tenant_password;
                 localNewBed.rent = activeProfileTenant.rent;
                 localNewBed.rentStatus = activeProfileTenant.rentStatus;
+                localNewBed.notice_status = activeProfileTenant.notice_status || null;
                 
                 oldBed.tenant = '';
                 oldBed.tenant_email = null;
                 oldBed.tenant_phone = null;
                 oldBed.tenant_password = null;
                 oldBed.rentStatus = null;
+                oldBed.notice_status = null;
+                if (typeof renderNoticeRequests === 'function') renderNoticeRequests(currentRole);
                 
                 activeProfileTenant.num = newRoomNum;
                 document.getElementById('tp-room').textContent = newRoomNum;
@@ -9062,7 +9075,8 @@
                     advance_deposit: null,
                     payment_style: null,
                     id_proof_type: null,
-                    photo_url: null
+                    photo_url: null,
+                    notice_status: null
                 }).eq('id', bedId);
 
                 if (error) throw error;
@@ -9073,7 +9087,7 @@
                     const bedIndex = r.beds.findIndex(b => b._id === bedId || b.id === bedId);
                     if (bedIndex !== -1) {
                         const defaultRent = r.beds[0]?.rent || 5500;
-                        r.beds[bedIndex] = { tenant: '', rent: defaultRent, rentStatus: null };
+                        r.beds[bedIndex] = { tenant: '', rent: defaultRent, rentStatus: null, notice_status: null };
                     }
                 }
 
@@ -9085,6 +9099,8 @@
                 if (typeof updateDashboardStats === 'function') updateDashboardStats();
                 if (typeof renderMgrTenants === 'function') renderMgrTenants();
                 if (typeof renderManagerOccupancy === 'function') renderManagerOccupancy();
+                if (typeof renderOwnerOccupancy === 'function') renderOwnerOccupancy();
+                if (typeof renderNoticeRequests === 'function') renderNoticeRequests(currentRole);
 
                 showToast('Removed ✅', `${name} has been removed.`);
             } catch (err) {
@@ -9627,7 +9643,7 @@
                 if (rooms[hid]) {
                     rooms[hid].forEach(r => {
                         r.beds.forEach((b, idx) => {
-                            if (b.notice_status) {
+                            if (b.tenant && typeof b.tenant === 'string' && b.tenant.trim().length > 0 && b.notice_status) {
                                 allNoticeBeds.push({ ...b, num: r.num, hostel: hid, bedIdx: idx });
                             }
                         });
