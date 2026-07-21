@@ -10153,68 +10153,86 @@
         }
 
         function payRent() {
-            const payAmtEl = document.getElementById('tp-pay-amt') || document.getElementById('tp-pay-total');
-            let rentVal = null;
-            if (payAmtEl && payAmtEl.textContent) {
-                const cleanText = payAmtEl.textContent.replace(/[^\d.]/g, '');
-                const amt = Number(cleanText);
-                if (!isNaN(amt)) rentVal = amt;
+            try {
+                console.log('[TenantUPI] payRent triggered');
+                const payAmtEl = document.getElementById('tp-pay-amt') || document.getElementById('tp-pay-total');
+                let rentVal = null;
+                if (payAmtEl && payAmtEl.textContent) {
+                    const cleanText = payAmtEl.textContent.replace(/[^\d.]/g, '');
+                    const amt = Number(cleanText);
+                    if (!isNaN(amt) && amt >= 0) rentVal = amt;
+                }
+                openTenantUpiModal(rentVal);
+            } catch (e) {
+                console.error('[TenantUPI] payRent error:', e);
+                openTenantUpiModal(5500);
             }
-            openTenantUpiModal(rentVal);
         }
 
         async function openTenantUpiModal(overrideRent = null) {
+            console.log('[TenantUPI] Opening Tenant UPI Modal...');
             const modal = document.getElementById('tenant-upi-modal');
-            if (!modal) return;
-            modal.style.display = 'flex';
+            if (!modal) {
+                console.error('[TenantUPI] #tenant-upi-modal element not found in DOM!');
+                return;
+            }
+            
+            // Force display modal immediately
+            modal.style.cssText = 'display: flex !important; position: fixed !important; inset: 0 !important; z-index: 999999 !important; background: rgba(26, 24, 20, 0.75) !important; backdrop-filter: blur(4px) !important; align-items: center !important; justify-content: center !important;';
             modal.classList.add('on');
 
-            const tenant = getLoggedTenantObj();
-            const rentAmt = (overrideRent !== null && overrideRent !== undefined && !isNaN(Number(overrideRent))) ? Number(overrideRent) : getTenantDueRentAmount();
-            const roomNum = (tenant && (tenant.room_num || tenant.rooms?.num)) ? (tenant.room_num || tenant.rooms?.num) : '105';
-            
-            const hostelId = (tenant && tenant.rooms && tenant.rooms.hostel_id) ? tenant.rooms.hostel_id : (typeof currentHostel !== 'undefined' ? currentHostel : 1);
-            const hostelObj = (typeof hostels !== 'undefined' && hostels && hostels[hostelId]) ? hostels[hostelId] : null;
+            try {
+                const tenant = getLoggedTenantObj();
+                let rentAmt = (overrideRent !== null && overrideRent !== undefined && !isNaN(Number(overrideRent))) ? Number(overrideRent) : getTenantDueRentAmount();
+                if (isNaN(rentAmt) || rentAmt < 0) rentAmt = 5500;
 
-            const upiId = (hostelObj && hostelObj.upi_id) ? hostelObj.upi_id : '6300642776@ybl';
-            const upiName = (hostelObj && hostelObj.upi_name) ? hostelObj.upi_name : 'VUSTELA PG Hostels';
+                const roomNum = (tenant && (tenant.room_num || tenant.rooms?.num)) ? (tenant.room_num || tenant.rooms?.num) : '105';
+                
+                const hostelId = (tenant && tenant.rooms && tenant.rooms.hostel_id) ? tenant.rooms.hostel_id : (typeof currentHostel !== 'undefined' ? currentHostel : 1);
+                const hostelObj = (typeof hostels !== 'undefined' && hostels && hostels[hostelId]) ? hostels[hostelId] : null;
 
-            const amtEl = document.getElementById('t-upi-amount-display');
-            if (amtEl) amtEl.textContent = `₹${rentAmt.toLocaleString()}`;
+                const upiId = (hostelObj && hostelObj.upi_id) ? hostelObj.upi_id : '6300642776@ybl';
+                const upiName = (hostelObj && hostelObj.upi_name) ? hostelObj.upi_name : 'VUSTELA PG Hostels';
 
-            const upiIdEl = document.getElementById('t-upi-id-text');
-            if (upiIdEl) upiIdEl.textContent = upiId;
+                const amtEl = document.getElementById('t-upi-amount-display');
+                if (amtEl) amtEl.textContent = `₹${rentAmt.toLocaleString()}`;
 
-            // Generate UPI Intent URI
-            const params = new URLSearchParams({
-                pa: upiId,
-                pn: upiName,
-                am: rentAmt.toFixed(2),
-                cu: "INR",
-                tn: `Rent Room ${roomNum}`,
-                mc: "7011"
-            });
-            const upiUri = `upi://pay?${params.toString()}`;
+                const upiIdEl = document.getElementById('t-upi-id-text');
+                if (upiIdEl) upiIdEl.textContent = upiId;
 
-            // Generate QR Image URL using QRServer API with fallback
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUri)}`;
-            const fallbackQrUrl = `https://quickchart.io/qr?size=200&text=${encodeURIComponent(upiUri)}`;
-            const qrImgEl = document.getElementById('t-upi-qr-img');
-            if (qrImgEl) {
-                qrImgEl.onerror = function() {
-                    if (this.src !== fallbackQrUrl) {
-                        this.src = fallbackQrUrl;
-                    }
-                };
-                qrImgEl.src = qrUrl;
+                // Generate UPI Intent URI
+                const params = new URLSearchParams({
+                    pa: upiId,
+                    pn: upiName,
+                    am: rentAmt.toFixed(2),
+                    cu: "INR",
+                    tn: `Rent Room ${roomNum}`,
+                    mc: "7011"
+                });
+                const upiUri = `upi://pay?${params.toString()}`;
+
+                // Generate QR Image URL using QRServer API with fallback
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUri)}`;
+                const fallbackQrUrl = `https://quickchart.io/qr?size=200&text=${encodeURIComponent(upiUri)}`;
+                const qrImgEl = document.getElementById('t-upi-qr-img');
+                if (qrImgEl) {
+                    qrImgEl.onerror = function() {
+                        if (this.src !== fallbackQrUrl) {
+                            this.src = fallbackQrUrl;
+                        }
+                    };
+                    qrImgEl.src = qrUrl;
+                }
+
+                // Set app direct link
+                const appLink = document.getElementById('t-upi-app-link');
+                if (appLink) appLink.href = upiUri;
+
+                // Check if tenant already has a pending submission
+                await checkTenantPendingPayment();
+            } catch (err) {
+                console.error('[TenantUPI] Error setting up modal details:', err);
             }
-
-            // Set app direct link
-            const appLink = document.getElementById('t-upi-app-link');
-            if (appLink) appLink.href = upiUri;
-
-            // Check if tenant already has a pending submission
-            await checkTenantPendingPayment();
         }
 
         function closeTenantUpiModal(e) {
