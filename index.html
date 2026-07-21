@@ -10167,6 +10167,7 @@
             const modal = document.getElementById('tenant-upi-modal');
             if (!modal) return;
             modal.style.display = 'flex';
+            modal.classList.add('on');
 
             const tenant = getLoggedTenantObj();
             const rentAmt = (overrideRent !== null && overrideRent !== undefined && !isNaN(Number(overrideRent))) ? Number(overrideRent) : getTenantDueRentAmount();
@@ -10195,10 +10196,18 @@
             });
             const upiUri = `upi://pay?${params.toString()}`;
 
-            // Generate QR Image URL using QRServer API
+            // Generate QR Image URL using QRServer API with fallback
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUri)}`;
+            const fallbackQrUrl = `https://quickchart.io/qr?size=200&text=${encodeURIComponent(upiUri)}`;
             const qrImgEl = document.getElementById('t-upi-qr-img');
-            if (qrImgEl) qrImgEl.src = qrUrl;
+            if (qrImgEl) {
+                qrImgEl.onerror = function() {
+                    if (this.src !== fallbackQrUrl) {
+                        this.src = fallbackQrUrl;
+                    }
+                };
+                qrImgEl.src = qrUrl;
+            }
 
             // Set app direct link
             const appLink = document.getElementById('t-upi-app-link');
@@ -10210,7 +10219,10 @@
 
         function closeTenantUpiModal(e) {
             const modal = document.getElementById('tenant-upi-modal');
-            if (modal) modal.style.display = 'none';
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('on');
+            }
         }
 
         function copyUpiId() {

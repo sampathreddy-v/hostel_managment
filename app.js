@@ -750,7 +750,7 @@ async function acceptRequest(id) {
 
             <p style="font-size: 14px; color: #666; margin-bottom: 24px;">You can login here to pay rent, view receipts, and raise complaints:</p>
             
-            <a href="http://localhost:8080/hostel_management002.html" 
+            <a href="index.html" 
                style="display: inline-block; background: #1A1814; color: #FFF; padding: 14px 28px; border-radius: 40px; text-decoration: none; font-weight: 700; font-size: 15px;">
                Login to Dashboard
             </a>
