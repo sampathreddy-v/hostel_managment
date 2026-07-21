@@ -1,3 +1,8 @@
 node_modules/
 .DS_Store
 .env
+scratch*
+crop_*
+sent_reports_log.json
+url_ascii.txt
+local server
