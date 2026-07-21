@@ -4151,10 +4151,10 @@
             </div>
             <div id="login-form-area">
                 <div class="input-group"><label>Email</label><input type="email" placeholder="your@email.com"
-                        id="l-email">
+                        id="l-email" onkeypress="if(event.key==='Enter') doLogin()">
                 </div>
                 <div class="input-group"><label>Password</label><input type="password" placeholder="Your Password"
-                        id="l-pass">
+                        id="l-pass" onkeypress="if(event.key==='Enter') doLogin()">
                 </div>
             </div>
             <button class="btn-full" id="l-btn" onclick="doLogin()">Login</button>
@@ -6188,6 +6188,8 @@
                     while (filledBeds.length < r.capacity) filledBeds.push({ tenant: '', rent: defaultRent, rentStatus: null });
                     return { _roomId: r.id, num: r.num, floor: r.floor, type: r.type, capacity: r.capacity, beds: filledBeds };
                 });
+            }
+
             // Reconcile approved payment submissions with beds rentStatus automatically
             try {
                 const { data: approvedSubs } = await db
