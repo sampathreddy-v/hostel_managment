@@ -6112,6 +6112,23 @@
             ? 'http://localhost:3000'
             : 'https://hostel-managment-i9y5.onrender.com';
 
+        async function safeFetchApi(endpoint, options = {}, timeoutMs = 3000) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const response = await fetch(API_BASE_URL + endpoint, {
+                    ...options,
+                    signal: controller.signal
+                });
+                clearTimeout(timer);
+                return response;
+            } catch (err) {
+                clearTimeout(timer);
+                console.warn(`[API] Optional backend call ${endpoint} skipped/timed out:`, err.message);
+                return null;
+            }
+        }
+
         // ============================================================
         // SUPABASE CLIENT
         // ============================================================
