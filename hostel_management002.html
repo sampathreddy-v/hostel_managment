@@ -6572,7 +6572,7 @@
                 for (let hid of [1, 2, 3]) {
                     rooms[hid].forEach(r => {
                         r.beds.forEach(b => {
-                            if (b.tenant_email?.toLowerCase() === email.toLowerCase() && b.tenant_password === password) {
+                            if (b.tenant && b.tenant.trim().length > 0 && b.tenant_email?.toLowerCase() === email.toLowerCase() && b.tenant_password === password) {
                                 foundBed = { ...b, tenant_name: b.tenant, rooms: { num: r.num, hostel_id: hid } };
                             }
                         });
@@ -6585,11 +6585,15 @@
                         .select('*, rooms(hostel_id, num)')
                         .ilike('tenant_email', email)
                         .eq('tenant_password', password)
+                        .not('tenant_name', 'is', null)
+                        .neq('tenant_name', '')
                         .single();
-                    if (bed) foundBed = bed;
+                    if (bed && bed.tenant_name && bed.tenant_name.trim().length > 0) {
+                        foundBed = bed;
+                    }
                 }
 
-                if (foundBed) {
+                if (foundBed && (foundBed.tenant_name || foundBed.tenant) && String(foundBed.tenant_name || foundBed.tenant).trim().length > 0) {
                     closeModal('login-modal');
                     currentRole = 'tenant';
                     currentTenant = foundBed;
