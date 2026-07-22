@@ -5870,37 +5870,8 @@
                                     <th>Receipt</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>May 2025</strong></td>
-                                    <td class="mono">₹5,500</td>
-                                    <td>UPI</td>
-                                    <td>May 2, 2025</td>
-                                    <td><span class="badge badge-green">✅ Paid</span></td>
-                                    <td><button class="btn-ghost"
-                                            onclick="showToast('Receipt','May 2025 receipt downloaded.')">⬇
-                                            Download</button></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>April 2025</strong></td>
-                                    <td class="mono">₹5,500</td>
-                                    <td>UPI</td>
-                                    <td>Apr 3, 2025</td>
-                                    <td><span class="badge badge-green">✅ Paid</span></td>
-                                    <td><button class="btn-ghost"
-                                            onclick="showToast('Receipt','April 2025 receipt downloaded.')">⬇
-                                            Download</button></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>March 2025</strong></td>
-                                    <td class="mono">₹5,500</td>
-                                    <td>Cash</td>
-                                    <td>Mar 5, 2025</td>
-                                    <td><span class="badge badge-green">✅ Paid</span></td>
-                                    <td><button class="btn-ghost"
-                                            onclick="showToast('Receipt','March 2025 receipt downloaded.')">⬇
-                                            Download</button></td>
-                                </tr>
+                            <tbody id="tp-history-tbody">
+                                <tr><td colspan="6" style="text-align:center; padding:32px; color:var(--ink3);">Loading payment history...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -5908,13 +5879,13 @@
                         <div class="flex between">
                             <div>
                                 <div style="font-size:13px;color:var(--ink3)">Total paid since joining</div>
-                                <div
+                                <div id="tp-history-total-paid"
                                     style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--green)">
-                                    ₹16,500</div>
+                                    ₹0</div>
                             </div>
                             <div style="text-align:right">
                                 <div style="font-size:13px;color:var(--ink3)">Security deposit</div>
-                                <div style="font-family:var(--font-display);font-size:22px;font-weight:700">₹11,000
+                                <div id="tp-history-deposit" style="font-family:var(--font-display);font-size:22px;font-weight:700">₹11,000
                                 </div>
                                 <div style="font-size:12px;color:var(--ink3)">Refundable on exit</div>
                             </div>
@@ -6695,6 +6666,7 @@
             setElText('tp-pay-due', `${roomStr} · Due June 5, 2025`);
 
             checkTenantPendingPayment();
+            renderTenantPaymentHistory();
 
             setElText('tp-prof-ava', inits);
             setElText('tp-prof-name', name);
@@ -10427,6 +10399,100 @@
                 }
             } catch (err) {
                 console.error('[TenantUPI] Check pending error:', err);
+            }
+        }
+
+        async function renderTenantPaymentHistory() {
+            const tenant = getLoggedTenantObj();
+            if (!tenant) return;
+
+            const tbody = document.getElementById('tp-history-tbody');
+            const totalPaidEl = document.getElementById('tp-history-total-paid');
+            const depositEl = document.getElementById('tp-history-deposit');
+            if (!tbody) return;
+
+            try {
+                const email = tenant.tenant_email ? tenant.tenant_email.trim() : '';
+                const rawBedId = tenant.id || tenant._id || tenant.bed_id;
+                const numericBedId = (rawBedId && !isNaN(Number(rawBedId))) ? Number(rawBedId) : null;
+
+                let query = db.from('rent_history').select('*');
+                if (email) query = query.ilike('tenant_email', email);
+                else if (numericBedId) query = query.eq('bed_id', numericBedId);
+
+                const { data: historyData } = await query.order('created_at', { ascending: false });
+
+                let subQuery = db.from('payment_submissions').select('*');
+                if (numericBedId) subQuery = subQuery.eq('bed_id', numericBedId);
+                else if (email) subQuery = subQuery.ilike('tenant_email', email);
+
+                const { data: subData } = await subQuery.order('created_at', { ascending: false });
+
+                let combinedRecords = [];
+                let totalPaidAmt = 0;
+
+                if (subData && subData.length > 0) {
+                    subData.forEach(sub => {
+                        const amt = Number(sub.amount_claimed || 0);
+                        const isApproved = sub.status === 'approved';
+                        if (isApproved) totalPaidAmt += amt;
+
+                        combinedRecords.push({
+                            month: sub.payment_month || new Date(sub.created_at).toLocaleString('default', { month: 'short', year: 'numeric' }),
+                            amount: amt,
+                            method: 'UPI',
+                            date: new Date(sub.created_at).toLocaleDateString(),
+                            status: isApproved ? 'approved' : 'pending',
+                            utr: sub.utr_number
+                        });
+                    });
+                }
+
+                if (historyData && historyData.length > 0) {
+                    historyData.forEach(h => {
+                        const amt = Number(h.rent_amount || 0);
+                        const isPaid = h.rent_status === 'paid';
+                        if (isPaid) totalPaidAmt += amt;
+
+                        const monthStr = `${h.month || ''} ${h.year || ''}`.trim();
+                        const exists = combinedRecords.some(r => r.month === monthStr || (r.amount === amt && r.date === new Date(h.created_at).toLocaleDateString()));
+                        if (!exists) {
+                            combinedRecords.push({
+                                month: monthStr || 'Rent Payment',
+                                amount: amt,
+                                method: 'Bank Transfer / Cash',
+                                date: h.created_at ? new Date(h.created_at).toLocaleDateString() : 'Paid',
+                                status: isPaid ? 'approved' : 'pending',
+                                utr: ''
+                            });
+                        }
+                    });
+                }
+
+                if (combinedRecords.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:32px; color:var(--ink3);">No payment history records found yet.</td></tr>`;
+                } else {
+                    tbody.innerHTML = combinedRecords.map(r => `
+                        <tr>
+                            <td><strong>${r.month}</strong></td>
+                            <td class="mono">₹${r.amount.toLocaleString()}</td>
+                            <td>${r.method}</td>
+                            <td>${r.date}</td>
+                            <td>${r.status === 'approved' ? '<span class="badge badge-green">✅ Paid</span>' : '<span class="badge badge-yellow">⏳ Pending Verification</span>'}</td>
+                            <td>
+                                <button class="btn-ghost" onclick="showToast('Receipt','Receipt for ${r.month} (₹${r.amount.toLocaleString()}) downloaded.')">⬇ Download</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+
+                if (totalPaidEl) totalPaidEl.textContent = `₹${totalPaidAmt.toLocaleString()}`;
+                
+                const baseRent = Number(tenant.rent || 5500);
+                if (depositEl) depositEl.textContent = `₹${(baseRent * 2).toLocaleString()}`;
+
+            } catch (err) {
+                console.error('[TenantHistory] Error loading history:', err);
             }
         }
 
