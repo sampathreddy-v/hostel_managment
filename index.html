@@ -10364,22 +10364,32 @@
                     if (pendingBanner) pendingBanner.style.display = 'none';
                     if (pageBanner) pageBanner.style.display = 'none';
 
-                    // Check if payment was approved for THIS BED specifically in payment_submissions or beds DB
+                    // Check if payment was approved specifically for THIS bed/room in database
                     const rawBedId = tenant.id || tenant._id || tenant.bed_id;
-                    const isBedPaidInDB = (tenant.rent_status === 'paid' || tenant.rentStatus === 'paid');
-                    
-                    let appQuery = db.from('payment_submissions').select('*').eq('status', 'approved');
-                    if (rawBedId && !isNaN(Number(rawBedId))) {
-                        appQuery = appQuery.eq('bed_id', Number(rawBedId));
-                    } else if (tenant.tenant_email) {
-                        appQuery = appQuery.ilike('tenant_email', tenant.tenant_email.trim());
-                    }
-                    const { data: appData } = await appQuery.order('created_at', { ascending: false }).limit(1);
+                    let isBedPaidInDB = (tenant.rent_status === 'paid' || tenant.rentStatus === 'paid');
 
-                    const currentRoomNum = String(tenant.room_num || tenant.rooms?.num || '');
-                    const hasApprovedSub = appData && appData.length > 0 && (
-                        !currentRoomNum || String(appData[0].room_num) === currentRoomNum
-                    );
+                    // Check Supabase beds table directly for latest bed status
+                    if (rawBedId && !isNaN(Number(rawBedId))) {
+                        try {
+                            const { data: bData } = await db.from('beds').select('rent_status').eq('id', Number(rawBedId)).single();
+                            if (bData && bData.rent_status === 'paid') isBedPaidInDB = true;
+                        } catch (e) {}
+                    }
+
+                    let hasApprovedSub = false;
+                    if (!isBedPaidInDB) {
+                        let appQuery = db.from('payment_submissions').select('*').eq('status', 'approved');
+                        if (rawBedId && !isNaN(Number(rawBedId))) {
+                            appQuery = appQuery.eq('bed_id', Number(rawBedId));
+                        } else if (tenant.tenant_email) {
+                            appQuery = appQuery.ilike('tenant_email', tenant.tenant_email.trim());
+                        }
+                        const { data: appData } = await appQuery.order('created_at', { ascending: false }).limit(1);
+                        const currentRoomNum = String(tenant.room_num || tenant.rooms?.num || '');
+                        if (appData && appData.length > 0 && appData[0].bed_id == rawBedId && currentRoomNum && String(appData[0].room_num) === currentRoomNum) {
+                            hasApprovedSub = true;
+                        }
+                    }
 
                     if (isBedPaidInDB || hasApprovedSub) {
                         tenant.rent_status = 'paid';
