@@ -7769,6 +7769,10 @@
                         ...updatePayload,
                         late_fee_collected: lateFeeCharged
                     }).eq('id', bedId);
+                    await db.from('payment_submissions').update({ status: 'approved' }).eq('bed_id', bedId);
+                }
+                if (bed.tenant_email) {
+                    await db.from('payment_submissions').update({ status: 'approved' }).ilike('tenant_email', bed.tenant_email.trim());
                 }
             } catch (err) {
                 // Fallback if column does not exist in beds table yet
@@ -10360,13 +10364,26 @@
                     if (pendingBanner) pendingBanner.style.display = 'none';
                     if (pageBanner) pageBanner.style.display = 'none';
 
-                    // Check if payment was approved
+                    // Check if payment was approved for THIS BED specifically in payment_submissions or beds DB
+                    const rawBedId = tenant.id || tenant._id || tenant.bed_id;
+                    const isBedPaidInDB = (tenant.rent_status === 'paid' || tenant.rentStatus === 'paid');
+                    
                     let appQuery = db.from('payment_submissions').select('*').eq('status', 'approved');
-                    if (tenant.tenant_email) appQuery = appQuery.ilike('tenant_email', tenant.tenant_email);
+                    if (rawBedId && !isNaN(Number(rawBedId))) {
+                        appQuery = appQuery.eq('bed_id', Number(rawBedId));
+                    } else if (tenant.tenant_email) {
+                        appQuery = appQuery.ilike('tenant_email', tenant.tenant_email.trim());
+                    }
                     const { data: appData } = await appQuery.order('created_at', { ascending: false }).limit(1);
 
-                    if (appData && appData.length > 0) {
+                    const currentRoomNum = String(tenant.room_num || tenant.rooms?.num || '');
+                    const hasApprovedSub = appData && appData.length > 0 && (
+                        !currentRoomNum || String(appData[0].room_num) === currentRoomNum
+                    );
+
+                    if (isBedPaidInDB || hasApprovedSub) {
                         tenant.rent_status = 'paid';
+                        tenant.rentStatus = 'paid';
                         if (payBtn) {
                             payBtn.textContent = 'Paid ✅';
                             payBtn.disabled = true;
@@ -10378,6 +10395,8 @@
                         const payAmt = document.getElementById('tp-pay-amt');
                         if (payAmt) payAmt.textContent = '₹0';
                     } else {
+                        tenant.rent_status = 'unpaid';
+                        tenant.rentStatus = 'unpaid';
                         if (payBtn) {
                             const rentAmt = getTenantDueRentAmount();
                             payBtn.textContent = `Pay ₹${rentAmt.toLocaleString()} →`;
