@@ -515,7 +515,7 @@
             display: none;
             position: fixed;
             inset: 0;
-            z-index: 500;
+            z-index: 10000;
             background: rgba(26, 24, 20, 0.5);
             backdrop-filter: blur(4px);
             align-items: center;
@@ -523,7 +523,7 @@
         }
 
         .modal-overlay.on {
-            display: flex
+            display: flex;
         }
 
         .modal {
@@ -2423,19 +2423,27 @@
                 grid-template-columns: 1fr;
             }
 
-            /* SIDEBAR — slide-in overlay */
+            /* SIDEBAR — full screen slide-in overlay on mobile */
             .sidebar {
                 position: fixed;
-                left: -280px;
+                left: -100vw;
                 top: 0;
                 height: 100vh;
-                width: 260px;
-                z-index: 350;
+                height: 100dvh;
+                width: 100vw;
+                max-width: 100%;
+                z-index: 99999;
                 transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-sizing: border-box;
+                overflow-y: auto;
             }
 
             .sidebar.mob-open {
                 left: 0;
+            }
+
+            .mob-sidebar-close-btn {
+                display: block !important;
             }
 
             /* MOBILE TOPBAR */
@@ -3891,12 +3899,28 @@
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
                 <div class="input-group" style="margin-bottom: 0;">
-                    <label>From Date</label>
-                    <input type="date" id="filter-start-date" class="input">
+                    <label>Month</label>
+                    <select id="filter-month" class="input">
+                        <option value="all">All Months</option>
+                        <option value="0">January</option>
+                        <option value="1">February</option>
+                        <option value="2">March</option>
+                        <option value="3">April</option>
+                        <option value="4">May</option>
+                        <option value="5">June</option>
+                        <option value="6">July</option>
+                        <option value="7">August</option>
+                        <option value="8">September</option>
+                        <option value="9">October</option>
+                        <option value="10">November</option>
+                        <option value="11">December</option>
+                    </select>
                 </div>
                 <div class="input-group" style="margin-bottom: 0;">
-                    <label>To Date</label>
-                    <input type="date" id="filter-end-date" class="input">
+                    <label>Year</label>
+                    <select id="filter-year" class="input" onchange="updateMonthOptionsRestriction()">
+                        <option value="all">All Years</option>
+                    </select>
                 </div>
             </div>
 
@@ -4174,9 +4198,12 @@
                 <span style="font-size:11px;opacity:0.5;letter-spacing:1px;text-transform:uppercase">Owner</span>
             </div>
             <aside class="sidebar">
-                <div class="sb-brand">
-                    <div class="sb-brand-name">VUSTELA</div>
-                    <div class="sb-role">Owner Portal</div>
+                <div class="sb-brand" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <div>
+                        <div class="sb-brand-name">VUSTELA</div>
+                        <div class="sb-role">Owner Portal</div>
+                    </div>
+                    <button class="mob-sidebar-close-btn" onclick="closeMobileSidebar()" style="display:none; background:none; border:none; font-size:24px; color:var(--white); cursor:pointer; padding:4px 8px;" title="Close Menu">✕</button>
                 </div>
                 <div class="sb-user">
                     <div class="sb-user-name">Ramesh Sharma</div>
@@ -4257,7 +4284,7 @@
                                     <th>Late Fee Collected</th>
                                     <th>Pending</th>
                                     <th>Maintenance</th>
-                                    <th>Advance Deposits</th>
+                                    <th>Security Deposits</th>
                                     <th>Net Income</th>
                                 </tr>
                             </thead>
@@ -4899,9 +4926,12 @@
                 <span style="font-size:11px;opacity:0.5;letter-spacing:1px;text-transform:uppercase">Manager</span>
             </div>
             <aside class="sidebar">
-                <div class="sb-brand">
-                    <div class="sb-brand-name">VUSTELA</div>
-                    <div class="sb-role">Manager Portal</div>
+                <div class="sb-brand" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <div>
+                        <div class="sb-brand-name">VUSTELA</div>
+                        <div class="sb-role">Manager Portal</div>
+                    </div>
+                    <button class="mob-sidebar-close-btn" onclick="closeMobileSidebar()" style="display:none; background:none; border:none; font-size:24px; color:var(--white); cursor:pointer; padding:4px 8px;" title="Close Menu">✕</button>
                 </div>
                 <div class="sb-user">
                     <div class="sb-user-name" id="mgr-name-sb">Anil Kumar</div>
@@ -5636,6 +5666,37 @@
         </div>
     </div>
 
+    <!-- ACCEPT BOOKING MODAL -->
+    <div class="modal-overlay" id="accept-booking-modal" style="z-index: 10000;">
+        <div class="modal" style="max-width:440px; width:90vw;">
+            <div class="modal-header">
+                <div class="modal-title">🎉 Accept Booking Request</div>
+                <button class="modal-close" onclick="closeModal('accept-booking-modal')">×</button>
+            </div>
+            <div style="padding:12px 0;">
+                <div style="font-size:14px; margin-bottom:16px; color:var(--ink2);">
+                    Set Monthly Rent & Security Deposit for <strong id="ab-modal-tenant-name" style="color:var(--ink1);">...</strong> (Room <span id="ab-modal-room-num">...</span>)
+                </div>
+                
+                <div class="input-group" style="margin-bottom:14px;">
+                    <label style="font-weight:700; font-size:13px; color:var(--ink1);">Monthly Rent Amount (₹) *</label>
+                    <input type="number" id="ab-rent-input" placeholder="e.g. 5500" value="5500" style="padding:10px; border-radius:8px; border:1px solid var(--border); font-size:15px; font-weight:600;">
+                </div>
+
+                <div class="input-group" style="margin-bottom:18px;">
+                    <label style="font-weight:700; font-size:13px; color:var(--ink1);">Security Deposit Amount (₹) *</label>
+                    <input type="number" id="ab-deposit-input" placeholder="e.g. 11000" value="11000" style="padding:10px; border-radius:8px; border:1px solid var(--border); font-size:15px; font-weight:600;">
+                    <div style="font-size:11px; color:var(--ink3); margin-top:4px;">This deposit will be collected from the tenant along with the first month rent.</div>
+                </div>
+
+                <div class="flex gap8" style="margin-top:12px;">
+                    <button class="btn-full btn-ghost" onclick="closeModal('accept-booking-modal')" style="background:var(--bg); color:var(--ink1);">Cancel</button>
+                    <button class="btn-full btn-green" id="ab-submit-btn" onclick="submitAcceptBookingFromModal()">Save & Accept Booking</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- RESOLVE COMPLAINT MODAL -->
     <div class="modal-overlay" id="resolve-modal">
         <div class="modal">
@@ -5666,9 +5727,12 @@
                 <span style="font-size:11px;opacity:0.5;letter-spacing:1px;text-transform:uppercase">Tenant</span>
             </div>
             <aside class="sidebar">
-                <div class="sb-brand">
-                    <div class="sb-brand-name">VUSTELA</div>
-                    <div class="sb-role">My Portal</div>
+                <div class="sb-brand" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <div>
+                        <div class="sb-brand-name">VUSTELA</div>
+                        <div class="sb-role">My Portal</div>
+                    </div>
+                    <button class="mob-sidebar-close-btn" onclick="closeMobileSidebar()" style="display:none; background:none; border:none; font-size:24px; color:var(--white); cursor:pointer; padding:4px 8px;" title="Close Menu">✕</button>
                 </div>
                 <div class="sb-user">
                     <div class="sb-user-name" id="tp-sb-name">Priya Sharma</div>
@@ -5835,6 +5899,9 @@
                             <div class="flex between" style="margin-bottom:8px"><span
                                     style="font-size:13px;color:var(--ink3)">Monthly Rent</span><span
                                     style="font-size:14px;font-weight:600" id="tp-pay-sub">₹5,500</span></div>
+                            <div class="flex between" style="margin-bottom:8px; display:none;" id="tp-deposit-row"><span
+                                    style="font-size:13px;color:var(--accent);font-weight:600;">Security Deposit (Advance 🛡️)</span><span
+                                    style="font-size:14px;font-weight:700;color:var(--accent)" id="tp-pay-deposit">+ ₹11,000</span></div>
                             <div class="flex between" style="margin-bottom:8px; display:none;" id="tp-fine-row"><span
                                     style="font-size:13px;color:var(--danger);font-weight:600;">Late Fee (Fine ⚠️)</span><span
                                     style="font-size:14px;font-weight:700;color:var(--danger)" id="tp-pay-fine">₹0</span></div>
@@ -5993,35 +6060,35 @@
                     <div class="card">
                         <div class="info-row">
                             <div class="ir-key">Full Name</div>
-                            <div class="ir-val" id="tp-info-name">Priya Sharma</div>
+                            <div class="ir-val" id="tp-info-name">Loading...</div>
                         </div>
                         <div class="info-row">
                             <div class="ir-key">Phone</div>
-                            <div class="ir-val">+91 98765 12345</div>
+                            <div class="ir-val" id="tp-info-phone">Loading...</div>
                         </div>
                         <div class="info-row">
                             <div class="ir-key">Email</div>
-                            <div class="ir-val" id="tp-info-email">priya.sharma@email.com</div>
+                            <div class="ir-val" id="tp-info-email">Loading...</div>
                         </div>
                         <div class="info-row">
                             <div class="ir-key">Hostel</div>
-                            <div class="ir-val" id="tp-info-hostel">VUSTELA Kokapet</div>
+                            <div class="ir-val" id="tp-info-hostel">Loading...</div>
                         </div>
                         <div class="info-row">
                             <div class="ir-key">Room</div>
-                            <div class="ir-val" id="tp-info-room">105 — Ground Floor</div>
+                            <div class="ir-val" id="tp-info-room">Loading...</div>
                         </div>
                         <div class="info-row">
                             <div class="ir-key">Check-in Date</div>
-                            <div class="ir-val">March 1, 2025</div>
+                            <div class="ir-val" id="tp-info-checkin">Loading...</div>
                         </div>
                         <div class="info-row">
                             <div class="ir-key">Monthly Rent</div>
-                            <div class="ir-val" id="tp-info-rent">₹5,500</div>
+                            <div class="ir-val" id="tp-info-rent">Loading...</div>
                         </div>
                         <div class="info-row">
                             <div class="ir-key">ID Proof</div>
-                            <div class="ir-val">Aadhaar uploaded ✓</div>
+                            <div class="ir-val" id="tp-info-idproof">Loading...</div>
                         </div>
                     </div>
                 </div>
@@ -6371,9 +6438,19 @@
 
         function openModal(id) {
             if (id === 'book-room-modal') backToStep(1);
-            document.getElementById(id).classList.add('on');
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.add('on');
+                el.style.display = 'flex';
+            }
         }
-        function closeModal(id) { document.getElementById(id).classList.remove('on'); }
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove('on');
+                el.style.display = 'none';
+            }
+        }
 
         // Click outside modal content box to close modal
         document.addEventListener('click', (e) => {
@@ -6489,9 +6566,106 @@
 
         function logout() {
             currentRole = null;
+            currentTenant = null;
+            localStorage.removeItem('vustela_session');
             goTo('pg-landing');
             showToast('Logged out', 'See you next time!');
         }
+
+        async function restoreSessionOnPageLoad() {
+            try {
+                const sessionStr = localStorage.getItem('vustela_session');
+                if (!sessionStr) return;
+
+                const session = JSON.parse(sessionStr);
+                if (!session || !session.email || !session.role) return;
+
+                const { role, email, password, hostel_id } = session;
+
+                if (role === 'owner') {
+                    const { data: user } = await db.from('users')
+                        .select('*')
+                        .eq('email', email)
+                        .eq('password', password)
+                        .eq('role', 'owner')
+                        .single();
+
+                    if (user) {
+                        currentRole = 'owner';
+                        await loadData([1, 2, 3]);
+                        renderOwnerOccupancy();
+                        renderOwnerRentTable('all');
+                        renderOwnerExpenses();
+                        renderSalaries();
+                        renderOwnerComplaints();
+                        renderOwnerAllTenants();
+                        renderOwnerNotices();
+                        renderManagersTable();
+                        goTo('pg-owner');
+                        return;
+                    }
+                } else if (role === 'manager') {
+                    const { data: user } = await db.from('users')
+                        .select('*')
+                        .eq('email', email)
+                        .eq('password', password)
+                        .eq('role', 'manager')
+                        .single();
+
+                    if (user) {
+                        currentRole = 'manager';
+                        currentHostel = user.hostel_id || hostel_id || 1;
+                        const h = hostels[currentHostel] || hostels[1];
+
+                        const mgrNameSb = document.getElementById('mgr-name-sb');
+                        const mgrHostelSb = document.getElementById('mgr-hostel-sb');
+                        const mDashTitle = document.getElementById('m-dash-title');
+
+                        if (mgrNameSb) mgrNameSb.textContent = h.mgr;
+                        if (mgrHostelSb) mgrHostelSb.textContent = `Hostel ${currentHostel} — ${h.name.replace('VUSTELA ', '')}`;
+                        if (mDashTitle) mDashTitle.textContent = h.name;
+
+                        await loadData([currentHostel]);
+                        renderManagerOccupancy();
+                        renderMgrRentTable('all');
+                        renderMgrExpenses();
+                        renderMgrTenants();
+                        renderMgrComplaints('all');
+                        renderMgrFoodMenu();
+                        if (typeof renderMgrBookings === 'function') renderMgrBookings();
+                        goTo('pg-manager');
+                        return;
+                    }
+                } else if (role === 'tenant') {
+                    const { data: bed } = await db.from('beds')
+                        .select('*, rooms(hostel_id, num)')
+                        .ilike('tenant_email', email)
+                        .eq('tenant_password', password)
+                        .not('tenant_name', 'is', null)
+                        .neq('tenant_name', '')
+                        .single();
+
+                    if (bed && bed.tenant_name && bed.tenant_name.trim().length > 0) {
+                        currentRole = 'tenant';
+                        currentTenant = bed;
+                        currentHostel = bed.rooms?.hostel_id || hostel_id || 1;
+
+                        await loadData([currentHostel]);
+                        renderTenantPortal();
+                        renderTenantComplaints();
+                        renderNotices();
+                        renderTenantFoodMenu();
+                        goTo('pg-tenant');
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.warn('[restoreSessionOnPageLoad] Could not restore session:', err);
+            }
+        }
+
+        // Auto-restore session when DOM is ready
+        document.addEventListener('DOMContentLoaded', restoreSessionOnPageLoad);
 
         // ============================================================
         // LOGIN
@@ -6533,6 +6707,7 @@
                     closeModal('login-modal');
                     if (user.role === 'owner') {
                         currentRole = 'owner';
+                        localStorage.setItem('vustela_session', JSON.stringify({ role: 'owner', email, password }));
                         await loadData([1, 2, 3]);
                         renderOwnerOccupancy();
                         renderOwnerRentTable('all');
@@ -6548,6 +6723,7 @@
                     } else if (user.role === 'manager') {
                         currentRole = 'manager';
                         currentHostel = user.hostel_id || 1;
+                        localStorage.setItem('vustela_session', JSON.stringify({ role: 'manager', email, password, hostel_id: currentHostel }));
                         const h = hostels[currentHostel] || hostels[1];
                         document.getElementById('mgr-name-sb').textContent = h.mgr;
                         document.getElementById('mgr-hostel-sb').textContent = `Hostel ${currentHostel} — ${h.name.replace('VUSTELA ', '')}`;
@@ -6598,6 +6774,7 @@
                     currentRole = 'tenant';
                     currentTenant = foundBed;
                     currentHostel = foundBed.rooms?.hostel_id || 1;
+                    localStorage.setItem('vustela_session', JSON.stringify({ role: 'tenant', email, password, hostel_id: currentHostel }));
 
                     await loadData([currentHostel]);
                     renderTenantPortal();
@@ -6632,12 +6809,21 @@
             const baseRent = Number(currentTenant.rent || 5500);
             const proratedRent = getProratedRentForBed(currentTenant);
             const lateFee = getLateFeeForBed(currentTenant);
-            const totalDue = (currentTenant.rent_status === 'paid') ? 0 : (proratedRent + lateFee);
 
-            const rentStr = `₹${totalDue.toLocaleString()}`;
+            const currentRentStat = String(currentTenant.rent_status || currentTenant.rentStatus || 'pending').toLowerCase();
+            const isRentPaid = (currentRentStat === 'paid');
+
+            const depStatus = String(currentTenant.deposit_status || 'Pending').trim().toLowerCase();
+            const isDepositPaid = (depStatus === 'paid');
+            const depositAmt = isDepositPaid ? 0 : Number(currentTenant.advance_deposit || (baseRent * 2) || 11000);
+
+            const totalDue = isRentPaid ? 0 : (proratedRent + lateFee + depositAmt);
+
+            const rentStr = isRentPaid ? '₹0' : `₹${totalDue.toLocaleString()}`;
             const isProrated = proratedRent < baseRent;
             const proratedRentStr = isProrated ? `₹${proratedRent.toLocaleString()} (Prorated)` : `₹${baseRent.toLocaleString()}`;
-            const depStr = `₹${(baseRent * 2).toLocaleString()}`;
+            const actualDepVal = Number(currentTenant.advance_deposit || baseRent * 2 || 11000);
+            const depStr = `₹${actualDepVal.toLocaleString()}`;
 
             const setElText = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
 
@@ -6648,17 +6834,28 @@
 
             setElText('tp-stay-hostel', hname);
             setElText('tp-stay-room', `${rnum} — Occupied`);
-            setElText('tp-stay-deposit', `${depStr} (refundable)`);
+            setElText('tp-stay-deposit', `${depStr} (${isDepositPaid ? 'Paid ✅' : 'Refundable on exit'})`);
 
             setElText('tp-hero-rent', rentStr);
             setElText('tp-pay-amt', rentStr);
             setElText('tp-pay-sub', proratedRentStr);
             setElText('tp-pay-total', rentStr);
 
+            const depositRow = document.getElementById('tp-deposit-row');
+            const depositVal = document.getElementById('tp-pay-deposit');
+            if (depositRow && depositVal) {
+                if (!isDepositPaid && !isRentPaid) {
+                    depositRow.style.display = 'flex';
+                    depositVal.textContent = `+ ₹${depositAmt.toLocaleString()}`;
+                } else {
+                    depositRow.style.display = 'none';
+                }
+            }
+
             const fineRow = document.getElementById('tp-fine-row');
             const fineVal = document.getElementById('tp-pay-fine');
             if (fineRow && fineVal) {
-                if (lateFee > 0 && currentTenant.rent_status !== 'paid') {
+                if (lateFee > 0 && !isRentPaid) {
                     fineRow.style.display = 'flex';
                     fineVal.textContent = `+ ₹${lateFee.toLocaleString()}`;
                 } else {
@@ -6666,7 +6863,7 @@
                 }
             }
 
-            setElText('tp-pay-btn', `Pay ${rentStr} →`);
+            setElText('tp-pay-btn', isRentPaid ? 'Paid ✅' : `Pay ${rentStr} →`);
             setElText('tp-pay-due', `${roomStr} · Due June 5, 2025`);
 
             checkTenantPendingPayment();
@@ -6677,10 +6874,25 @@
             setElText('tp-prof-sub', `${roomStr} · Tenant`);
 
             setElText('tp-info-name', name);
+            setElText('tp-info-phone', currentTenant.tenant_phone || currentTenant.phone || 'Not Provided');
             setElText('tp-info-email', currentTenant.tenant_email || 'N/A');
             setElText('tp-info-hostel', hname);
             setElText('tp-info-room', rnum);
-            setElText('tp-info-rent', rentStr);
+            
+            const dojVal = currentTenant.date_of_joining;
+            const checkinStr = dojVal ? new Date(dojVal).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Not Provided';
+            setElText('tp-info-checkin', checkinStr);
+            setElText('tp-info-rent', `₹${baseRent.toLocaleString()}`);
+
+            const idProofEl = document.getElementById('tp-info-idproof');
+            if (idProofEl) {
+                const idType = currentTenant.id_proof_type || 'Aadhaar Card';
+                if (currentTenant.photo_url) {
+                    idProofEl.innerHTML = `<a href="${currentTenant.photo_url}" target="_blank" class="badge badge-green" style="font-size:12px; padding:4px 8px; text-decoration:none;">📄 View ${idType}</a>`;
+                } else {
+                    idProofEl.innerHTML = `<span style="color:var(--ink3); font-size:13px;">${idType} (Uploaded)</span>`;
+                }
+            }
 
             const noticeBtn = document.getElementById('tenant-notice-btn');
             if (noticeBtn) {
@@ -6713,49 +6925,68 @@
         // TAB SWITCHING
         // ============================================================
         function ownerTab(el, secId) {
-            document.querySelectorAll('#pg-owner .sb-link').forEach(l => l.classList.remove('act'));
-            el.classList.add('act');
-            document.querySelectorAll('#pg-owner .dash-section').forEach(s => s.classList.remove('on'));
-            document.getElementById(secId).classList.add('on');
-            if (secId === 'o-edit-dashboard') {
-                renderEditDashboard();
-            } else if (secId === 'o-notice-requests') {
-                renderNoticeRequests('owner');
-            } else if (secId === 'o-salaries') {
-                if (typeof renderSalaries === 'function') renderSalaries();
+            if (window.innerWidth <= 768 && typeof closeMobileSidebar === 'function') closeMobileSidebar();
+            try {
+                document.querySelectorAll('#pg-owner .sb-link').forEach(l => l.classList.remove('act'));
+                if (el) el.classList.add('act');
+                document.querySelectorAll('#pg-owner .dash-section').forEach(s => s.classList.remove('on'));
+                const sec = document.getElementById(secId);
+                if (sec) sec.classList.add('on');
+
+                if (secId === 'o-edit-dashboard') {
+                    if (typeof renderEditDashboard === 'function') renderEditDashboard();
+                } else if (secId === 'o-notice-requests') {
+                    if (typeof renderNoticeRequests === 'function') renderNoticeRequests('owner');
+                } else if (secId === 'o-salaries') {
+                    if (typeof renderSalaries === 'function') renderSalaries();
+                }
+            } catch (err) {
+                console.warn('[ownerTab] Tab switch notice:', err);
             }
         }
 
         function mgrTab(el, secId) {
-            document.querySelectorAll('#pg-manager .sb-link').forEach(l => l.classList.remove('act'));
-            el.classList.add('act');
-            document.querySelectorAll('#pg-manager .dash-section').forEach(s => s.classList.remove('on'));
-            document.getElementById(secId).classList.add('on');
+            if (window.innerWidth <= 768 && typeof closeMobileSidebar === 'function') closeMobileSidebar();
+            try {
+                document.querySelectorAll('#pg-manager .sb-link').forEach(l => l.classList.remove('act'));
+                if (el) el.classList.add('act');
+                document.querySelectorAll('#pg-manager .dash-section').forEach(s => s.classList.remove('on'));
+                const sec = document.getElementById(secId);
+                if (sec) sec.classList.add('on');
 
-            if (secId === 'm-bookings') {
-                renderMgrBookings();
-            } else if (secId === 'm-notice-requests') {
-                renderNoticeRequests('manager');
-            } else if (secId === 'm-payments') {
-                renderManagerUpiPayments();
+                if (secId === 'm-bookings') {
+                    if (typeof renderMgrBookings === 'function') renderMgrBookings();
+                } else if (secId === 'm-notice-requests') {
+                    if (typeof renderNoticeRequests === 'function') renderNoticeRequests('manager');
+                } else if (secId === 'm-payments') {
+                    if (typeof renderManagerUpiPayments === 'function') renderManagerUpiPayments();
+                }
+            } catch (err) {
+                console.warn('[mgrTab] Tab switch notice:', err);
             }
         }
 
         function tenantTab(el, secId) {
-            document.querySelectorAll('#pg-tenant .sb-link').forEach(l => l.classList.remove('act'));
-            el.classList.add('act');
-            document.querySelectorAll('#pg-tenant .dash-section').forEach(s => s.classList.remove('on'));
-            document.getElementById(secId).classList.add('on');
+            if (window.innerWidth <= 768 && typeof closeMobileSidebar === 'function') closeMobileSidebar();
+            try {
+                document.querySelectorAll('#pg-tenant .sb-link').forEach(l => l.classList.remove('act'));
+                if (el) el.classList.add('act');
+                document.querySelectorAll('#pg-tenant .dash-section').forEach(s => s.classList.remove('on'));
+                const sec = document.getElementById(secId);
+                if (sec) sec.classList.add('on');
 
-            if (secId === 't-pay') {
-                checkTenantPendingPayment();
-            } else if (secId === 't-notices') {
-                const badge = document.getElementById('tenant-notice-badge');
-                if (badge && badge.style.display !== 'none') {
-                    badge.style.display = 'none';
-                    const relevantNotices = notices.filter(n => n.hostel_id === currentHostel);
-                    localStorage.setItem('read_notices_' + currentHostel, relevantNotices.length);
+                if (secId === 't-pay') {
+                    if (typeof checkTenantPendingPayment === 'function') checkTenantPendingPayment();
+                } else if (secId === 't-notices') {
+                    const badge = document.getElementById('tenant-notice-badge');
+                    if (badge && badge.style.display !== 'none') {
+                        badge.style.display = 'none';
+                        const relevantNotices = (notices || []).filter(n => n.hostel_id === currentHostel);
+                        localStorage.setItem('read_notices_' + currentHostel, relevantNotices.length);
+                    }
                 }
+            } catch (err) {
+                console.warn('[tenantTab] Tab switch notice:', err);
             }
         }
 
@@ -6787,6 +7018,7 @@
                                 tenant_password: b.tenant_password || '',
                                 rent: b.rent || defaultRent,
                                 rentStatus: b.rent_status || null,
+                                rent_status: b.rent_status || null,
                                 father_phone: b.father_phone || '',
                                 father_email: b.father_email || '',
                                 date_of_joining: b.date_of_joining || '',
@@ -6795,7 +7027,7 @@
                                 id_proof_type: b.id_proof_type || '',
                                 photo_url: b.photo_url || '',
                                 notice_status: b.notice_status || null,
-                                deposit_status: b.deposit_status || 'Paid',
+                                deposit_status: b.deposit_status || (tName ? 'Pending' : 'Paid'),
                                 late_fee_collected: b.late_fee_collected || 0
                             };
                         });
@@ -7125,7 +7357,10 @@
                             r.beds.forEach(b => {
                                 if (b.tenant) {
                                     expected += b.rent || 0;
-                                    advanceDeposit += b.advance_deposit || 0;
+                                    const depStat = String(b.deposit_status || '').trim().toLowerCase();
+                                    if (depStat === 'paid') {
+                                        advanceDeposit += Number(b.advance_deposit || 0);
+                                    }
                                 }
                             });
                         }
@@ -7649,11 +7884,11 @@
                 const totalDaysInMonth = new Date(doj.getFullYear(), doj.getMonth() + 1, 0).getDate();
                 const daysOccupied = totalDaysInMonth - joinDay + 1;
 
-                if (daysOccupied <= 0) return 0;
+                if (daysOccupied <= 0) return fullRent;
                 if (daysOccupied >= totalDaysInMonth) return fullRent;
 
                 const prorated = Math.round((fullRent / totalDaysInMonth) * daysOccupied);
-                return prorated;
+                return Math.max(1, prorated);
             }
 
             return fullRent;
@@ -7735,9 +7970,11 @@
             const finalRent = bed.rent || 0; // Keep rent amount as base rent in history, or base+late fee depending on record preference. Base rent is best since rent_amount is base rent, and we store late fee separately! Or we can sum them. Let's make rent_amount equal base rent + late fee (which is the actual total collected rent).
 
             bed.rentStatus = 'paid';
+            bed.rent_status = 'paid';
+            bed.deposit_status = 'Paid';
             bed.late_fee_collected = lateFeeCharged;
 
-            const updatePayload = { rent_status: 'paid' };
+            const updatePayload = { rent_status: 'paid', deposit_status: 'Paid' };
             try {
                 // Attempt to update with late_fee_collected column
                 if (bedId) {
@@ -8220,11 +8457,11 @@
 
             if (requests.length === 0) {
                 container.innerHTML = '';
-                noMsg.style.display = 'block';
+                if (noMsg) noMsg.style.display = 'block';
                 return;
             }
 
-            noMsg.style.display = 'none';
+            if (noMsg) noMsg.style.display = 'none';
             container.innerHTML = requests.map(req => {
                 const cleanName = req.tenant.replace('PENDING: ', '');
                 return `
@@ -8241,7 +8478,7 @@
                         <td><span class="badge badge-yellow">Booking Request</span></td>
                         <td>
                             <div class="flex gap8">
-                                <button class="btn-sm btn-green" onclick="acceptBooking('${req._id}', '${cleanName}', '${req.roomId}', '${req.tenant_email || ''}', '${req.tenant_phone || ''}')">Accept</button>
+                                <button class="btn-sm btn-green" onclick="openAcceptBookingModal('${req._id}', '${cleanName}', '${req.roomId}', '${req.tenant_email || ''}', '${req.tenant_phone || ''}')">Accept</button>
                                 <button class="btn-sm btn-red" onclick="rejectBooking('${req._id}')">Reject</button>
                             </div>
                         </td>
@@ -8250,9 +8487,49 @@
             }).join('');
         }
 
-        async function acceptBooking(bedId, name, roomNum, tenantEmail, tenantPhone) {
-            if (!confirm(`Are you sure you want to accept ${name}'s booking for Room ${roomNum}?`)) return;
+        let currentAcceptBookingData = null;
 
+        function openAcceptBookingModal(bedId, name, roomNum, tenantEmail, tenantPhone) {
+            let defaultRent = 5500;
+            if (rooms[currentHostel]) {
+                for (let r of rooms[currentHostel]) {
+                    if (r.num === roomNum && r.beds) {
+                        for (let b of r.beds) {
+                            if (b._id == bedId || b.id == bedId) {
+                                if (b.rent) defaultRent = b.rent;
+                            }
+                        }
+                    }
+                }
+            }
+
+            currentAcceptBookingData = { bedId, name, roomNum, tenantEmail, tenantPhone };
+
+            const nameEl = document.getElementById('ab-modal-tenant-name');
+            const roomEl = document.getElementById('ab-modal-room-num');
+            const rentInp = document.getElementById('ab-rent-input');
+            const depInp = document.getElementById('ab-deposit-input');
+
+            if (nameEl) nameEl.textContent = name;
+            if (roomEl) roomEl.textContent = roomNum;
+            if (rentInp) rentInp.value = defaultRent;
+            if (depInp) depInp.value = defaultRent * 2;
+
+            openModal('accept-booking-modal');
+        }
+
+        async function submitAcceptBookingFromModal() {
+            if (!currentAcceptBookingData) return;
+            const { bedId, name, roomNum, tenantEmail, tenantPhone } = currentAcceptBookingData;
+
+            const rentVal = Number(document.getElementById('ab-rent-input').value) || 5500;
+            const depositVal = Number(document.getElementById('ab-deposit-input').value) || (rentVal * 2);
+
+            closeModal('accept-booking-modal');
+            await acceptBooking(bedId, name, roomNum, tenantEmail, tenantPhone, rentVal, depositVal);
+        }
+
+        async function acceptBooking(bedId, name, roomNum, tenantEmail, tenantPhone, rentVal = 5500, depositVal = 11000) {
             showToast('Processing...', 'Accepting booking request...');
 
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -8264,20 +8541,55 @@
             try {
                 const { data: freshBed } = await db
                     .from('beds')
-                    .select('tenant_email, tenant_phone')
+                    .select('*')
                     .eq('id', bedId)
                     .single();
 
                 const emailToSend = (freshBed?.tenant_email || tenantEmail || '').trim();
                 const phoneToSend = (freshBed?.tenant_phone || tenantPhone || '').trim();
+                const dojVal      = freshBed?.date_of_joining || new Date().toISOString().split('T')[0];
+                const idTypeVal   = freshBed?.id_proof_type || 'Aadhaar Card';
+                const photoUrlVal = freshBed?.photo_url || '';
 
                 const { error } = await db.from('beds').update({
                     tenant_name:     name,
+                    tenant_email:    emailToSend,
+                    tenant_phone:    phoneToSend,
+                    date_of_joining: dojVal,
+                    id_proof_type:   idTypeVal,
+                    photo_url:       photoUrlVal,
+                    rent:            rentVal,
+                    advance_deposit: depositVal,
+                    deposit_status:  'Pending',
                     rent_status:     'pending',
                     tenant_password: tenantPwd
                 }).eq('id', bedId);
 
                 if (error) throw error;
+
+                if (rooms[currentHostel]) {
+                    rooms[currentHostel].forEach(r => {
+                        if (r.num === roomNum && r.beds) {
+                            r.beds.forEach(b => {
+                                if (b._id == bedId || b.id == bedId) {
+                                    b.tenant = name;
+                                    b.tenant_name = name;
+                                    b.rent = rentVal;
+                                    b.advance_deposit = depositVal;
+                                    b.deposit_status = 'Pending';
+                                    b.rentStatus = 'pending';
+                                    b.rent_status = 'pending';
+                                    b.tenant_password = tenantPwd;
+                                    b.tenant_email = emailToSend;
+                                    b.tenant_phone = phoneToSend;
+                                    b.date_of_joining = dojVal;
+                                    b.id_proof_type = idTypeVal;
+                                    b.photo_url = photoUrlVal;
+                                }
+                            });
+                        }
+                    });
+                }
 
                 if (emailToSend && emailToSend !== 'undefined') {
                     try {
@@ -9714,12 +10026,14 @@
 
             if (displayBeds.length === 0) {
                 tableBody.innerHTML = '';
-                tableBody.closest('table').style.display = 'none';
+                const pTable = tableBody.closest('table');
+                if (pTable) pTable.style.display = 'none';
                 if (noMsgEl) noMsgEl.style.display = 'block';
                 return;
             }
 
-            tableBody.closest('table').style.display = 'table';
+            const pTable = tableBody.closest('table');
+            if (pTable) pTable.style.display = 'table';
             if (noMsgEl) noMsgEl.style.display = 'none';
 
             tableBody.innerHTML = displayBeds.map(b => {
@@ -10342,14 +10656,21 @@
 
                     // Check if payment was approved specifically for THIS bed/room in database
                     const rawBedId = tenant.id || tenant._id || tenant.bed_id;
-                    let isBedPaidInDB = (tenant.rent_status === 'paid' || tenant.rentStatus === 'paid');
+                    let isBedPaidInDB = false;
 
                     // Check Supabase beds table directly for latest bed status
                     if (rawBedId && !isNaN(Number(rawBedId))) {
                         try {
                             const { data: bData } = await db.from('beds').select('rent_status').eq('id', Number(rawBedId)).single();
-                            if (bData && bData.rent_status === 'paid') isBedPaidInDB = true;
-                        } catch (e) {}
+                            if (bData) {
+                                const dbStat = String(bData.rent_status || '').toLowerCase().trim();
+                                isBedPaidInDB = (dbStat === 'paid');
+                            }
+                        } catch (e) {
+                            isBedPaidInDB = (String(tenant.rent_status || tenant.rentStatus || '').toLowerCase().trim() === 'paid');
+                        }
+                    } else {
+                        isBedPaidInDB = (String(tenant.rent_status || tenant.rentStatus || '').toLowerCase().trim() === 'paid');
                     }
 
                     let hasApprovedSub = false;
@@ -10381,8 +10702,8 @@
                         const payAmt = document.getElementById('tp-pay-amt');
                         if (payAmt) payAmt.textContent = '₹0';
                     } else {
-                        tenant.rent_status = 'unpaid';
-                        tenant.rentStatus = 'unpaid';
+                        tenant.rent_status = 'pending';
+                        tenant.rentStatus = 'pending';
                         if (payBtn) {
                             const rentAmt = getTenantDueRentAmount();
                             payBtn.textContent = `Pay ₹${rentAmt.toLocaleString()} →`;
@@ -10669,11 +10990,24 @@
                 // 2. Update bed status to paid in beds table safely
                 try {
                     if (sub.bed_id) {
-                        await db.from('beds').update({ rent_status: 'paid' }).eq('id', sub.bed_id);
+                        await db.from('beds').update({ rent_status: 'paid', deposit_status: 'Paid' }).eq('id', sub.bed_id);
                     }
                     if (sub.tenant_email) {
-                        await db.from('beds').update({ rent_status: 'paid' }).ilike('tenant_email', sub.tenant_email.trim());
+                        await db.from('beds').update({ rent_status: 'paid', deposit_status: 'Paid' }).ilike('tenant_email', sub.tenant_email.trim());
                     }
+                    [1, 2, 3].forEach(hid => {
+                        if (rooms[hid]) {
+                            rooms[hid].forEach(r => {
+                                r.beds.forEach(b => {
+                                    if (b._id == sub.bed_id || (sub.tenant_email && b.tenant_email && b.tenant_email.toLowerCase().trim() === sub.tenant_email.toLowerCase().trim())) {
+                                        b.rentStatus = 'paid';
+                                        b.rent_status = 'paid';
+                                        b.deposit_status = 'Paid';
+                                    }
+                                });
+                            });
+                        }
+                    });
                 } catch (bedErr) {
                     console.warn('[ManagerUPI] Bed update notice:', bedErr);
                 }
@@ -11670,8 +12004,8 @@
         let expenseFilters = {
             hostel: 'all',
             category: 'all',
-            startDate: '',
-            endDate: ''
+            month: 'all',
+            year: 'all'
         };
 
         function getFilteredExpenses() {
@@ -11684,22 +12018,79 @@
 
                 if (expenseFilters.category !== 'all' && e.category !== expenseFilters.category) return false;
 
-                if (expenseFilters.startDate) {
-                    const sDate = new Date(expenseFilters.startDate);
-                    sDate.setHours(0,0,0,0);
-                    if (new Date(e.created_at) < sDate) return false;
-                }
-                if (expenseFilters.endDate) {
-                    const eDate = new Date(expenseFilters.endDate);
-                    eDate.setHours(23,59,59,999);
-                    if (new Date(e.created_at) > eDate) return false;
+                const eDate = new Date(e.created_at);
+                if (!isNaN(eDate.getTime())) {
+                    if (expenseFilters.month !== 'all' && expenseFilters.month !== '') {
+                        if (eDate.getMonth() !== parseInt(expenseFilters.month)) return false;
+                    }
+                    if (expenseFilters.year !== 'all' && expenseFilters.year !== '') {
+                        if (eDate.getFullYear() !== parseInt(expenseFilters.year)) return false;
+                    }
                 }
 
                 return true;
             });
         }
 
+        function populateFilterYearsAndMonths() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+
+            const yearSelect = document.getElementById('filter-year');
+            if (!yearSelect) return;
+
+            const selectedYearVal = yearSelect.value || expenseFilters.year || 'all';
+            yearSelect.innerHTML = '<option value="all">All Years</option>';
+            for (let y = currentYear; y >= currentYear - 5; y--) {
+                const opt = document.createElement('option');
+                opt.value = String(y);
+                opt.textContent = String(y);
+                yearSelect.appendChild(opt);
+            }
+            if (Array.from(yearSelect.options).some(o => o.value === selectedYearVal)) {
+                yearSelect.value = selectedYearVal;
+            } else {
+                yearSelect.value = 'all';
+            }
+
+            updateMonthOptionsRestriction();
+        }
+
+        function updateMonthOptionsRestriction() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+
+            const yearSelect = document.getElementById('filter-year');
+            const monthSelect = document.getElementById('filter-month');
+            if (!yearSelect || !monthSelect) return;
+
+            const selectedYear = yearSelect.value;
+            const isCurrentYear = (selectedYear === String(currentYear));
+
+            Array.from(monthSelect.options).forEach(opt => {
+                if (opt.value === 'all') return;
+                const mIdx = parseInt(opt.value);
+                if (isCurrentYear && mIdx > currentMonth) {
+                    opt.disabled = true;
+                    opt.style.display = 'none';
+                } else {
+                    opt.disabled = false;
+                    opt.style.display = '';
+                }
+            });
+
+            if (monthSelect.value !== 'all') {
+                const selIdx = parseInt(monthSelect.value);
+                if (isCurrentYear && selIdx > currentMonth) {
+                    monthSelect.value = 'all';
+                }
+            }
+        }
+
         function openExpenseFilterModal(role) {
+            populateFilterYearsAndMonths();
+
             const hostelGroup = document.getElementById('filter-hostel-group');
             if (role === 'owner') {
                 hostelGroup.style.display = 'block';
@@ -11707,10 +12098,11 @@
                 hostelGroup.style.display = 'none';
             }
             
-            document.getElementById('filter-hostel').value = expenseFilters.hostel;
-            document.getElementById('filter-category').value = expenseFilters.category;
-            document.getElementById('filter-start-date').value = expenseFilters.startDate;
-            document.getElementById('filter-end-date').value = expenseFilters.endDate;
+            document.getElementById('filter-hostel').value = expenseFilters.hostel || 'all';
+            document.getElementById('filter-category').value = expenseFilters.category || 'all';
+            document.getElementById('filter-year').value = expenseFilters.year || 'all';
+            updateMonthOptionsRestriction();
+            document.getElementById('filter-month').value = expenseFilters.month || 'all';
 
             openModal('expense-filter-modal');
         }
@@ -11718,8 +12110,8 @@
         function applyExpenseFilters() {
             expenseFilters.hostel = document.getElementById('filter-hostel').value;
             expenseFilters.category = document.getElementById('filter-category').value;
-            expenseFilters.startDate = document.getElementById('filter-start-date').value;
-            expenseFilters.endDate = document.getElementById('filter-end-date').value;
+            expenseFilters.month = document.getElementById('filter-month').value;
+            expenseFilters.year = document.getElementById('filter-year').value;
 
             closeModal('expense-filter-modal');
             
@@ -11735,14 +12127,15 @@
             expenseFilters = {
                 hostel: 'all',
                 category: 'all',
-                startDate: '',
-                endDate: ''
+                month: 'all',
+                year: 'all'
             };
             
             document.getElementById('filter-hostel').value = 'all';
             document.getElementById('filter-category').value = 'all';
-            document.getElementById('filter-start-date').value = '';
-            document.getElementById('filter-end-date').value = '';
+            document.getElementById('filter-year').value = 'all';
+            updateMonthOptionsRestriction();
+            document.getElementById('filter-month').value = 'all';
 
             closeModal('expense-filter-modal');
             
@@ -13411,9 +13804,11 @@
         function backToStep(step) { goToStep(step); }
 
         async function submitRoomRequest() {
-            const name  = document.getElementById('br-name').value.trim();
-            const email = document.getElementById('br-email').value.trim();
-            const phone = document.getElementById('br-phone').value.trim();
+            const name   = document.getElementById('br-name').value.trim();
+            const email  = document.getElementById('br-email').value.trim();
+            const phone  = document.getElementById('br-phone').value.trim();
+            const doj    = document.getElementById('br-doj')?.value || new Date().toISOString().split('T')[0];
+            const idtype = document.getElementById('br-idtype')?.value || 'Aadhaar Card';
 
             if (!name || !email || !phone) {
                 showToast('Error', 'Please fill in all required fields.');
@@ -13422,6 +13817,21 @@
 
             showToast('Sending...', 'Submitting your request...');
 
+            let photoUrl = '';
+            const fileInp = document.getElementById('br-idphoto');
+            if (fileInp && fileInp.files && fileInp.files[0]) {
+                try {
+                    photoUrl = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = () => resolve('');
+                        reader.readAsDataURL(fileInp.files[0]);
+                    });
+                } catch (e) {
+                    console.warn('[submitRoomRequest] File read error:', e);
+                }
+            }
+
             try {
                 const selectedBed  = bookingState.selectedRoom.beds[bookingState.selectedBedIndex];
                 const bedId        = selectedBed?._id;
@@ -13429,25 +13839,25 @@
 
                 let dbError = null;
 
+                const payload = {
+                    tenant_name:     `PENDING: ${name}`,
+                    tenant_email:    email,
+                    tenant_phone:    phone,
+                    date_of_joining: doj,
+                    id_proof_type:   idtype,
+                    photo_url:       photoUrl,
+                    rent_status:     'Request'
+                };
+
                 if (bedId) {
-                    // Bed row already exists in DB — just update it
-                    const { error } = await db.from('beds').update({
-                        tenant_name:  `PENDING: ${name}`,
-                        tenant_email: email,
-                        tenant_phone: phone,
-                        rent_status:  'Request'
-                    }).eq('id', bedId);
+                    const { error } = await db.from('beds').update(payload).eq('id', bedId);
                     dbError = error;
                 } else {
-                    // Empty placeholder bed — INSERT a new row
                     const defaultRent = bookingState.selectedRoom.beds[0]?.rent || 5500;
                     const { error } = await db.from('beds').insert({
-                        room_id:      roomId,
-                        tenant_name:  `PENDING: ${name}`,
-                        tenant_email: email,
-                        tenant_phone: phone,
-                        rent:         defaultRent,
-                        rent_status:  'Request'
+                        room_id: roomId,
+                        rent:    defaultRent,
+                        ...payload
                     });
                     dbError = error;
                 }
@@ -13897,12 +14307,22 @@
                         Room 102 (Double Sharing)</div>
                 </div>
 
-                <div class="input-group"><label>Full Name</label><input type="text" id="br-name"
+                <div class="input-group"><label>Full Name *</label><input type="text" id="br-name"
                         placeholder="Your full name"></div>
-                <div class="input-group"><label>Email Address</label><input type="email" id="br-email"
+                <div class="input-group"><label>Email Address *</label><input type="email" id="br-email"
                         placeholder="your@email.com"></div>
-                <div class="input-group"><label>Phone Number</label><input type="tel" id="br-phone"
+                <div class="input-group"><label>Phone Number *</label><input type="tel" id="br-phone"
                         placeholder="+91 00000 00000"></div>
+                <div class="input-group"><label>Check-in Date *</label><input type="date" id="br-doj"></div>
+                <div class="input-group"><label>ID Proof Type *</label>
+                    <select id="br-idtype" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); font-size:14px;">
+                        <option value="Aadhaar Card">Aadhaar Card</option>
+                        <option value="PAN Card">PAN Card</option>
+                        <option value="Passport">Passport</option>
+                        <option value="Driving License">Driving License</option>
+                    </select>
+                </div>
+                <div class="input-group"><label>Upload ID Proof / Photo (optional)</label><input type="file" id="br-idphoto" accept="image/*,.pdf"></div>
                 <div class="input-group"><label>Message (optional)</label><textarea id="br-message"
                         placeholder="Any special requests?"></textarea></div>
 
