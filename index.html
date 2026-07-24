@@ -4246,13 +4246,16 @@
                             <div class="dash-title">Good Morning, Ramesh 👋</div>
                             <div class="dash-subtitle" id="owner-overview-subtitle">Here's your hostel overview for June 2025</div>
                         </div>
-                        <div class="flex gap8" style="align-items:center;">
+                        <div class="flex gap8" style="align-items:flex-start;">
                             <button class="btn btn-outline" onclick="openUltraMsgConfigModal()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px; color:var(--green); border-color:#bbf7d0;">
                                 💬 Auto WhatsApp API
                             </button>
-                            <button class="btn btn-outline" onclick="openOwnerMonthPicker()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
-                                📅 Change Month
-                            </button>
+                            <div style="display:flex; flex-direction:column; align-items:center;">
+                                <button class="btn btn-outline" onclick="openOwnerMonthPicker()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
+                                    📅 Change Month
+                                </button>
+                                <span id="owner-active-month-badge" style="font-size:12px; font-weight:700; color:var(--yellow); background:var(--bg2); border:1px solid var(--border); padding:2px 10px; border-radius:12px; margin-top:5px;">July 2026</span>
+                            </div>
                             <button id="btn-export-report" class="btn btn-outline" onclick="openModal('export-options-modal')" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
                                 ⬇ Export Report
                             </button>
@@ -4281,10 +4284,18 @@
                                     <th>Hostel</th>
                                     <th>Expected Rent</th>
                                     <th>Collected</th>
-                                    <th>Late Fee Collected</th>
+                                    <th>
+                                        <button onclick="openLateFeeDetailsModal('all')" style="background:none; border:none; color:inherit; font:inherit; font-weight:700; cursor:pointer; padding:0; text-decoration:underline; text-decoration-style:dashed;" title="Click to view tenant late fee breakdown">
+                                            Late Fee Collected
+                                        </button>
+                                    </th>
                                     <th>Pending</th>
                                     <th>Maintenance</th>
-                                    <th>Security Deposits</th>
+                                    <th>
+                                        <button onclick="openSecurityDepositDetailsModal('all')" style="background:none; border:none; color:inherit; font:inherit; font-weight:700; cursor:pointer; padding:0; text-decoration:underline; text-decoration-style:dashed;" title="Click to view tenant security deposit breakdown">
+                                            Security Deposits
+                                        </button>
+                                    </th>
                                     <th>Net Income</th>
                                 </tr>
                             </thead>
@@ -4563,15 +4574,18 @@
 
                 <!-- O: EXPENSES LOG -->
                 <div class="dash-section" id="o-expenses">
-                    <div class="dash-header">
+                    <div class="dash-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
                         <div>
                             <div class="dash-title">Expense Log</div>
-                            <div class="dash-subtitle">All logged expenses and maintenance costs with bill evidence</div>
+                            <div class="dash-subtitle" id="o-exp-subtitle">All logged expenses and maintenance costs with bill evidence</div>
                         </div>
-                        <div class="flex align-center gap8">
+                        <div class="flex align-center gap8" style="flex-wrap:wrap;">
+                            <button class="btn btn-outline" onclick="openOwnerMonthPicker()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
+                                📅 Change Month
+                            </button>
                             <button class="btn btn-outline btn-sm" onclick="openExpenseFilterModal('owner')">🔍 Filter</button>
                             <button class="btn btn-primary btn-sm" onclick="openLogExpenseModal()">+ Log New Expense</button>
-                            <div class="badge badge-yellow" id="o-exp-total-spent">₹0 spent this month</div>
+                            <div class="badge badge-yellow" id="o-exp-total-spent">₹0 spent</div>
                         </div>
                     </div>
 
@@ -4669,15 +4683,20 @@
 
                 <!-- O: COMPLAINTS -->
                 <div class="dash-section" id="o-complaints">
-                    <div class="dash-header">
-                        <div class="dash-title">Complaints</div>
-                        <div class="dash-subtitle">All active and resolved complaints across hostels</div>
+                    <div class="dash-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                        <div>
+                            <div class="dash-title">Complaints</div>
+                            <div class="dash-subtitle" id="o-complaints-subtitle">All active and resolved complaints across hostels</div>
+                        </div>
+                        <button class="btn btn-outline" onclick="openOwnerMonthPicker()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
+                            📅 Change Month
+                        </button>
                     </div>
                     <div class="filter-bar">
-                        <button class="fb on" onclick="setActive(this,'.filter-bar')">All</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar')">🔴 Open</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar')">🟡 In Progress</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar')">✅ Resolved</button>
+                        <button class="fb on" onclick="setActive(this,'.filter-bar'); filterOwnerComplaintsByStatus('all')">All</button>
+                        <button class="fb" onclick="setActive(this,'.filter-bar'); filterOwnerComplaintsByStatus('open')">🔴 Open</button>
+                        <button class="fb" onclick="setActive(this,'.filter-bar'); filterOwnerComplaintsByStatus('progress')">🟡 In Progress</button>
+                        <button class="fb" onclick="setActive(this,'.filter-bar'); filterOwnerComplaintsByStatus('resolved')">✅ Resolved</button>
                     </div>
                     <div id="o-complaints-list"></div>
                 </div>
@@ -5239,9 +5258,14 @@
 
                 <!-- M: COMPLAINTS -->
                 <div class="dash-section" id="m-complaints">
-                    <div class="dash-header">
-                        <div class="dash-title">Complaints</div>
-                        <div class="dash-subtitle">Manage and resolve tenant complaints</div>
+                    <div class="dash-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                        <div>
+                            <div class="dash-title">Complaints</div>
+                            <div class="dash-subtitle" id="m-complaints-subtitle">Manage and resolve tenant complaints</div>
+                        </div>
+                        <button class="btn btn-outline" onclick="openOwnerMonthPicker()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
+                            📅 Change Month
+                        </button>
                     </div>
                     <div class="filter-bar">
                         <button class="fb on"
@@ -5285,12 +5309,15 @@
 
                 <!-- M: EXPENSES -->
                 <div class="dash-section" id="m-expenses">
-                    <div class="dash-header">
+                    <div class="dash-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
                         <div>
                             <div class="dash-title">Hostel Expenses</div>
-                            <div class="dash-subtitle">Log new expenses and view past records</div>
+                            <div class="dash-subtitle" id="m-exp-subtitle">Log new expenses and view past records</div>
                         </div>
-                        <div class="flex gap8">
+                        <div class="flex gap8" style="flex-wrap:wrap;">
+                            <button class="btn btn-outline" onclick="openOwnerMonthPicker()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
+                                📅 Change Month
+                            </button>
                             <button class="btn btn-outline btn-sm" onclick="openExpenseFilterModal('manager')">🔍 Filter</button>
                             <button class="btn btn-primary btn-sm" onclick="openLogExpenseModal()">+ Log New Expense</button>
                         </div>
@@ -5630,6 +5657,74 @@
         </div>
     </div>
 
+    <!-- LATE FEE DETAILS BREAKDOWN MODAL -->
+    <div class="modal-overlay" id="late-fee-details-modal" style="z-index: 10000;">
+        <div class="modal" style="max-width: 680px; width: 92vw;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div>
+                    <h3 id="late-fee-modal-title" style="margin:0; font-size:18px; font-weight:700;">Late Fee Collected Breakdown</h3>
+                    <p id="late-fee-modal-subtitle" style="margin:4px 0 0 0; font-size:13px; color:var(--ink3);">Showing all tenants who paid late fees</p>
+                </div>
+                <button class="btn-ghost" onclick="closeModal('late-fee-details-modal')" style="font-size:20px; padding:4px 8px;">✕</button>
+            </div>
+
+            <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+                <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
+                    <thead style="background:var(--bg2); position:sticky; top:0; z-index:2;">
+                        <tr>
+                            <th style="padding:10px 12px; border-bottom:1px solid var(--border);">Tenant Name</th>
+                            <th style="padding:10px 12px; border-bottom:1px solid var(--border);">Hostel & Room</th>
+                            <th style="padding:10px 12px; border-bottom:1px solid var(--border);">Payment Date</th>
+                            <th style="padding:10px 12px; border-bottom:1px solid var(--border); text-align:right;">Late Fee Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="late-fee-details-tbody">
+                        <!-- Dynamic rows -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:12px; border-top:1px solid var(--border);">
+                <div style="font-weight:700; font-size:14px;">Total Late Fee Collected: <span id="late-fee-modal-total" style="color:var(--green); font-size:16px;">₹0</span></div>
+                <button class="btn btn-primary" onclick="closeModal('late-fee-details-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECURITY DEPOSITS DETAILS BREAKDOWN MODAL -->
+    <div class="modal-overlay" id="security-deposit-details-modal" style="z-index: 10000;">
+        <div class="modal" style="max-width: 680px; width: 92vw;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div>
+                    <h3 id="security-deposit-modal-title" style="margin:0; font-size:18px; font-weight:700;">Security Deposits Breakdown</h3>
+                    <p id="security-deposit-modal-subtitle" style="margin:4px 0 0 0; font-size:13px; color:var(--ink3);">Showing all tenants with paid security deposits</p>
+                </div>
+                <button class="btn-ghost" onclick="closeModal('security-deposit-details-modal')" style="font-size:20px; padding:4px 8px;">✕</button>
+            </div>
+
+            <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
+                <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
+                    <thead style="background:var(--bg2); position:sticky; top:0; z-index:2;">
+                        <tr>
+                            <th style="padding:10px 12px; border-bottom:1px solid var(--border);">Tenant Name</th>
+                            <th style="padding:10px 12px; border-bottom:1px solid var(--border);">Hostel & Room</th>
+                            <th style="padding:10px 12px; border-bottom:1px solid var(--border);">Deposit Date</th>
+                            <th style="padding:10px 12px; border-bottom:1px solid var(--border); text-align:right;">Deposit Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="security-deposit-details-tbody">
+                        <!-- Dynamic rows -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:12px; border-top:1px solid var(--border);">
+                <div style="font-weight:700; font-size:14px;">Total Security Deposits: <span id="security-deposit-modal-total" style="color:#1565c0; font-size:16px;">₹0</span></div>
+                <button class="btn btn-primary" onclick="closeModal('security-deposit-details-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- RENT PAYMENT CONFIRMATION MODAL -->
     <div class="modal-overlay" id="confirm-payment-modal" style="z-index: 10000;">
         <div class="modal" style="max-width:400px; width:90vw;">
@@ -5709,9 +5804,57 @@
             <div class="input-group"><label>Maintenance Cost (₹) — optional</label><input type="number" id="res-cost"
                     placeholder="0"></div>
             <div class="input-group"><label>Bill Photo — optional</label><input type="file" id="res-bill"
-                    accept="image/*"></div>
+                    accept="image/*" onchange="handleResolveBillChange(this)"></div>
             <input type="hidden" id="res-complaint-id">
             <button class="btn-full" onclick="resolveComplaint()">Mark as Resolved</button>
+        </div>
+    </div>
+
+    <!-- VIEW BILL MODAL -->
+    <div class="modal-overlay" id="view-bill-modal" style="z-index: 10000;">
+        <div class="modal" style="max-width: 580px; width: 92vw;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <div>
+                    <h3 id="view-bill-modal-title" style="margin:0; font-size:18px; font-weight:700;">Complaint Bill & Details</h3>
+                    <p id="view-bill-modal-subtitle" style="margin:4px 0 0 0; font-size:13px; color:var(--ink3);">Maintenance expense details</p>
+                </div>
+                <button class="btn-ghost" onclick="closeModal('view-bill-modal')" style="font-size:20px; padding:4px 8px;">✕</button>
+            </div>
+
+            <div id="view-bill-modal-content" style="background:var(--bg2); padding:16px; border-radius:8px; border:1px solid var(--border); font-size:13px;">
+                <!-- Dynamic Content -->
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; margin-top:16px; padding-top:12px; border-top:1px solid var(--border);">
+                <button class="btn btn-primary" onclick="closeModal('view-bill-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT COMPLAINT RESOLUTION MODAL -->
+    <div class="modal-overlay" id="edit-complaint-modal" style="z-index: 10000;">
+        <div class="modal" style="max-width: 500px; width: 90vw;">
+            <div class="modal-header">
+                <div class="modal-title">Edit Complaint Resolution & Bill</div>
+                <button class="modal-close" onclick="closeModal('edit-complaint-modal')">×</button>
+            </div>
+            <div style="padding: 12px 0;">
+                <div class="input-group">
+                    <label>Resolution Note</label>
+                    <textarea id="edit-res-note" placeholder="Update resolution details..."></textarea>
+                </div>
+                <div class="input-group" style="margin-top:12px;">
+                    <label>Maintenance Cost (₹)</label>
+                    <input type="number" id="edit-res-cost" placeholder="0">
+                </div>
+                <div class="input-group" style="margin-top:12px;">
+                    <label>Update Bill Photo (optional)</label>
+                    <input type="file" id="edit-res-bill" accept="image/*" onchange="handleEditResolveBillChange(this)">
+                    <div id="edit-res-bill-preview" style="font-size:12px; color:var(--ink3); margin-top:4px;"></div>
+                </div>
+            </div>
+            <input type="hidden" id="edit-res-complaint-id">
+            <button class="btn-full" onclick="saveComplaintResolutionEdit()" style="margin-top:16px;">Save Changes</button>
         </div>
     </div>
 
@@ -6939,6 +7082,10 @@
                     if (typeof renderNoticeRequests === 'function') renderNoticeRequests('owner');
                 } else if (secId === 'o-salaries') {
                     if (typeof renderSalaries === 'function') renderSalaries();
+                } else if (secId === 'o-complaints') {
+                    if (typeof renderOwnerComplaints === 'function') renderOwnerComplaints();
+                } else if (secId === 'o-expenses') {
+                    if (typeof renderOwnerExpenses === 'function') renderOwnerExpenses();
                 }
             } catch (err) {
                 console.warn('[ownerTab] Tab switch notice:', err);
@@ -6958,8 +7105,12 @@
                     if (typeof renderMgrBookings === 'function') renderMgrBookings();
                 } else if (secId === 'm-notice-requests') {
                     if (typeof renderNoticeRequests === 'function') renderNoticeRequests('manager');
+                } else if (secId === 'm-complaints') {
+                    if (typeof renderMgrComplaints === 'function') renderMgrComplaints('all');
                 } else if (secId === 'm-payments') {
                     if (typeof renderManagerUpiPayments === 'function') renderManagerUpiPayments();
+                } else if (secId === 'm-expenses') {
+                    if (typeof renderMgrExpenses === 'function') renderMgrExpenses();
                 }
             } catch (err) {
                 console.warn('[mgrTab] Tab switch notice:', err);
@@ -7330,6 +7481,9 @@
             const subTitleEl = document.getElementById('owner-overview-subtitle');
             if (subTitleEl) subTitleEl.textContent = `Here's your hostel overview for ${currentMonthName}`;
 
+            const badgeEl = document.getElementById('owner-active-month-badge');
+            if (badgeEl) badgeEl.textContent = currentMonthName;
+
             let expectedTotal = 0;
             let collectedTotal = 0;
             let lateFeeTotal = 0;
@@ -7396,7 +7550,12 @@
 
                 if (expenses) {
                     maintenance = expenses
-                        .filter(e => Number(e.hostel_id) === Number(hid) && (isCurrent || matchesMonthYear(e.created_at, ownerSelectedMonth, ownerSelectedYear)))
+                        .filter(e => {
+                            const hMatch = Number(e.hostel_id) === Number(hid);
+                            const dateVal = e.created_at || e.date || e.created_date;
+                            const dMatch = matchesMonthYear(dateVal, ownerSelectedMonth, ownerSelectedYear);
+                            return hMatch && dMatch;
+                        })
                         .reduce((sum, e) => sum + Number(e.amount || 0), 0);
                 }
 
@@ -7418,10 +7577,18 @@
                         <td><strong>${hName}</strong></td>
                         <td>₹${expected.toLocaleString()}</td>
                         <td style="color:var(--green);font-weight:700">₹${collected.toLocaleString()}</td>
-                        <td style="color:var(--green);font-weight:700">₹${lateFee.toLocaleString()}</td>
+                        <td>
+                            <button class="btn-sm" style="background:#e6f4ea; border:1px solid #137333; color:var(--green); font-weight:700; border-radius:6px; padding:3px 8px; cursor:pointer;" onclick="openLateFeeDetailsModal(${hid})" title="Click to view tenant late fee details">
+                                ₹${lateFee.toLocaleString()}
+                            </button>
+                        </td>
                         <td style="color:var(--red);font-weight:700">₹${pending.toLocaleString()}</td>
                         <td style="color:var(--yellow)">₹${maintenance.toLocaleString()}</td>
-                        <td style="color:#1565c0;font-weight:700">₹${advanceDeposit.toLocaleString()}</td>
+                        <td>
+                            <button class="btn-sm" style="background:#e3f2fd; border:1px solid #1565c0; color:#1565c0; font-weight:700; border-radius:6px; padding:3px 8px; cursor:pointer;" onclick="openSecurityDepositDetailsModal(${hid})" title="Click to view security deposit details">
+                                ₹${advanceDeposit.toLocaleString()}
+                            </button>
+                        </td>
                         <td style="font-weight:800;font-family:var(--font-display)">₹${net.toLocaleString()}</td>
                     </tr>
                 `);
@@ -7433,10 +7600,18 @@
                     <td><strong>TOTAL</strong></td>
                     <td><strong>₹${expectedTotal.toLocaleString()}</strong></td>
                     <td style="color:var(--green);font-weight:800;font-size:16px">₹${collectedTotal.toLocaleString()}</td>
-                    <td style="color:var(--green);font-weight:800;font-size:16px">₹${lateFeeTotal.toLocaleString()}</td>
+                    <td>
+                        <button class="btn-sm" style="background:#e6f4ea; border:1px solid #137333; color:var(--green); font-weight:800; border-radius:6px; padding:5px 12px; cursor:pointer; font-size:15px;" onclick="openLateFeeDetailsModal('all')" title="Click to view all late fee tenants">
+                            ₹${lateFeeTotal.toLocaleString()}
+                        </button>
+                    </td>
                     <td style="color:var(--red);font-weight:800">₹${pendingTotal.toLocaleString()}</td>
                     <td style="color:var(--yellow);font-weight:800">₹${maintenanceTotal.toLocaleString()}</td>
-                    <td style="color:#1565c0;font-weight:800">₹${advanceDepositTotal.toLocaleString()}</td>
+                    <td>
+                        <button class="btn-sm" style="background:#e3f2fd; border:1px solid #1565c0; color:#1565c0; font-weight:800; border-radius:6px; padding:5px 12px; cursor:pointer; font-size:15px;" onclick="openSecurityDepositDetailsModal('all')" title="Click to view all deposit tenants">
+                            ₹${advanceDepositTotal.toLocaleString()}
+                        </button>
+                    </td>
                     <td style="font-weight:800;font-size:17px;font-family:var(--font-display)">₹${netTotal.toLocaleString()}</td>
                 </tr>
             `);
@@ -7485,6 +7660,149 @@
             if (netSubEl) {
                 netSubEl.textContent = `↑ ₹12,000 vs last month`;
             }
+        }
+
+        function openLateFeeDetailsModal(hostelFilter = 'all') {
+            const today = new Date();
+            const isCurrent = (ownerSelectedMonth === (today.getMonth() + 1)) && (ownerSelectedYear === today.getFullYear());
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const monthLabel = monthNames[ownerSelectedMonth - 1] + ' ' + ownerSelectedYear;
+
+            const hostelNameStr = hostelFilter === 'all' ? 'All Hostels' : (hostels[hostelFilter] ? hostels[hostelFilter].name : `Hostel ${hostelFilter}`);
+            
+            const titleEl = document.getElementById('late-fee-modal-title');
+            const subTitleEl = document.getElementById('late-fee-modal-subtitle');
+            if (titleEl) titleEl.textContent = `Late Fee Collected Breakdown — ${monthLabel}`;
+            if (subTitleEl) subTitleEl.textContent = `Showing late fees collected in ${hostelNameStr}`;
+
+            let records = [];
+            const targetHostels = hostelFilter === 'all' ? [1, 2, 3] : [parseInt(hostelFilter, 10)];
+
+            if (isCurrent) {
+                targetHostels.forEach(hid => {
+                    if (rooms[hid]) {
+                        rooms[hid].forEach(r => {
+                            if (r.beds) {
+                                r.beds.forEach(b => {
+                                    if (b.tenant) {
+                                        const fee = Number(b.late_fee_collected || 0);
+                                        if (fee > 0) {
+                                            records.push({
+                                                tenant: b.tenant,
+                                                hostel: hostels[hid] ? hostels[hid].name : `Hostel ${hid}`,
+                                                roomNum: r.num,
+                                                date: `${monthLabel} (Current)`,
+                                                amount: fee
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                (historicalRentHistory || []).forEach(h => {
+                    if (targetHostels.includes(Number(h.hostel_id)) && Number(h.late_fee_amount || 0) > 0) {
+                        records.push({
+                            tenant: h.tenant_name || h.tenant || 'Tenant',
+                            hostel: hostels[h.hostel_id] ? hostels[h.hostel_id].name : `Hostel ${h.hostel_id}`,
+                            roomNum: h.room_num || 'N/A',
+                            date: h.created_at ? new Date(h.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : `${monthLabel}`,
+                            amount: Number(h.late_fee_amount)
+                        });
+                    }
+                });
+            }
+
+            const tbody = document.getElementById('late-fee-details-tbody');
+            let grandTotal = 0;
+
+            if (tbody) {
+                if (records.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:24px; color:var(--ink3);">No late fees recorded for ${monthLabel}.</td></tr>`;
+                } else {
+                    tbody.innerHTML = records.map(rec => {
+                        grandTotal += rec.amount;
+                        return `
+                            <tr>
+                                <td style="padding:10px 12px; border-bottom:1px solid var(--border); font-weight:600;">${rec.tenant}</td>
+                                <td style="padding:10px 12px; border-bottom:1px solid var(--border);">${rec.hostel} / Room ${rec.roomNum}</td>
+                                <td style="padding:10px 12px; border-bottom:1px solid var(--border); color:var(--ink3);">${rec.date}</td>
+                                <td style="padding:10px 12px; border-bottom:1px solid var(--border); text-align:right; font-weight:700; color:var(--green);">₹${rec.amount.toLocaleString()}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            }
+
+            const totalEl = document.getElementById('late-fee-modal-total');
+            if (totalEl) totalEl.textContent = `₹${grandTotal.toLocaleString()}`;
+            openModal('late-fee-details-modal');
+        }
+
+        function openSecurityDepositDetailsModal(hostelFilter = 'all') {
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const monthLabel = monthNames[ownerSelectedMonth - 1] + ' ' + ownerSelectedYear;
+
+            const hostelNameStr = hostelFilter === 'all' ? 'All Hostels' : (hostels[hostelFilter] ? hostels[hostelFilter].name : `Hostel ${hostelFilter}`);
+
+            const titleEl = document.getElementById('security-deposit-modal-title');
+            const subTitleEl = document.getElementById('security-deposit-modal-subtitle');
+            if (titleEl) titleEl.textContent = `Security Deposits Breakdown — ${monthLabel}`;
+            if (subTitleEl) subTitleEl.textContent = `Showing active security deposits in ${hostelNameStr}`;
+
+            let records = [];
+            const targetHostels = hostelFilter === 'all' ? [1, 2, 3] : [parseInt(hostelFilter, 10)];
+
+            targetHostels.forEach(hid => {
+                if (rooms[hid]) {
+                    rooms[hid].forEach(r => {
+                        if (r.beds) {
+                            r.beds.forEach(b => {
+                                if (b.tenant) {
+                                    const depStat = String(b.deposit_status || '').trim().toLowerCase();
+                                    const depositAmt = Number(b.advance_deposit || 0);
+                                    if (depStat === 'paid' || depositAmt > 0) {
+                                        records.push({
+                                            tenant: b.tenant,
+                                            hostel: hostels[hid] ? hostels[hid].name : `Hostel ${hid}`,
+                                            roomNum: r.num,
+                                            date: b.joining_date ? new Date(b.joining_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Deposit Held ✅',
+                                            amount: depositAmt
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+            const tbody = document.getElementById('security-deposit-details-tbody');
+            let grandTotal = 0;
+
+            if (tbody) {
+                if (records.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:24px; color:var(--ink3);">No paid security deposits recorded for ${monthLabel}.</td></tr>`;
+                } else {
+                    tbody.innerHTML = records.map(rec => {
+                        grandTotal += rec.amount;
+                        return `
+                            <tr>
+                                <td style="padding:10px 12px; border-bottom:1px solid var(--border); font-weight:600;">${rec.tenant}</td>
+                                <td style="padding:10px 12px; border-bottom:1px solid var(--border);">${rec.hostel} / Room ${rec.roomNum}</td>
+                                <td style="padding:10px 12px; border-bottom:1px solid var(--border); color:var(--ink3);">${rec.date}</td>
+                                <td style="padding:10px 12px; border-bottom:1px solid var(--border); text-align:right; font-weight:700; color:#1565c0;">₹${rec.amount.toLocaleString()}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            }
+
+            const totalEl = document.getElementById('security-deposit-modal-total');
+            if (totalEl) totalEl.textContent = `₹${grandTotal.toLocaleString()}`;
+            openModal('security-deposit-details-modal');
         }
 
         let ownerSelectedMonth = new Date().getMonth() + 1;
@@ -7585,6 +7903,10 @@
             ownerSelectedYear = y;
             closeModal('owner-month-picker-modal');
             loadOwnerFinancialsForSelectedMonth();
+            if (typeof renderOwnerComplaints === 'function') renderOwnerComplaints();
+            if (typeof renderMgrComplaints === 'function') renderMgrComplaints();
+            if (typeof renderOwnerExpenses === 'function') renderOwnerExpenses();
+            if (typeof renderMgrExpenses === 'function') renderMgrExpenses();
         }
 
         function renderManagerOccupancy() {
@@ -7710,7 +8032,7 @@
                                 <div class="audit-text">Collect rent from ${t.tenant} — Room ${t.roomNum}</div>
                                 <div class="audit-time">Rent · ₹${t.rent.toLocaleString()} pending</div>
                             </div>
-                            <button class="btn-sm btn-red" onclick="sendRentReminder(this, '${escapeJS(t.tenant)}', '${t.email}', '${t.phone}', ${t.rent}, ${currentHostel}, '${t.roomNum}')">Remind</button>
+                            <button class="btn-sm btn-red" onclick="sendRentReminder(this, '${escapeJS(t.tenant)}', '${t.email}', '${t.phone}', ${t.rent}, ${currentHostel}, '${t.roomNum}', '${escapeJS(t.father_email || '')}', '${t.father_phone || ''}')">Remind</button>
                         </div>
                     `);
                     rentCount++;
@@ -8259,7 +8581,7 @@
                   <td style="color:var(--ink3)">Jun 5, 2025</td>
                   <td>${rentBadge(b.rentStatus)}</td>
                   <td><div class="flex gap8">
-                    ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-ghost" onclick="sendRentReminder(this, '${(b.tenant || '').replace(/'/g, "\\'")}', '${b.tenant_email || ''}', '${b.tenant_phone || ''}', ${proratedRent}, ${b.hostel}, '${b.num}')">Remind</button>` : ''}
+                    ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-ghost" onclick="sendRentReminder(this, '${(b.tenant || '').replace(/'/g, "\\'")}', '${b.tenant_email || ''}', '${b.tenant_phone || ''}', ${proratedRent}, ${b.hostel}, '${b.num}', '${(b.father_email || '').replace(/'/g, "\\'")}', '${b.father_phone || ''}')">Remind</button>` : ''}
                   </div></td>
                 </tr>`;
             }).join('');
@@ -8291,7 +8613,7 @@
                   <td style="color:var(--ink3)">Jun 5, 2025</td>
                   <td>${rentBadge(b.rentStatus)}</td>
                   <td><div class="flex gap8">
-                    ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-green" onclick="openPaymentConfirmModal(${currentHostel}, '${b.num}', ${b.bedIdx})">Mark Paid</button><button class="btn-sm btn-ghost" onclick="sendRentReminder(this, '${(b.tenant || '').replace(/'/g, "\\'")}', '${b.tenant_email || ''}', '${b.tenant_phone || ''}', ${proratedRent}, ${currentHostel}, '${b.num}')">Remind</button>` : `<button class="btn-sm btn-ghost" onclick="showToast('Receipt','Receipt sent to ${b.tenant}.')">Receipt</button>`}
+                    ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-green" onclick="openPaymentConfirmModal(${currentHostel}, '${b.num}', ${b.bedIdx})">Mark Paid</button><button class="btn-sm btn-ghost" onclick="sendRentReminder(this, '${(b.tenant || '').replace(/'/g, "\\'")}', '${b.tenant_email || ''}', '${b.tenant_phone || ''}', ${proratedRent}, ${currentHostel}, '${b.num}', '${(b.father_email || '').replace(/'/g, "\\'")}', '${b.father_phone || ''}')">Remind</button>` : `<button class="btn-sm btn-ghost" onclick="showToast('Receipt','Receipt sent to ${b.tenant}.')">Receipt</button>`}
                   </div></td>
                 </tr>`;
             }).join('');
@@ -10326,13 +10648,243 @@
         // COMPLAINTS
         // ============================================================
         function statusBadge(s) {
+            if (s === 'pending' || s === 'pending_approval' || !s) return '<span class="badge badge-yellow" style="background:#fff3cd; color:#856404; border:1px solid #ffeeba;">⏳ Pending Approval</span>';
+            if (s === 'rejected') return '<span class="badge badge-red" style="background:#f8d7da; color:#721c24; border:1px solid #f5c6cb;">✕ Rejected</span>';
             if (s === 'open') return '<span class="badge badge-red">🔴 Open</span>';
             if (s === 'progress') return '<span class="badge badge-yellow">🟡 In Progress</span>';
             if (s === 'resolved') return '<span class="badge badge-green">✅ Resolved</span>';
+            return '<span class="badge badge-grey">' + s + '</span>';
+        }
+
+        let currentOwnerComplaintsFilter = 'all';
+        let currentMgrComplaintsFilter = 'all';
+
+        function filterOwnerComplaintsByStatus(filterStatus) {
+            currentOwnerComplaintsFilter = filterStatus || 'all';
+            renderOwnerComplaints();
+        }
+
+        async function acceptComplaint(id) {
+            const c = complaints.find(x => x.id === id);
+            if (c) {
+                c.status = 'open';
+                await db.from('complaints').update({ status: 'open' }).eq('id', id);
+            }
+            if (typeof renderMgrComplaints === 'function') renderMgrComplaints();
+            if (typeof renderOwnerComplaints === 'function') renderOwnerComplaints();
+            showToast('Complaint Accepted ✅', 'Approved. Mark in Progress and Resolve buttons are now active.');
+        }
+
+        async function rejectComplaint(id) {
+            const c = complaints.find(x => x.id === id);
+            if (c) {
+                c.status = 'rejected';
+                await db.from('complaints').update({ status: 'rejected' }).eq('id', id);
+            }
+            if (typeof renderMgrComplaints === 'function') renderMgrComplaints();
+            if (typeof renderOwnerComplaints === 'function') renderOwnerComplaints();
+            showToast('Complaint Rejected ✕', 'Complaint has been rejected.');
+        }
+
+        async function deleteComplaint(id) {
+            if (!confirm('Are you sure you want to delete this complaint? This cannot be undone.')) {
+                return;
+            }
+            try {
+                await db.from('complaints').delete().eq('id', id);
+            } catch (err) {
+                console.warn('Could not delete complaint from Supabase DB:', err);
+            }
+            const idx = complaints.findIndex(x => Number(x.id) === Number(id));
+            if (idx !== -1) {
+                complaints.splice(idx, 1);
+            }
+            if (typeof renderMgrComplaints === 'function') renderMgrComplaints();
+            if (typeof renderOwnerComplaints === 'function') renderOwnerComplaints();
+            showToast('Complaint Deleted 🗑️', 'The complaint has been removed.');
+        }
+
+        let resolveBillBase64 = null;
+        let editResolveBillBase64 = null;
+
+        function handleResolveBillChange(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    resolveBillBase64 = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                resolveBillBase64 = null;
+            }
+        }
+
+        function handleEditResolveBillChange(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    editResolveBillBase64 = e.target.result;
+                    const previewEl = document.getElementById('edit-res-bill-preview');
+                    if (previewEl) previewEl.textContent = `New bill photo selected (${(input.files[0].size/1024).toFixed(1)} KB)`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function viewComplaintBill(id) {
+            const c = complaints.find(x => Number(x.id) === Number(id));
+            if (!c) {
+                showToast('Error', 'Complaint record not found.');
+                return;
+            }
+
+            const titleEl = document.getElementById('view-bill-modal-title');
+            const subtitleEl = document.getElementById('view-bill-modal-subtitle');
+            const contentEl = document.getElementById('view-bill-modal-content');
+
+            if (titleEl) titleEl.textContent = `Bill & Resolution Details — ${c.tenant} (Room ${c.room})`;
+            if (subtitleEl) subtitleEl.textContent = `Hostel ${c.hostel} · Date: ${c.date}`;
+
+            let imgHtml = '';
+            if (c.bill_url && String(c.bill_url).startsWith('data:image')) {
+                imgHtml = `
+                    <div style="margin-top:16px; text-align:center;">
+                        <div style="font-weight:700; margin-bottom:8px; text-align:left; color:var(--ink);">Uploaded Bill Evidence:</div>
+                        <img src="${c.bill_url}" alt="Bill Photo" style="max-width:100%; max-height:350px; border-radius:8px; border:1px solid var(--border); box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+                    </div>
+                `;
+            } else if (c.bill) {
+                imgHtml = `
+                    <div style="margin-top:16px; padding:12px; background:#e6f4ea; border:1px solid #137333; color:var(--green); border-radius:6px; font-weight:600; text-align:center;">
+                        ✓ Bill photo uploaded & verified by Manager.
+                    </div>
+                `;
+            } else {
+                imgHtml = `
+                    <div style="margin-top:16px; padding:12px; background:var(--bg); border:1px dashed var(--border); color:var(--ink3); border-radius:6px; text-align:center;">
+                        No physical bill photo uploaded for this resolution.
+                    </div>
+                `;
+            }
+
+            if (contentEl) {
+                contentEl.innerHTML = `
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                        <div><strong>Tenant:</strong> ${c.tenant}</div>
+                        <div><strong>Room & Hostel:</strong> Room ${c.room} (Hostel ${c.hostel})</div>
+                        <div><strong>Complaint Issue:</strong> ${c.subject}</div>
+                        <div><strong>Category:</strong> ${c.category}</div>
+                        <div><strong>Date:</strong> ${c.date}</div>
+                        <div><strong>Maintenance Cost:</strong> <span style="color:var(--green); font-weight:800; font-size:15px;">₹${(c.cost || 0).toLocaleString()}</span></div>
+                    </div>
+                    <div style="margin-top:8px; padding:10px; background:var(--bg); border-radius:6px; border:1px solid var(--border);">
+                        <strong>Resolution Note:</strong>
+                        <p style="margin:4px 0 0 0; color:var(--ink);">${c.resolution_note || c.desc || 'Resolved by hostel maintenance.'}</p>
+                    </div>
+                    ${imgHtml}
+                `;
+            }
+
+            openModal('view-bill-modal');
+        }
+
+        function openEditComplaintModal(id) {
+            const c = complaints.find(x => Number(x.id) === Number(id));
+            if (!c) return;
+
+            document.getElementById('edit-res-complaint-id').value = id;
+            if (document.getElementById('edit-res-note')) document.getElementById('edit-res-note').value = c.resolution_note || c.desc || '';
+            if (document.getElementById('edit-res-cost')) document.getElementById('edit-res-cost').value = c.cost || 0;
+            if (document.getElementById('edit-res-bill-preview')) {
+                document.getElementById('edit-res-bill-preview').textContent = c.bill_url ? 'Current bill image stored ✓' : (c.bill ? 'Current bill uploaded ✓' : 'No bill file uploaded.');
+            }
+            editResolveBillBase64 = c.bill_url || null;
+            openModal('edit-complaint-modal');
+        }
+
+        async function saveComplaintResolutionEdit() {
+            const id = parseInt(document.getElementById('edit-res-complaint-id').value, 10);
+            const newCost = parseInt(document.getElementById('edit-res-cost').value, 10) || 0;
+            const newNote = (document.getElementById('edit-res-note')?.value || '').trim();
+
+            const c = complaints.find(x => Number(x.id) === Number(id));
+            if (c) {
+                c.cost = newCost;
+                c.resolution_note = newNote;
+                if (editResolveBillBase64) {
+                    c.bill_url = editResolveBillBase64;
+                    c.bill = true;
+                }
+
+                await db.from('complaints').update({
+                    cost: newCost,
+                    resolution_note: newNote,
+                    bill: c.bill,
+                    bill_url: c.bill_url || null
+                }).eq('id', id);
+
+                // ALSO UPDATE EXPENSE LOG ENTRY IF EXISTS
+                const expDescPattern = `Complaint from ${c.tenant} (Room ${c.room}): ${c.subject}`;
+                const existingExp = (expenses || []).find(e => e.description && e.description.includes(expDescPattern));
+
+                if (existingExp) {
+                    existingExp.amount = newCost;
+                    existingExp.description = `${expDescPattern}${newNote ? ' - ' + newNote : ''}`;
+                    if (c.bill_url) existingExp.bill_url = c.bill_url;
+
+                    await db.from('expenses').update({
+                        amount: newCost,
+                        description: existingExp.description,
+                        bill_url: existingExp.bill_url || null
+                    }).eq('id', existingExp.id);
+                }
+
+                if (typeof renderOwnerExpenses === 'function') renderOwnerExpenses();
+                if (typeof renderMgrExpenses === 'function') renderMgrExpenses();
+                if (typeof renderOwnerFinancials === 'function') renderOwnerFinancials();
+            }
+
+            closeModal('edit-complaint-modal');
+            renderMgrComplaints();
+            if (typeof renderOwnerComplaints === 'function') renderOwnerComplaints();
+
+            showToast('Resolution Updated ✏️', `Amount updated to ₹${newCost} and bill details saved.`);
         }
 
         function renderOwnerComplaints() {
-            document.getElementById('o-complaints-list').innerHTML = complaints.map(c => `
+            const container = document.getElementById('o-complaints-list');
+            if (!container) return;
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const monthLabel = monthNames[ownerSelectedMonth - 1] + ' ' + ownerSelectedYear;
+
+            const subtitleEl = document.getElementById('o-complaints-subtitle');
+            if (subtitleEl) {
+                subtitleEl.textContent = `Showing complaints for ${monthLabel}`;
+            }
+
+            let filtered = (complaints || []).filter(c => matchesMonthYear(c.date, ownerSelectedMonth, ownerSelectedYear));
+
+            if (currentOwnerComplaintsFilter === 'open') {
+                filtered = filtered.filter(c => c.status === 'open' || c.status === 'pending' || c.status === 'pending_approval');
+            } else if (currentOwnerComplaintsFilter === 'progress') {
+                filtered = filtered.filter(c => c.status === 'progress');
+            } else if (currentOwnerComplaintsFilter === 'resolved') {
+                filtered = filtered.filter(c => c.status === 'resolved');
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="card" style="text-align:center; padding:40px; color:var(--ink3);">
+                        <div style="font-size:32px; margin-bottom:8px;">📋</div>
+                        <div style="font-size:15px; font-weight:600;">No complaints found for ${monthLabel}</div>
+                        <div style="font-size:13px; margin-top:4px;">Try changing the month/year filter or switching status tabs.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(c => `
     <div class="complaint-card">
       <div class="cc-header">
         <div><div class="cc-title">${c.subject}</div><div class="cc-meta">${c.category} · Hostel ${c.hostel} · Room ${c.room} · ${c.tenant}</div></div>
@@ -10341,17 +10893,54 @@
       <div class="cc-desc">${c.desc}</div>
       <div class="cc-footer">
         <div class="cc-info">${c.date} ${c.cost ? `· ₹${c.cost} spent` : ''} ${c.bill ? '· Bill uploaded ✓' : ''}</div>
+        <div class="cc-actions" style="display:flex; align-items:center; gap:8px;">
+          ${c.status === 'resolved' ? `
+            <button class="btn-sm btn-ghost" onclick="viewComplaintBill(${c.id})" style="padding:4px 10px; font-size:12px; display:inline-flex; align-items:center; gap:4px; background:#e3f2fd; color:#1565c0; border:1px solid #90caf9;" title="View Bill Details">
+              📄 View Bill
+            </button>
+          ` : ''}
+          <button class="btn-sm btn-red" onclick="deleteComplaint(${c.id})" style="padding:4px 10px; font-size:12px; display:inline-flex; align-items:center; gap:4px;" title="Delete Complaint">
+            🗑️ Delete
+          </button>
+        </div>
       </div>
     </div>
   `).join('');
         }
 
         function renderMgrComplaints(filter) {
-            let list = complaints.filter(c => c.hostel === currentHostel);
-            if (filter === 'open') list = list.filter(c => c.status === 'open');
+            if (filter) currentMgrComplaintsFilter = filter;
+            else filter = currentMgrComplaintsFilter || 'all';
+
+            const container = document.getElementById('mgr-complaints-list');
+            if (!container) return;
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const monthLabel = monthNames[ownerSelectedMonth - 1] + ' ' + ownerSelectedYear;
+
+            const subtitleEl = document.getElementById('m-complaints-subtitle');
+            if (subtitleEl) {
+                subtitleEl.textContent = `Showing complaints for ${monthLabel}`;
+            }
+
+            let list = (complaints || []).filter(c => Number(c.hostel) === Number(currentHostel) && matchesMonthYear(c.date, ownerSelectedMonth, ownerSelectedYear));
+
+            if (filter === 'open') list = list.filter(c => c.status === 'open' || c.status === 'pending' || c.status === 'pending_approval');
             else if (filter === 'progress') list = list.filter(c => c.status === 'progress');
             else if (filter === 'resolved') list = list.filter(c => c.status === 'resolved');
-            document.getElementById('mgr-complaints-list').innerHTML = list.length ? list.map(c => `
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="card" style="text-align:center; padding:40px; color:var(--ink3);">
+                        <div style="font-size:32px; margin-bottom:8px;">📋</div>
+                        <div style="font-size:15px; font-weight:600;">No complaints found for ${monthLabel}</div>
+                        <div style="font-size:13px; margin-top:4px;">Try changing the month/year filter or switching status tabs.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = list.map(c => `
     <div class="complaint-card">
       <div class="cc-header">
         <div><div class="cc-title">${c.subject}</div><div class="cc-meta">${c.category} · Room ${c.room} · ${c.tenant}</div></div>
@@ -10360,39 +10949,123 @@
       <div class="cc-desc">${c.desc}</div>
       <div class="cc-footer">
         <div class="cc-info">${c.date}</div>
-        <div class="cc-actions">
-          ${c.status === 'open' ? `<button class="btn-sm btn-ghost" onclick="setProgress(${c.id})">Mark In Progress</button>` : ''}
-          ${c.status !== 'resolved' ? `<button class="btn-sm btn-green" onclick="openResolveModal(${c.id})">✓ Resolve</button>` : `<span style="font-size:12px;color:var(--ink3)">Cost: ₹${c.cost || 0} ${c.bill ? '· Bill ✓' : ''}</span>`}
+        <div class="cc-actions" style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          ${(c.status === 'pending' || c.status === 'pending_approval' || !c.status) ? `
+            <button class="btn-sm btn-green" onclick="acceptComplaint(${c.id})">✓ Accept</button>
+            <button class="btn-sm btn-red" onclick="rejectComplaint(${c.id})">✕ Reject</button>
+          ` : ''}
+          ${(c.status === 'open' || c.status === 'progress') ? `
+            ${c.status === 'open' ? `<button class="btn-sm btn-ghost" onclick="setProgress(${c.id})">Mark In Progress</button>` : ''}
+            <button class="btn-sm btn-green" onclick="openResolveModal(${c.id})">✓ Resolve</button>
+          ` : ''}
+          ${c.status === 'rejected' ? `<span style="font-size:12px;color:var(--red);font-weight:600">✕ Rejected</span>` : ''}
+          ${c.status === 'resolved' ? `
+            <span style="font-size:12px;color:var(--ink3)">Cost: ₹${c.cost || 0} ${c.bill ? '· Bill ✓' : ''}</span>
+            <button class="btn-sm btn-ghost" onclick="viewComplaintBill(${c.id})" style="padding:4px 10px; font-size:12px; background:#e3f2fd; color:#1565c0; border:1px solid #90caf9;" title="View Bill">
+              📄 View Bill
+            </button>
+            <button class="btn-sm btn-ghost" onclick="openEditComplaintModal(${c.id})" style="padding:4px 10px; font-size:12px; background:#fff3cd; color:#856404; border:1px solid #ffeeba;" title="Edit Resolution & Cost">
+              ✏️ Edit
+            </button>
+          ` : ''}
+          <button class="btn-sm btn-red" onclick="deleteComplaint(${c.id})" style="padding:4px 10px; font-size:12px; display:inline-flex; align-items:center; gap:4px;" title="Delete Complaint">
+            🗑️ Delete
+          </button>
         </div>
       </div>
     </div>
-  `).join('') : '<div class="card" style="text-align:center;padding:32px;color:var(--ink3)">No complaints in this category</div>';
+  `).join('');
         }
 
         async function setProgress(id) {
             const c = complaints.find(x => x.id === id);
             if (c) { c.status = 'progress'; await db.from('complaints').update({ status: 'progress' }).eq('id', id); }
-            renderMgrComplaints('all');
+            renderMgrComplaints();
             showToast('Updated', 'Complaint marked as In Progress.');
         }
 
         function openResolveModal(id) {
             document.getElementById('res-complaint-id').value = id;
+            if (document.getElementById('res-note')) document.getElementById('res-note').value = '';
+            if (document.getElementById('res-cost')) document.getElementById('res-cost').value = '';
+            resolveBillBase64 = null;
             openModal('resolve-modal');
         }
 
         async function resolveComplaint() {
-            const id = parseInt(document.getElementById('res-complaint-id').value);
-            const cost = parseInt(document.getElementById('res-cost').value) || 0;
-            const bill = document.getElementById('res-bill').files.length > 0;
+            const id = parseInt(document.getElementById('res-complaint-id').value, 10);
+            const cost = parseInt(document.getElementById('res-cost').value, 10) || 0;
+            const resNote = (document.getElementById('res-note')?.value || '').trim();
+            const bill = document.getElementById('res-bill').files.length > 0 || !!resolveBillBase64;
+
             const c = complaints.find(x => x.id === id);
             if (c) {
-                c.status = 'resolved'; c.cost = cost; c.bill = bill;
-                await db.from('complaints').update({ status: 'resolved', cost, bill }).eq('id', id);
+                c.status = 'resolved';
+                c.cost = cost;
+                c.bill = bill;
+                c.resolution_note = resNote;
+                if (resolveBillBase64) c.bill_url = resolveBillBase64;
+
+                await db.from('complaints').update({
+                    status: 'resolved',
+                    cost: cost,
+                    bill: bill,
+                    resolution_note: resNote,
+                    bill_url: c.bill_url || null
+                }).eq('id', id);
+
+                // AUTOMATICALLY LOG EXPENSE TO OWNER & MANAGER EXPENSE LOG
+                // Format: Category = Complaint, Description = Complaint from Tenant (Room X): Subject - Note
+                let expDateIso = new Date().toISOString();
+                if (c && c.date) {
+                    const parseD = new Date(c.date);
+                    if (!isNaN(parseD.getTime())) {
+                        expDateIso = parseD.toISOString();
+                    }
+                }
+
+                const expDesc = `Complaint from ${c.tenant} (Room ${c.room}): ${c.subject}${resNote ? ' - ' + resNote : ''}`;
+                const newExp = {
+                    hostel_id: Number(c.hostel || currentHostel),
+                    category: 'Complaint',
+                    amount: cost,
+                    description: expDesc,
+                    bill_url: bill ? (c.bill_url || 'Bill Uploaded') : null,
+                    created_by: 'Manager',
+                    created_at: expDateIso
+                };
+
+                try {
+                    const { data: expData, error: expError } = await db.from('expenses').insert([newExp]).select();
+                    if (expError) {
+                        console.warn('Could not insert complaint expense to Supabase DB:', expError.message);
+                        newExp.id = Date.now();
+                    } else if (expData && expData[0]) {
+                        newExp.id = expData[0].id;
+                    }
+                } catch (err) {
+                    console.warn('Expense insert exception:', err);
+                    newExp.id = Date.now();
+                }
+
+                if (Array.isArray(expenses)) {
+                    expenses.unshift(newExp);
+                }
+
+                if (typeof renderOwnerExpenses === 'function') renderOwnerExpenses();
+                if (typeof renderMgrExpenses === 'function') renderMgrExpenses();
+                if (typeof renderOwnerFinancials === 'function') renderOwnerFinancials();
             }
+
             closeModal('resolve-modal');
-            renderMgrComplaints('all');
-            showToast('Complaint Resolved ✅', `Marked resolved. Cost: ₹${cost}${bill ? ' · Bill uploaded.' : '.'}`);
+            document.getElementById('res-cost').value = '';
+            if (document.getElementById('res-note')) document.getElementById('res-note').value = '';
+            if (document.getElementById('res-bill')) document.getElementById('res-bill').value = '';
+
+            renderMgrComplaints();
+            if (typeof renderOwnerComplaints === 'function') renderOwnerComplaints();
+
+            showToast('Complaint Resolved ✅', `Resolved & added ₹${cost} to Expense Log under Category "Complaint".`);
         }
 
         function renderTenantComplaints() {
@@ -10420,14 +11093,14 @@
             const name = currentTenant ? currentTenant.tenant_name : 'Unknown';
             const room = currentTenant ? currentTenant.rooms.num : '000';
 
-            const { data } = await db.from('complaints').insert({ hostel_id: currentHostel, room_num: room, tenant_name: name, category: cat, subject, description: desc, status: 'open', created_date: today }).select().single();
-            const newC = { id: data?.id || Date.now(), hostel: currentHostel, room: room, tenant: name, category: cat, subject, desc, status: 'open', date: today, cost: null, bill: null };
+            const { data } = await db.from('complaints').insert({ hostel_id: currentHostel, room_num: room, tenant_name: name, category: cat, subject, description: desc, status: 'pending', created_date: today }).select().single();
+            const newC = { id: data?.id || Date.now(), hostel: currentHostel, room: room, tenant: name, category: cat, subject, desc, status: 'pending', date: today, cost: null, bill: null };
             complaints.push(newC);
             closeModal('new-complaint-modal');
             document.getElementById('c-subject').value = '';
             document.getElementById('c-desc').value = '';
             renderTenantComplaints();
-            showToast('Complaint Submitted 📋', 'Your complaint has been sent to the manager.');
+            showToast('Complaint Submitted 📋', 'Your complaint has been submitted for manager approval.');
         }
 
         // ============================================================
@@ -12009,26 +12682,28 @@
         };
 
         function getFilteredExpenses() {
-            return expenses.filter(e => {
+            return (expenses || []).filter(e => {
                 if (currentRole === 'manager') {
-                    if (e.hostel_id !== currentHostel) return false;
+                    if (Number(e.hostel_id) !== Number(currentHostel)) return false;
                 } else {
-                    if (expenseFilters.hostel !== 'all' && e.hostel_id !== parseInt(expenseFilters.hostel)) return false;
+                    if (expenseFilters.hostel !== 'all' && Number(e.hostel_id) !== parseInt(expenseFilters.hostel, 10)) return false;
                 }
 
                 if (expenseFilters.category !== 'all' && e.category !== expenseFilters.category) return false;
 
-                const eDate = new Date(e.created_at);
-                if (!isNaN(eDate.getTime())) {
-                    if (expenseFilters.month !== 'all' && expenseFilters.month !== '') {
-                        if (eDate.getMonth() !== parseInt(expenseFilters.month)) return false;
-                    }
-                    if (expenseFilters.year !== 'all' && expenseFilters.year !== '') {
-                        if (eDate.getFullYear() !== parseInt(expenseFilters.year)) return false;
-                    }
+                const dateVal = e.created_at || e.date || e.created_date;
+
+                let targetMonth = ownerSelectedMonth;
+                let targetYear = ownerSelectedYear;
+
+                if (expenseFilters.month !== 'all' && expenseFilters.month !== '') {
+                    targetMonth = parseInt(expenseFilters.month, 10) + 1;
+                }
+                if (expenseFilters.year !== 'all' && expenseFilters.year !== '') {
+                    targetYear = parseInt(expenseFilters.year, 10);
                 }
 
-                return true;
+                return matchesMonthYear(dateVal, targetMonth, targetYear);
             });
         }
 
@@ -12150,22 +12825,30 @@
         function renderMgrExpenses() {
             const tbody = document.getElementById('mgr-expenses-table');
             if (!tbody) return;
-            
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const monthLabel = monthNames[ownerSelectedMonth - 1] + ' ' + ownerSelectedYear;
+
+            const subtitleEl = document.getElementById('m-exp-subtitle');
+            if (subtitleEl) {
+                subtitleEl.textContent = `Showing logged expenses for ${monthLabel}`;
+            }
+
             const filtered = getFilteredExpenses();
-            
+
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:20px;">No matching expenses found.</td></tr>';
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:30px;">No expenses logged for ${monthLabel}.</td></tr>`;
                 return;
             }
-            
+
             tbody.innerHTML = filtered.map(e => {
-                const d = new Date(e.created_at);
-                const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const d = new Date(e.created_at || e.date);
+                const dateStr = !isNaN(d.getTime()) ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : (e.created_at || 'N/A');
                 return `
                 <tr>
                     <td>${e.description}</td>
                     <td><span class="badge badge-grey">${e.category}</span></td>
-                    <td style="font-weight:700;color:var(--ink)">₹${e.amount.toLocaleString()}</td>
+                    <td style="font-weight:700;color:var(--ink)">₹${(e.amount || 0).toLocaleString()}</td>
                     <td>${dateStr}</td>
                     <td>${e.bill_url ? `<button class="btn-sm btn-ghost" onclick="viewBill('${e.bill_url}')">📎 View Bill</button>` : '<span style="font-size:12px;color:var(--ink3)">No bill</span>'}</td>
                     <td><button class="btn-sm btn-ghost" style="color:var(--red)" onclick="deleteExpense(${e.id}, this)">🗑️ Delete</button></td>
@@ -12176,53 +12859,64 @@
         function renderOwnerExpenses() {
             const tbody = document.getElementById('owner-expenses-table');
             if (!tbody) return;
-            
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const monthLabel = monthNames[ownerSelectedMonth - 1] + ' ' + ownerSelectedYear;
+
+            const subtitleEl = document.getElementById('o-exp-subtitle');
+            if (subtitleEl) {
+                subtitleEl.textContent = `Showing logged expenses for ${monthLabel}`;
+            }
+
             let totalSpent = 0;
             let h1Cost = 0, h2Cost = 0, h3Cost = 0;
             let h1Jobs = 0, h2Jobs = 0, h3Jobs = 0;
-            
+
             const filtered = getFilteredExpenses();
-            
+
             const html = filtered.map(e => {
-                const d = new Date(e.created_at);
-                const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                
-                totalSpent += e.amount;
-                if(e.hostel_id === 1) { h1Cost += e.amount; h1Jobs++; }
-                if(e.hostel_id === 2) { h2Cost += e.amount; h2Jobs++; }
-                if(e.hostel_id === 3) { h3Cost += e.amount; h3Jobs++; }
-                
+                const d = new Date(e.created_at || e.date);
+                const dateStr = !isNaN(d.getTime()) ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : (e.created_at || 'N/A');
+
+                const amt = Number(e.amount || 0);
+                totalSpent += amt;
+                if (Number(e.hostel_id) === 1) { h1Cost += amt; h1Jobs++; }
+                if (Number(e.hostel_id) === 2) { h2Cost += amt; h2Jobs++; }
+                if (Number(e.hostel_id) === 3) { h3Cost += amt; h3Jobs++; }
+
                 let hBadge = '';
-                if(e.hostel_id === 1) hBadge = '<span class="badge badge-blue">H1</span>';
-                if(e.hostel_id === 2) hBadge = '<span class="badge badge-green">H2</span>';
-                if(e.hostel_id === 3) hBadge = '<span class="badge badge-yellow">H3</span>';
-                
+                if (Number(e.hostel_id) === 1) hBadge = '<span class="badge badge-blue">H1</span>';
+                if (Number(e.hostel_id) === 2) hBadge = '<span class="badge badge-green">H2</span>';
+                if (Number(e.hostel_id) === 3) hBadge = '<span class="badge badge-yellow">H3</span>';
+
                 return `
                 <tr>
                     <td>${e.description}</td>
                     <td>${hBadge}</td>
                     <td><span class="badge badge-grey">${e.category}</span></td>
-                    <td style="font-weight:700;color:var(--yellow)">₹${e.amount.toLocaleString()}</td>
+                    <td style="font-weight:700;color:var(--yellow)">₹${amt.toLocaleString()}</td>
                     <td>${e.created_by || 'Manager'}</td>
                     <td>${dateStr}</td>
                     <td>${e.bill_url ? `<button class="btn-sm btn-ghost" onclick="viewBill('${e.bill_url}')">📎 View Bill</button>` : '<span style="font-size:12px;color:var(--ink3)">No bill</span>'}</td>
                     <td><button class="btn-sm btn-ghost" style="color:var(--red)" onclick="deleteExpense(${e.id}, this)">🗑️ Delete</button></td>
                 </tr>`;
             }).join('');
-            
+
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--ink3);padding:20px;">No matching expenses found.</td></tr>';
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--ink3);padding:30px;">No expenses logged for ${monthLabel}.</td></tr>`;
             } else {
                 tbody.innerHTML = html;
             }
-            // Update stats
-            document.getElementById('o-exp-total-spent').textContent = `₹${totalSpent.toLocaleString()} spent this month`;
-            document.getElementById('o-exp-h1-cost').textContent = `₹${h1Cost.toLocaleString()}`;
-            document.getElementById('o-exp-h1-jobs').textContent = `${h1Jobs} jobs`;
-            document.getElementById('o-exp-h2-cost').textContent = `₹${h2Cost.toLocaleString()}`;
-            document.getElementById('o-exp-h2-jobs').textContent = `${h2Jobs} jobs`;
-            document.getElementById('o-exp-h3-cost').textContent = `₹${h3Cost.toLocaleString()}`;
-            document.getElementById('o-exp-h3-jobs').textContent = `${h3Jobs} jobs`;
+
+            const spentBadge = document.getElementById('o-exp-total-spent');
+            if (spentBadge) spentBadge.textContent = `₹${totalSpent.toLocaleString()} spent in ${monthLabel}`;
+
+            if (document.getElementById('o-exp-h1-cost')) document.getElementById('o-exp-h1-cost').textContent = `₹${h1Cost.toLocaleString()}`;
+            if (document.getElementById('o-exp-h1-jobs')) document.getElementById('o-exp-h1-jobs').textContent = `${h1Jobs} job${h1Jobs !== 1 ? 's' : ''}`;
+            if (document.getElementById('o-exp-h2-cost')) document.getElementById('o-exp-h2-cost').textContent = `₹${h2Cost.toLocaleString()}`;
+            if (document.getElementById('o-exp-h2-jobs')) document.getElementById('o-exp-h2-jobs').textContent = `${h2Jobs} job${h2Jobs !== 1 ? 's' : ''}`;
+            if (document.getElementById('o-exp-h3-cost')) document.getElementById('o-exp-h3-cost').textContent = `₹${h3Cost.toLocaleString()}`;
+            if (document.getElementById('o-exp-h3-jobs')) document.getElementById('o-exp-h3-jobs').textContent = `${h3Jobs} job${h3Jobs !== 1 ? 's' : ''}`;
         }
 
         async function deleteExpense(id, btn) {
@@ -13266,7 +13960,7 @@
             return (str || '').replace(/'/g, "\\'");
         }
 
-        async function sendRentReminder(btn, name, email, phone, rent, hostelId, roomNum) {
+        async function sendRentReminder(btn, name, email, phone, rent, hostelId, roomNum, parentEmail = '', parentPhone = '') {
             if (btn) {
                 btn.disabled = true;
                 btn.dataset.oldText = btn.innerHTML;
@@ -13277,14 +13971,39 @@
             const cleanPhone = (phone || '').replace(/\D/g, '');
             const hostelName = hostels[hostelId] ? hostels[hostelId].name : `Hostel ${hostelId}`;
 
-            console.log(`Sending rent reminder to ${name}`, { email: cleanEmail, phone: cleanPhone, rent, hostelId, roomNum });
+            // Auto-lookup parent email and phone from rooms if not supplied
+            let cleanParentEmail = (parentEmail || '').trim();
+            let cleanParentPhone = (parentPhone || '').replace(/\D/g, '');
 
-            let emailSuccess = false;
-            let waSuccess = false;
+            if (!cleanParentEmail || !cleanParentPhone) {
+                const hrooms = rooms[hostelId] || [];
+                for (const r of hrooms) {
+                    if (!roomNum || r.num === roomNum) {
+                        const foundBed = (r.beds || []).find(b => 
+                            (b.tenant_email && b.tenant_email.toLowerCase() === cleanEmail.toLowerCase()) ||
+                            (b.tenant && b.tenant === name) ||
+                            (b.tenant_phone && b.tenant_phone.replace(/\D/g, '') === cleanPhone)
+                        );
+                        if (foundBed) {
+                            if (!cleanParentEmail && foundBed.father_email) cleanParentEmail = foundBed.father_email.trim();
+                            if (!cleanParentPhone && foundBed.father_phone) cleanParentPhone = foundBed.father_phone.replace(/\D/g, '');
+                            break;
+                        }
+                    }
+                }
+            }
+
+            console.log(`Sending rent reminder for ${name}`, { email: cleanEmail, phone: cleanPhone, parentEmail: cleanParentEmail, parentPhone: cleanParentPhone, rent, hostelId, roomNum });
+
+            let tenantEmailSuccess = false;
+            let parentEmailSuccess = false;
+            let tenantWaSuccess = false;
+            let parentWaSuccess = false;
+
             let emailErrorMsg = '';
             let waErrorMsg = '';
 
-            // 1. Send Email if email is present
+            // 1. TENANT EMAIL
             if (cleanEmail && cleanEmail !== 'null' && cleanEmail !== 'undefined') {
                 const subject = `VUSTELA Pending Rent Reminder — Room ${roomNum}`;
                 const emailHtml = `
@@ -13321,19 +14040,63 @@
                         body: JSON.stringify({ to: cleanEmail, subject, html: emailHtml })
                     });
                     const resData = await res.json();
-                    if (resData.success) {
-                        emailSuccess = true;
-                    } else {
-                        emailErrorMsg = resData.error || 'Server error';
-                    }
+                    if (resData.success) tenantEmailSuccess = true;
+                    else emailErrorMsg = resData.error || 'Server error';
                 } catch (err) {
                     emailErrorMsg = err.message;
                 }
             } else {
-                emailErrorMsg = 'No email set';
+                emailErrorMsg = 'No tenant email';
             }
 
-            // 2. Send WhatsApp if phone is present
+            // 2. PARENT EMAIL
+            if (cleanParentEmail && cleanParentEmail !== 'null' && cleanParentEmail !== 'undefined' && cleanParentEmail.toLowerCase() !== cleanEmail.toLowerCase()) {
+                const parentSubject = `VUSTELA Rent Pending Reminder — ${name} (Room ${roomNum})`;
+                const parentEmailHtml = `
+                    <div style="font-family: 'DM Sans', Arial, sans-serif; background-color: #F7F5F0; padding: 30px; color: #1A1814;">
+                        <div style="max-width: 500px; margin: 0 auto; background-color: #FFFFFF; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 30px; border-top: 5px solid #C84B31;">
+                            <h2 style="font-family: 'Syne', sans-serif; font-size: 20px; color: #1A1814; margin-top: 0; text-align: center;">Rent Pending Notification ⏳</h2>
+                            <p>Dear Parent / Guardian of <strong>${name}</strong>,</p>
+                            <p>This is an automated notification from <strong>${hostelName}</strong> regarding the pending monthly rent for your ward, <strong>${name}</strong>.</p>
+                            
+                            <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
+                                <tr>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; color: #7A756E;">Student / Tenant Name</td>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; font-weight: bold; text-align: right;">${name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; color: #7A756E;">Room Number</td>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; font-weight: bold; text-align: right;">Room ${roomNum}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; color: #7A756E;">Outstanding Amount</td>
+                                    <td style="padding: 10px 0; border-bottom: 1px solid #E5E1DB; font-weight: bold; color: #C84B31; text-align: right;">₹${rent.toLocaleString()}</td>
+                                </tr>
+                            </table>
+
+                            <p style="margin-top: 20px;">We kindly request you to remind ${name} or complete the payment at your earliest convenience.</p>
+                            <p>If payment has already been completed, please ignore this notice.</p>
+                            
+                            <hr style="border: 0; border-top: 1px solid #E5E1DB; margin: 25px 0;">
+                            <p style="font-size: 11px; color: #7A756E; text-align: center; margin-bottom: 0;">VUSTELA Hostel Management Portal</p>
+                        </div>
+                    </div>
+                `;
+
+                try {
+                    const res = await fetch(API_BASE_URL + '/send-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ to: cleanParentEmail, subject: parentSubject, html: parentEmailHtml })
+                    });
+                    const resData = await res.json();
+                    if (resData.success) parentEmailSuccess = true;
+                } catch (err) {
+                    console.warn('[ParentEmail] Send failed:', err.message);
+                }
+            }
+
+            // 3. TENANT WHATSAPP
             if (cleanPhone && cleanPhone !== 'null' && cleanPhone !== 'undefined') {
                 const waMessage = `⚠️ *VUSTELA Rent Reminder* ⚠️\n\nHi ${name},\n\nThis is a friendly reminder that your monthly rent of *₹${rent.toLocaleString()}* for *Room ${roomNum}* at *${hostelName}* is currently pending.\n\nPlease process the payment at your earliest convenience and share the receipt with your hostel manager.\n\n_If you have already paid, please ignore this message._\n\n— VUSTELA PG Hostels`;
                 
@@ -13341,11 +14104,8 @@
                     const umCreds = getUltraMsgCredentials();
                     if (umCreds.token && umCreds.instanceId) {
                         const sent = await sendAutomatedWhatsApp(cleanPhone, waMessage);
-                        if (sent) {
-                            waSuccess = true;
-                        } else {
-                            waErrorMsg = 'UltraMsg API send failed';
-                        }
+                        if (sent) tenantWaSuccess = true;
+                        else waErrorMsg = 'UltraMsg API send failed';
                     } else {
                         const res = await fetch(API_BASE_URL + '/send-whatsapp', {
                             method: 'POST',
@@ -13353,25 +14113,52 @@
                             body: JSON.stringify({ to: cleanPhone, message: waMessage })
                         });
                         const resData = await res.json();
-                        if (resData.success) {
-                            waSuccess = true;
-                        } else {
-                            waErrorMsg = resData.error || 'Server error';
-                        }
+                        if (resData.success) tenantWaSuccess = true;
+                        else waErrorMsg = resData.error || 'Server error';
                     }
                 } catch (err) {
                     waErrorMsg = err.message;
                 }
             } else {
-                waErrorMsg = 'No phone set';
+                waErrorMsg = 'No tenant phone';
+            }
+
+            // 4. PARENT WHATSAPP
+            if (cleanParentPhone && cleanParentPhone !== 'null' && cleanParentPhone !== 'undefined' && cleanParentPhone !== cleanPhone) {
+                const parentWaMsg = `⚠️ *VUSTELA Rent Reminder (Parent Copy)* ⚠️\n\nDear Parent/Guardian of ${name},\n\nThis is a friendly reminder that monthly rent of *₹${rent.toLocaleString()}* for *${name}* (Room ${roomNum}) at *${hostelName}* is currently pending.\n\nPlease complete the payment or request ${name} to share the payment receipt with the hostel manager.\n\n_If already paid, please ignore this message._\n\n— VUSTELA PG Hostels`;
+                
+                try {
+                    const umCreds = getUltraMsgCredentials();
+                    if (umCreds.token && umCreds.instanceId) {
+                        const pSent = await sendAutomatedWhatsApp(cleanParentPhone, parentWaMsg);
+                        if (pSent) parentWaSuccess = true;
+                    } else {
+                        const res = await fetch(API_BASE_URL + '/send-whatsapp', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ to: cleanParentPhone, message: parentWaMsg })
+                        });
+                        const resData = await res.json();
+                        if (resData.success) parentWaSuccess = true;
+                    }
+                } catch (err) {
+                    console.warn('[ParentWhatsApp] Send failed:', err.message);
+                }
             }
 
             // UI Response toast
-            if (emailSuccess || waSuccess) {
+            const anySuccess = tenantEmailSuccess || parentEmailSuccess || tenantWaSuccess || parentWaSuccess;
+
+            if (anySuccess) {
+                let targets = [];
+                if (tenantEmailSuccess || tenantWaSuccess) targets.push('Tenant');
+                if (parentEmailSuccess || parentWaSuccess) targets.push('Parent');
+                
                 let channels = [];
-                if (emailSuccess) channels.push('Email ✉️');
-                if (waSuccess) channels.push('WhatsApp 💬');
-                showToast('Reminder Sent ✅', `Sent successfully to ${name} via ${channels.join(' and ')}.`);
+                if (tenantEmailSuccess || parentEmailSuccess) channels.push('Email ✉️');
+                if (tenantWaSuccess || parentWaSuccess) channels.push('WhatsApp 💬');
+
+                showToast('Reminder Sent ✅', `Sent to ${targets.join(' & ')} via ${channels.join(' and ')}.`);
             } else {
                 showToast('Send Failed ❌', `Email: ${emailErrorMsg} | WA: ${waErrorMsg}`);
             }
@@ -13380,7 +14167,7 @@
                 btn.disabled = false;
                 btn.innerHTML = btn.dataset.oldText || 'Remind';
             }
-            return emailSuccess || waSuccess;
+            return anySuccess;
         }
 
         async function remindAllUnpaid(btn) {
@@ -13417,7 +14204,7 @@
 
             let sentCount = 0;
             for (const b of unpaidBeds) {
-                const success = await sendRentReminder(null, b.tenant, b.tenant_email, b.tenant_phone, b.rent, b.hostel, b.num);
+                const success = await sendRentReminder(null, b.tenant, b.tenant_email, b.tenant_phone, b.rent, b.hostel, b.num, b.father_email, b.father_phone);
                 if (success) sentCount++;
             }
 
