@@ -1205,13 +1205,28 @@ const server = http.createServer((req, res) => {
     }
 });
 
-server.listen(port, () => {
-    console.log(`=========================================`);
-    console.log(`🚀 VUSTELA Relay Server is running!`);
-    console.log(`📡 Listening for WhatsApp & Email on http://localhost:${port}`);
-    console.log(`=========================================`);
-    
-    // Start automated scheduler
-    startScheduler();
+server.on('error', (e) => {
+    if (e.code === 'EADDRINUSE') {
+        console.log(`[Server] Port ${port} is already running.`);
+    } else {
+        console.error('[Server] Listen error:', e);
+    }
 });
+
+if (require.main === module) {
+    server.listen(port, () => {
+        console.log(`=========================================`);
+        console.log(`🚀 VUSTELA Relay Server is running!`);
+        console.log(`📡 Listening for WhatsApp & Email on http://localhost:${port}`);
+        console.log(`=========================================`);
+        
+        // Start automated scheduler
+        startScheduler();
+    });
+}
+
+module.exports = {
+    sendEmailDirect,
+    sendWhatsappDirect
+};
 
