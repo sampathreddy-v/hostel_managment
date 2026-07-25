@@ -859,11 +859,27 @@
             font-family: var(--font-display);
             font-size: 20px;
             font-weight: 800;
-            color: var(--ink)
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-name .brand-sub {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--ink);
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            letter-spacing: normal;
+            text-transform: uppercase;
+            box-shadow: none;
         }
 
         .brand-name span {
-            color: var(--accent)
+            color: var(--ink);
         }
 
         .hero {
@@ -3396,7 +3412,7 @@
         <nav class="landing-nav">
             <div class="brand" onclick="goTo('pg-landing')">
                 <div class="brand-mark">V</div>
-                <div class="brand-name">VUSTELA</div>
+                <div class="brand-name">VUSTELA <span class="brand-sub">PG MANAGEMENT</span></div>
             </div>
             <div class="flex gap12">
                 <button class="btn btn-outline" onclick="scrollToInfo()">About Hostel</button>
