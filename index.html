@@ -6647,12 +6647,12 @@
 
         const defaultHostelDetails = {
             1: {
-                desc: "Our Kokapet property offers premium living in the heart of the Financial District. Ideal for IT professionals, it features ultra-modern amenities, high-speed connectivity, and a peaceful work-from-home environment.",
-                locFull: "Kokapet, Financial District, Hyderabad"
+                desc: "ISHTAA PRIME BOYS property at NARSINGI offers premium boys accommodation with ultra-modern amenities, high-speed connectivity, and comfortable living spaces.",
+                locFull: "NARSINGI, Hyderabad"
             },
             2: {
-                desc: "Located in the bustling IT Hub of Gachibowli, this hostel is designed for convenience and community. Close to major tech parks, hospitals, and shopping centers, it provides a perfect balance of work and life.",
-                locFull: "Gachibowli, IT Hub, Hyderabad"
+                desc: "ISHTAA PRIME GIRLS property at NARSINGI provides safe, luxurious, and convenient girls accommodation close to IT hubs with top-class amenities.",
+                locFull: "NARSINGI, Hyderabad"
             },
             3: {
                 desc: "VUSTELA Madhapur brings you luxury living in the most vibrant part of the city. With spacious rooms and premium food services, it's the top choice for those who value comfort and accessibility.",
@@ -14710,13 +14710,19 @@
         // ============================================================
 
         function updateLandingPageUI() {
+            try {
+                const cachedDetails = localStorage.getItem('hostelDetails');
+                if (cachedDetails && (cachedDetails.includes('Kokapet') || cachedDetails.includes('Gachibowli'))) {
+                    localStorage.removeItem('hostelDetails');
+                }
+            } catch(e) {}
             const branchCards = document.querySelectorAll('.branch-card');
             [1, 2, 3].forEach((id, idx) => {
                 const card = branchCards[idx];
                 if (!card) return;
                 const h = hostels[id];
-                const d = hostelDetails[id];
-                const photos = hostelPhotos[id];
+                const d = (typeof hostelDetails !== 'undefined' && hostelDetails[id]) ? hostelDetails[id] : defaultHostelDetails[id];
+                const photos = (typeof hostelPhotos !== 'undefined') ? hostelPhotos[id] : null;
                 if (h) {
                     const nameEl = card.querySelector('.branch-name');
                     if (nameEl) nameEl.textContent = h.name;
