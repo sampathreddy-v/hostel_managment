@@ -6357,51 +6357,63 @@
         let managers = [];
 
         async function loadData(hostelIds) {
-            for (const hid of hostelIds) {
-                const { data: roomData, error } = await db
-                    .from('rooms')
-                    .select('*, beds(*)')
-                    .eq('hostel_id', hid)
-                    .order('floor')
-                    .order('num');
-                if (error) {
-                    console.error('Supabase error:', error);
-                    showToast('DB Error', error.message);
-                    return;
-                }
-                console.log(`Hostel ${hid}: loaded ${roomData?.length} rooms`, roomData);
-                rooms[hid] = (roomData || []).map(r => {
-                    const defaultRent = r.beds[0]?.rent || 5000;
-                    const filledBeds = r.beds.map(b => ({ 
-                        _id: b.id, 
-                        tenant: b.tenant_name || '', 
-                        tenant_email: b.tenant_email, 
-                        tenant_phone: b.tenant_phone, 
-                        rent: b.rent, 
-                        rentStatus: b.rent_status,
-                        father_phone: b.father_phone,
-                        father_email: b.father_email,
-                        date_of_joining: b.date_of_joining,
-                        advance_deposit: b.advance_deposit,
-                        payment_style: b.payment_style,
-                        id_proof_type: b.id_proof_type,
-                        photo_url: b.photo_url,
-                        notice_status: (b.tenant_name && b.tenant_name.trim().length > 0) ? b.notice_status : null,
-                        deposit_status: b.deposit_status,
-                        late_fee_collected: b.late_fee_collected || 0
-                    }));
-                    while (filledBeds.length < r.capacity) filledBeds.push({ tenant: '', rent: defaultRent, rentStatus: null });
-                    return { _roomId: r.id, num: r.num, floor: r.floor, type: r.type, capacity: r.capacity, beds: filledBeds };
-                });
-            }
-
-            // Reconcile approved payment submissions with beds rentStatus automatically
             try {
-                const { data: approvedSubs } = await db
-                    .from('payment_submissions')
-                    .select('*')
-                    .in('hostel_id', hostelIds)
-                    .eq('status', 'approved');
+                const [
+                    { data: roomData, error: roomError },
+                    { data: compData },
+                    { data: usersData },
+                    { data: noticeData },
+                    { data: expData },
+                    { data: workerData },
+                    { data: menuData },
+                    { data: approvedSubs }
+                ] = await Promise.all([
+                    db.from('rooms').select('*, beds(*)').in('hostel_id', hostelIds).order('floor').order('num'),
+                    db.from('complaints').select('*').in('hostel_id', hostelIds),
+                    db.from('users').select('*').eq('role', 'manager'),
+                    db.from('notices').select('*').in('hostel_id', [...hostelIds, 0]).order('created_at', { ascending: false }),
+                    db.from('expenses').select('*').in('hostel_id', hostelIds).order('created_at', { ascending: false }),
+                    db.from('workers').select('*').order('created_at', { ascending: false }),
+                    db.from('food_menu').select('*').in('hostel_id', hostelIds),
+                    db.from('payment_submissions').select('*').in('hostel_id', hostelIds).eq('status', 'approved')
+                ]);
+
+                if (roomData) {
+                    hostelIds.forEach(hid => {
+                        const hRooms = roomData.filter(r => Number(r.hostel_id) === Number(hid));
+                        rooms[hid] = hRooms.map(r => {
+                            const beds = r.beds || [];
+                            const defaultRent = beds[0]?.rent || 5500;
+                            const filledBeds = beds.map(b => {
+                                const tName = b.tenant_name || b.tenant || '';
+                                return {
+                                    _id: b.id,
+                                    tenant: tName,
+                                    tenant_email: b.tenant_email || '',
+                                    tenant_phone: b.tenant_phone || '',
+                                    tenant_password: b.tenant_password || '',
+                                    rent: b.rent || defaultRent,
+                                    rentStatus: b.rent_status || null,
+                                    rent_status: b.rent_status || null,
+                                    father_phone: b.father_phone || '',
+                                    father_email: b.father_email || '',
+                                    date_of_joining: b.date_of_joining || '',
+                                    advance_deposit: b.advance_deposit || 0,
+                                    payment_style: b.payment_style || '',
+                                    id_proof_type: b.id_proof_type || '',
+                                    photo_url: b.photo_url || '',
+                                    notice_status: b.notice_status || null,
+                                    deposit_status: b.deposit_status || (tName ? 'Pending' : 'Paid'),
+                                    late_fee_collected: b.late_fee_collected || 0
+                                };
+                            });
+                            while (filledBeds.length < r.capacity) {
+                                filledBeds.push({ tenant: '', rent: defaultRent, rentStatus: null });
+                            }
+                            return { _roomId: r.id, num: r.num, floor: r.floor, type: r.type, capacity: r.capacity, beds: filledBeds };
+                        });
+                    });
+                }
 
                 if (approvedSubs && approvedSubs.length > 0) {
                     approvedSubs.forEach(sub => {
@@ -6414,9 +6426,7 @@
                                             (sub.tenant_email && b.tenant_email && b.tenant_email.toLowerCase().trim() === sub.tenant_email.toLowerCase().trim())
                                         )) {
                                             b.rentStatus = 'paid';
-                                            if (b._id) {
-                                                db.from('beds').update({ rent_status: 'paid' }).eq('id', b._id).then(() => {}).catch(() => {});
-                                            }
+                                            b.rent_status = 'paid';
                                         }
                                     });
                                 });
@@ -6424,20 +6434,29 @@
                         });
                     });
                 }
-            } catch (reconErr) {
-                console.warn('Payment submission reconciliation notice:', reconErr);
-            }
 
-            const { data: compData } = await db.from('complaints').select('*').in('hostel_id', hostelIds);
-            if (compData) complaints = compData.map(c => ({ id: c.id, hostel: c.hostel_id, room: c.room_num, tenant: c.tenant_name, category: c.category, subject: c.subject, desc: c.description, status: c.status, date: c.created_date, cost: c.cost, bill: c.bill }));
+                if (compData) {
+                    complaints = compData.map(c => ({
+                        id: c.id,
+                        hostel: c.hostel_id,
+                        room: c.room_num,
+                        tenant: c.tenant_name,
+                        category: c.category,
+                        subject: c.subject,
+                        desc: c.description,
+                        status: c.status,
+                        date: c.created_date,
+                        cost: c.cost,
+                        bill: c.bill
+                    }));
+                }
 
-            const { data: expData, error: expErr } = await db.from('expenses').select('*').in('hostel_id', hostelIds).order('created_at', { ascending: false });
-            if (expData) expenses = expData;
-            else expenses = [];
+                if (usersData) managers = usersData;
+                if (noticeData) notices = noticeData;
+                if (expData) expenses = expData;
+                else expenses = [];
 
-            try {
-                const { data: workerData, error: wErr } = await db.from('workers').select('*').order('created_at', { ascending: false });
-                if (!wErr && workerData && workerData.length > 0) {
+                if (workerData && workerData.length > 0) {
                     workers = workerData.map(w => ({
                         id: w.id,
                         name: w.name,
@@ -6449,28 +6468,23 @@
                     }));
                     saveWorkersToStorage();
                 }
+
+                if (menuData) {
+                    hostelIds.forEach(id => foodMenu[id] = {});
+                    menuData.forEach(row => {
+                        foodMenu[row.hostel_id][row.day] = {
+                            tiffin: row.tiffin || '',
+                            lunch: row.lunch || '',
+                            snacks: row.snacks || '',
+                            dinner: row.dinner || ''
+                        };
+                    });
+                }
+
+                updateDashboardStats();
             } catch (err) {
-                console.warn('Worker DB load notice:', err);
-            }
-
-            const { data: usersData } = await db.from('users').select('*').eq('role', 'manager');
-            if (usersData) managers = usersData;
-
-            const { data: noticeData, error: noticeErr } = await db.from('notices').select('*').in('hostel_id', [...hostelIds, 0]).order('created_at', { ascending: false });
-            if (noticeErr) console.error("Error loading notices:", noticeErr);
-            if (noticeData) notices = noticeData;
-
-            const { data: menuData } = await db.from('food_menu').select('*').in('hostel_id', hostelIds);
-            if (menuData) {
-                hostelIds.forEach(id => foodMenu[id] = {});
-                menuData.forEach(row => {
-                    foodMenu[row.hostel_id][row.day] = {
-                        tiffin: row.tiffin || '',
-                        lunch: row.lunch || '',
-                        snacks: row.snacks || '',
-                        dinner: row.dinner || ''
-                    };
-                });
+                console.error('Error loading data:', err);
+                showToast('DB Error', 'Could not load dashboard data.');
             }
         }
 
@@ -7148,120 +7162,6 @@
             }
         }
 
-        async function loadData(hostelIds) {
-            try {
-                for (const hid of hostelIds) {
-                    const { data: roomData, error } = await db
-                        .from('rooms')
-                        .select('*, beds(*)')
-                        .eq('hostel_id', hid)
-                        .order('floor')
-                        .order('num');
-
-                    if (error) {
-                        console.error('Supabase error:', error);
-                        continue;
-                    }
-
-                    rooms[hid] = (roomData || []).map(r => {
-                        const beds = r.beds || [];
-                        const defaultRent = beds[0]?.rent || 5500;
-                        const filledBeds = beds.map(b => {
-                            const tName = b.tenant_name || b.tenant || '';
-                            return {
-                                _id: b.id,
-                                tenant: tName,
-                                tenant_email: b.tenant_email || '',
-                                tenant_phone: b.tenant_phone || '',
-                                tenant_password: b.tenant_password || '',
-                                rent: b.rent || defaultRent,
-                                rentStatus: b.rent_status || null,
-                                rent_status: b.rent_status || null,
-                                father_phone: b.father_phone || '',
-                                father_email: b.father_email || '',
-                                date_of_joining: b.date_of_joining || '',
-                                advance_deposit: b.advance_deposit || 0,
-                                payment_style: b.payment_style || '',
-                                id_proof_type: b.id_proof_type || '',
-                                photo_url: b.photo_url || '',
-                                notice_status: b.notice_status || null,
-                                deposit_status: b.deposit_status || (tName ? 'Pending' : 'Paid'),
-                                late_fee_collected: b.late_fee_collected || 0
-                            };
-                        });
-                        while (filledBeds.length < r.capacity) {
-                            filledBeds.push({ tenant: '', rent: defaultRent, rentStatus: null });
-                        }
-                        return { _roomId: r.id, num: r.num, floor: r.floor, type: r.type, capacity: r.capacity, beds: filledBeds };
-                    });
-                }
-
-                // Load other data
-                const { data: compData } = await db.from('complaints').select('*').in('hostel_id', hostelIds);
-                if (compData) {
-                    complaints = compData.map(c => ({
-                        id: c.id,
-                        hostel: c.hostel_id,
-                        room: c.room_num,
-                        tenant: c.tenant_name,
-                        category: c.category,
-                        subject: c.subject,
-                        desc: c.description,
-                        status: c.status,
-                        date: c.created_date,
-                        cost: c.cost,
-                        bill: c.bill
-                    }));
-                }
-
-                const { data: usersData } = await db.from('users').select('*').eq('role', 'manager');
-                if (usersData) managers = usersData;
-
-                const { data: noticeData } = await db.from('notices').select('*').in('hostel_id', [...hostelIds, 0]).order('created_at', { ascending: false });
-                if (noticeData) notices = noticeData;
-
-                const { data: expData } = await db.from('expenses').select('*').in('hostel_id', hostelIds).order('created_at', { ascending: false });
-                if (expData) expenses = expData;
-                else expenses = [];
-
-                try {
-                    const { data: workerData, error: wErr } = await db.from('workers').select('*').order('created_at', { ascending: false });
-                    if (!wErr && workerData && workerData.length > 0) {
-                        workers = workerData.map(w => ({
-                            id: w.id,
-                            name: w.name,
-                            role: w.role,
-                            hostel_id: w.hostel_id,
-                            phone: w.phone,
-                            doj: w.doj,
-                            payments: typeof w.payments === 'string' ? JSON.parse(w.payments) : (w.payments || [])
-                        }));
-                        saveWorkersToStorage();
-                    }
-                } catch (err) {
-                    console.warn('Worker DB load notice:', err);
-                }
-
-                const { data: menuData } = await db.from('food_menu').select('*').in('hostel_id', hostelIds);
-                if (menuData) {
-                    hostelIds.forEach(id => foodMenu[id] = {});
-                    menuData.forEach(row => {
-                        foodMenu[row.hostel_id][row.day] = {
-                            tiffin: row.tiffin || '',
-                            lunch: row.lunch || '',
-                            snacks: row.snacks || '',
-                            dinner: row.dinner || ''
-                        };
-                    });
-                }
-
-                // Update dashboard stats after loading
-                updateDashboardStats();
-            } catch (err) {
-                console.error('LOAD_DATA_ERROR:', err);
-            }
-        }
-
         function updateDashboardStats() {
             if (currentRole !== 'manager') return;
             const hrooms = rooms[currentHostel] || [];
@@ -7328,21 +7228,58 @@
             if (unpaidFillEl) unpaidFillEl.style.width = `${unpaidPct}%`;
         }
 
+        window.currentOccBlockFilter = 'ALL';
+        function setOccBlockFilter(blk) {
+            window.currentOccBlockFilter = blk;
+            if (currentRole === 'owner') renderOwnerOccupancy();
+            else renderManagerOccupancy();
+        }
+
         function buildOccGrid(hostelIds, containerId, role) {
             const container = document.getElementById(containerId);
             if (!container) return;
             let html = '';
+
+            const currentFilter = window.currentOccBlockFilter || 'ALL';
+
+            // Block Filter Toolbar
+            html += `<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:18px; background:var(--bg2, #f8fafc); padding:12px 16px; border-radius:12px; border:1px solid var(--border, #e2e8f0);">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:16px;">🏢</span>
+                    <strong style="font-size:14px; color:var(--ink);">Filter Block:</strong>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn btn-sm ${currentFilter === 'ALL' ? 'btn-primary' : 'btn-outline'}" onclick="setOccBlockFilter('ALL')">All Blocks (A & B)</button>
+                    <button class="btn btn-sm ${currentFilter === 'A' ? 'btn-primary' : 'btn-outline'}" onclick="setOccBlockFilter('A')">🏢 Block A (5 Floors, 40 Rooms)</button>
+                    <button class="btn btn-sm ${currentFilter === 'B' ? 'btn-primary' : 'btn-outline'}" onclick="setOccBlockFilter('B')">🏢 Block B (5 Floors, 40 Rooms)</button>
+                </div>
+            </div>`;
+
             hostelIds.forEach(hid => {
                 const hrooms = rooms[hid] || [];
                 if (hrooms.length === 0) {
                     html += `<div class="card" style="padding:40px; text-align:center; color:var(--ink3)">No room data found for Hostel ${hid}</div>`;
                     return;
                 }
+
+                // Group rooms by Block
+                const blocksMap = {};
+                hrooms.forEach(r => {
+                    let blockName = 'Block A';
+                    if (r.num && (r.num.toUpperCase().startsWith('B-') || r.num.toUpperCase().startsWith('B') || r.block === 'B')) {
+                        blockName = 'Block B';
+                    } else if (r.num && (r.num.toUpperCase().startsWith('A-') || r.num.toUpperCase().startsWith('A') || r.block === 'A')) {
+                        blockName = 'Block A';
+                    }
+                    if (!blocksMap[blockName]) blocksMap[blockName] = [];
+                    blocksMap[blockName].push(r);
+                });
+
                 const totalBeds = hrooms.reduce((sum, r) => sum + r.capacity, 0);
                 const occBeds = hrooms.reduce((sum, r) => sum + (r.beds ? r.beds.filter(b => b.tenant).length : 0), 0);
                 const pct = totalBeds > 0 ? Math.round(occBeds / totalBeds * 100) : 0;
 
-                html += `<div class="hostel-occ-block">
+                html += `<div class="hostel-occ-block" style="margin-bottom:28px;">
                     <div class="hob-header">
                         <div><div class="hob-name">${hostels[hid] ? hostels[hid].name : 'Hostel ' + hid}</div></div>
                         <div class="hob-stats">
@@ -7352,84 +7289,112 @@
                         </div>
                     </div>`;
 
-                const floors = [...new Set(hrooms.map(r => r.floor))].sort();
-                floors.forEach(fl => {
-                    const flrRooms = hrooms.filter(r => r.floor === fl);
-                    html += `<div class="floor-block"><div class="floor-label">Floor ${fl}</div><div class="room-grid">`;
-                    flrRooms.forEach(r => {
-                        const beds = r.beds || [];
-                        const today = new Date(); today.setHours(0,0,0,0);
-                        
-                        // Detect active tenants (joining date <= today)
-                        const activeBeds = beds.filter(b => {
-                            if (!b.tenant || b.tenant.startsWith('PENDING:')) return false;
-                            if (!b.date_of_joining) return true;
-                            const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
-                            return doj <= today;
-                        });
-                        const occupiedBeds = activeBeds.length;
-                        const pendingBookings = beds.filter(b => b.rentStatus === 'Request' || (b.tenant && b.tenant.startsWith('PENDING:'))).length;
+                const sortedBlockKeys = Object.keys(blocksMap).sort();
+                sortedBlockKeys.forEach(blkKey => {
+                    // Check if block passes currentFilter
+                    if (currentFilter === 'A' && !blkKey.endsWith('A')) return;
+                    if (currentFilter === 'B' && !blkKey.endsWith('B')) return;
 
-                        // Detect advance bookings: tenant added but joining date is in the future
-                        const advanceBookedBeds = beds.filter(b => {
-                            if (!b.tenant || b.tenant.startsWith('PENDING:')) return false;
-                            if (!b.date_of_joining) return false;
-                            const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
-                            return doj > today;
-                        });
-                        const hasActiveTenant = activeBeds.length > 0;
-                        const hasAdvanceBooking = advanceBookedBeds.length > 0 && !hasActiveTenant;
+                    const blkRooms = blocksMap[blkKey];
+                    const blkTotalBeds = blkRooms.reduce((sum, r) => sum + r.capacity, 0);
+                    const blkOccBeds = blkRooms.reduce((sum, r) => sum + (r.beds ? r.beds.filter(b => b.tenant).length : 0), 0);
+                    const blkPct = blkTotalBeds > 0 ? Math.round(blkOccBeds / blkTotalBeds * 100) : 0;
 
-                        const isFull = (occupiedBeds + pendingBookings) === r.capacity;
-                        const isEmpty = (occupiedBeds + pendingBookings) === 0;
-                        const activeBedsForRoom = beds.filter(b => b.tenant && typeof b.tenant === 'string' && b.tenant.trim().length > 0 && !b.tenant.startsWith('PENDING:'));
-                        const hasOverdue = activeBedsForRoom.some(b => b.rentStatus === 'overdue');
-                        const hasPendingPayment = activeBedsForRoom.some(b => b.rentStatus === 'pending');
-                        const hasNotice = activeBedsForRoom.some(b => b.notice_status === 'accepted');
-
-                        let cls = hasAdvanceBooking ? 'advance-booking' : isEmpty ? 'vacant' : (hasNotice ? 'notice-period' : (hasOverdue || hasPendingPayment) ? 'warning' : pendingBookings > 0 ? 'warning' : 'occupied');
-
-                        // "ADVANCE BOOK" label above VACANT — no background fill, just black border card
-                        const advanceLabel = hasAdvanceBooking
-                            ? `<span class="rb-status" style="color:#111;font-size:9px;font-weight:800;letter-spacing:0.5px;display:block;margin-bottom:1px;">ADVANCE BOOK</span>`
-                            : '';
-
-                        let statusText = isEmpty && !hasAdvanceBooking ? '<span class="rb-status" style="color:var(--red)">VACANT</span>' :
-                            hasAdvanceBooking ? `${advanceLabel}<span class="rb-status" style="color:var(--red);">VACANT</span>` :
-                            hasNotice ? '<span class="rb-status" style="color:#e65100; font-weight:700;">NOTICE</span>' :
-                            hasOverdue ? '<span class="rb-status" style="color:var(--yellow)">OVERDUE</span>' :
-                                pendingBookings > 0 ? '<span class="rb-status" style="color:var(--yellow)">BOOKING REQ</span>' :
-                                    hasPendingPayment ? '<span class="rb-status" style="color:var(--yellow)">RENT PENDING</span>' :
-                                        (!isFull) ? '<span class="rb-status" style="color:var(--green)">PARTIAL</span>' :
-                                            '<span class="rb-status" style="color:var(--green)">FULL</span>';
-
-                        const hasComplaint = complaints.some(c => c.hostel === hid && c.room === r.num && c.status !== 'resolved');
-                        let bedDots = beds.map(b => {
-                            const hasTenant = b.tenant && typeof b.tenant === 'string' && b.tenant.trim().length > 0;
-                            const isReq = b.rentStatus === 'Request' || (hasTenant && b.tenant.startsWith('PENDING:'));
-                            const isNotice = hasTenant && !b.tenant.startsWith('PENDING:') && b.notice_status === 'accepted';
-                            const isNoticePending = hasTenant && !b.tenant.startsWith('PENDING:') && b.notice_status === 'pending';
-                            const isOcc = hasTenant && !isReq;
-                            // Check if this specific bed is an advance booking
-                            let isAdvance = false;
-                            if (hasTenant && !b.tenant.startsWith('PENDING:') && b.date_of_joining) {
-                                const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
-                                isAdvance = doj > today;
-                            }
-                            let color = isAdvance ? '#90caf9' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'var(--border)';
-                            let bg    = isAdvance ? '#1565c0' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'transparent';
-                            return `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:2px;border:1px solid ${color};background:${bg}"></span>`;
-                        }).join('');
-
-                        html += `<div class="room-box ${cls}" onclick="showRoomPopup(event,${hid},'${r.num}','${role}')">
-                            <div class="rb-indicators">${hasComplaint ? '<div class="rb-dot" style="background:var(--red)" title="Open complaint"></div>' : ''}</div>
-                            <div class="rb-num">${r.num}</div>
-                            <div class="rb-name">${occupiedBeds + pendingBookings} / ${r.capacity} Beds</div>
-                            <div style="margin:4px 0">${bedDots}</div>
-                            ${statusText}
+                    html += `<div class="block-section" style="margin-top:16px; margin-bottom:20px; border:1px solid var(--border); border-radius:12px; padding:16px; background:var(--card-bg, #ffffff); box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--border); padding-bottom:10px; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <span class="badge ${blkKey.includes('B') ? 'badge-blue' : 'badge-green'}" style="font-size:12px; padding:4px 10px; font-weight:800;">🏢 ${blkKey.toUpperCase()}</span>
+                                <span style="font-weight:700; font-size:15px; color:var(--ink);">${blkKey} — 5 Floors (8 Rooms per Floor)</span>
+                            </div>
+                            <div style="font-size:12px; color:var(--ink2); font-weight:600;">
+                                Occupancy: <strong>${blkOccBeds} / ${blkTotalBeds} Beds</strong> (${blkPct}%)
+                            </div>
                         </div>`;
+
+                    const floors = [...new Set(blkRooms.map(r => r.floor))].sort((a,b) => a - b);
+                    floors.forEach(fl => {
+                        const flrRooms = blkRooms.filter(r => r.floor === fl);
+                        html += `<div class="floor-block" style="margin-bottom:16px;">
+                            <div class="floor-label" style="font-weight:700; color:var(--ink); font-size:13px; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+                                <span>📍 Floor ${fl}</span>
+                                <span style="font-size:11px; opacity:0.6; font-weight:normal;">(${flrRooms.length} Rooms: ${flrRooms[0]?.num || ''} - ${flrRooms[flrRooms.length-1]?.num || ''})</span>
+                            </div>
+                            <div class="room-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:10px;">`;
+
+                        flrRooms.forEach(r => {
+                            const beds = r.beds || [];
+                            const today = new Date(); today.setHours(0,0,0,0);
+                            
+                            // Detect active tenants (joining date <= today)
+                            const activeBeds = beds.filter(b => {
+                                if (!b.tenant || b.tenant.startsWith('PENDING:')) return false;
+                                if (!b.date_of_joining) return true;
+                                const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
+                                return doj <= today;
+                            });
+                            const occupiedBeds = activeBeds.length;
+                            const pendingBookings = beds.filter(b => b.rentStatus === 'Request' || (b.tenant && b.tenant.startsWith('PENDING:'))).length;
+
+                            // Detect advance bookings: tenant added but joining date is in the future
+                            const advanceBookedBeds = beds.filter(b => {
+                                if (!b.tenant || b.tenant.startsWith('PENDING:')) return false;
+                                if (!b.date_of_joining) return false;
+                                const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
+                                return doj > today;
+                            });
+                            const hasActiveTenant = activeBeds.length > 0;
+                            const hasAdvanceBooking = advanceBookedBeds.length > 0 && !hasActiveTenant;
+
+                            const isFull = (occupiedBeds + pendingBookings) === r.capacity;
+                            const isEmpty = (occupiedBeds + pendingBookings) === 0;
+                            const activeBedsForRoom = beds.filter(b => b.tenant && typeof b.tenant === 'string' && b.tenant.trim().length > 0 && !b.tenant.startsWith('PENDING:'));
+                            const hasOverdue = activeBedsForRoom.some(b => b.rentStatus === 'overdue');
+                            const hasPendingPayment = activeBedsForRoom.some(b => b.rentStatus === 'pending');
+                            const hasNotice = activeBedsForRoom.some(b => b.notice_status === 'accepted');
+
+                            let cls = hasAdvanceBooking ? 'advance-booking' : isEmpty ? 'vacant' : (hasNotice ? 'notice-period' : (hasOverdue || hasPendingPayment) ? 'warning' : pendingBookings > 0 ? 'warning' : 'occupied');
+
+                            const advanceLabel = hasAdvanceBooking
+                                ? `<span class="rb-status" style="color:#111;font-size:9px;font-weight:800;letter-spacing:0.5px;display:block;margin-bottom:1px;">ADVANCE BOOK</span>`
+                                : '';
+
+                            let statusText = isEmpty && !hasAdvanceBooking ? '<span class="rb-status" style="color:var(--red)">VACANT</span>' :
+                                hasAdvanceBooking ? `${advanceLabel}<span class="rb-status" style="color:var(--red);">VACANT</span>` :
+                                hasNotice ? '<span class="rb-status" style="color:#e65100; font-weight:700;">NOTICE</span>' :
+                                hasOverdue ? '<span class="rb-status" style="color:var(--yellow)">OVERDUE</span>' :
+                                    pendingBookings > 0 ? '<span class="rb-status" style="color:var(--yellow)">BOOKING REQ</span>' :
+                                        hasPendingPayment ? '<span class="rb-status" style="color:var(--yellow)">RENT PENDING</span>' :
+                                            (!isFull) ? '<span class="rb-status" style="color:var(--green)">PARTIAL</span>' :
+                                                '<span class="rb-status" style="color:var(--green)">FULL</span>';
+
+                            const hasComplaint = complaints.some(c => c.hostel === hid && c.room === r.num && c.status !== 'resolved');
+                            let bedDots = beds.map(b => {
+                                const hasTenant = b.tenant && typeof b.tenant === 'string' && b.tenant.trim().length > 0;
+                                const isReq = b.rentStatus === 'Request' || (hasTenant && b.tenant.startsWith('PENDING:'));
+                                const isNotice = hasTenant && !b.tenant.startsWith('PENDING:') && b.notice_status === 'accepted';
+                                const isNoticePending = hasTenant && !b.tenant.startsWith('PENDING:') && b.notice_status === 'pending';
+                                const isOcc = hasTenant && !isReq;
+                                let isAdvance = false;
+                                if (hasTenant && !b.tenant.startsWith('PENDING:') && b.date_of_joining) {
+                                    const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
+                                    isAdvance = doj > today;
+                                }
+                                let color = isAdvance ? '#90caf9' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'var(--border)';
+                                let bg    = isAdvance ? '#1565c0' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'transparent';
+                                return `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:2px;border:1px solid ${color};background:${bg}"></span>`;
+                            }).join('');
+
+                            html += `<div class="room-box ${cls}" onclick="showRoomPopup(event,${hid},'${r.num}','${role}')">
+                                <div class="rb-indicators">${hasComplaint ? '<div class="rb-dot" style="background:var(--red)" title="Open complaint"></div>' : ''}</div>
+                                <div class="rb-num">${r.num}</div>
+                                <div class="rb-name">${occupiedBeds + pendingBookings} / ${r.capacity} Beds</div>
+                                <div style="margin:4px 0">${bedDots}</div>
+                                ${statusText}
+                            </div>`;
+                        });
+                        html += `</div></div>`;
                     });
-                    html += `</div></div>`;
+                    html += `</div>`;
                 });
                 html += `</div>`;
             });
@@ -14627,9 +14592,12 @@
             }
 
             try {
-                const selectedBed  = bookingState.selectedRoom.beds[bookingState.selectedBedIndex];
+                const selectedBed  = bookingState.selectedRoom?.beds?.[bookingState.selectedBedIndex];
                 const bedId        = selectedBed?._id;
-                const roomId       = bookingState.selectedRoom._roomId;
+                const roomId       = bookingState.selectedRoom?._roomId;
+                const roomNum      = bookingState.selectedRoom?.num || '';
+                const roomType     = bookingState.selectedRoom?.type || 'Standard';
+                const messageText  = document.getElementById('br-message')?.value?.trim() || '';
 
                 let dbError = null;
 
@@ -14647,7 +14615,7 @@
                     const { error } = await db.from('beds').update(payload).eq('id', bedId);
                     dbError = error;
                 } else {
-                    const defaultRent = bookingState.selectedRoom.beds[0]?.rent || 5500;
+                    const defaultRent = bookingState.selectedRoom?.beds?.[0]?.rent || 5500;
                     const { error } = await db.from('beds').insert({
                         room_id: roomId,
                         rent:    defaultRent,
@@ -14658,8 +14626,63 @@
 
                 if (dbError) throw dbError;
 
+                // Also insert into room_bookings table
+                try {
+                    await db.from('room_bookings').insert({
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        hostel_id: bookingState.hostelId || 1,
+                        room_num: roomNum,
+                        bed_index: bookingState.selectedBedIndex || 0,
+                        sharing: roomType,
+                        message: messageText,
+                        status: 'pending'
+                    });
+                } catch(rbErr) {
+                    console.warn('[submitRoomRequest] room_bookings insert notice:', rbErr);
+                }
+
+                // Send Automated WhatsApp & Gmail Notifications to Hostel Manager & Owner
+                const bookingDetails = {
+                    name,
+                    email,
+                    phone,
+                    hostel_id: bookingState.hostelId || 1,
+                    room_num: roomNum,
+                    sharing: roomType,
+                    message: messageText,
+                    doj,
+                    idtype
+                };
+
+                // 1. Dispatch through backend notification endpoint (Brevo Gmail + Meta WhatsApp)
+                fetch(API_BASE_URL + '/send-booking-notification', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookingDetails)
+                }).then(r => r.json()).then(res => {
+                    console.log('[submitRoomRequest] Booking notification server response:', res);
+                }).catch(err => {
+                    console.warn('[submitRoomRequest] Server notification notice:', err);
+                });
+
+                // 2. Direct UltraMsg WhatsApp Backup (if configured in local state)
+                try {
+                    const hName = (typeof hostels !== 'undefined' && hostels[bookingState.hostelId]) ? hostels[bookingState.hostelId].name : 'VUSTELA PG Hostel';
+                    const now = new Date();
+                    const hours = now.getHours();
+                    const period = hours < 12 ? 'Morning' : (hours < 17 ? 'Afternoon' : (hours < 21 ? 'Evening' : 'Night'));
+                    const timeStr = `${period} (${now.toLocaleDateString()} at ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})`;
+                    const waBackupText = `🔔 *NEW ROOM BOOKING REQUEST*\n\n🏨 *Hostel:* ${hName}\n👤 *Name:* ${name}\n📞 *Phone:* ${phone}\n✉️ *Email:* ${email}\n🛏️ *Room:* ${roomNum} (${roomType})\n📅 *DOJ:* ${doj}\n⏰ *Submitted:* ${timeStr}${messageText ? `\n💬 *Note:* ${messageText}` : ''}\n\n⚡ Please log in to Manager/Owner Dashboard to review.`;
+                    
+                    sendAutomatedWhatsApp('916300642776', waBackupText);
+                } catch(umErr) {
+                    console.warn('[submitRoomRequest] UltraMsg backup notice:', umErr);
+                }
+
                 closeModal('book-room-modal');
-                showToast('Request Sent! 🎉', 'Your booking request has been submitted. The manager will review it shortly.');
+                showToast('Request Sent! 🎉', 'Your booking request has been submitted. WhatsApp & Gmail notifications sent to Manager & Owner.');
             } catch (err) {
                 console.error('[submitRoomRequest] Error:', err);
                 showToast('Error', err.message || 'Could not submit request. Please try again.');

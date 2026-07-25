@@ -1040,6 +1040,114 @@ const server = http.createServer((req, res) => {
                     }
                 }
 
+                // --- ROOM BOOKING NOTIFICATION (MANAGER & OWNER - WHATSAPP & GMAIL) ---
+                else if (req.url === '/send-booking-notification') {
+                    const { name, email, phone, hostel_id, room_num, sharing, message, doj, idtype } = data;
+
+                    console.log(`\n[Server] Received Room Booking Request from: ${name} (${email}, ${phone}) for Hostel ID ${hostel_id}`);
+
+                    // 1. Fetch Hostel Name
+                    let hostelName = hostels[hostel_id]?.name || `Hostel Branch #${hostel_id || 1}`;
+                    try {
+                        const { data: hData } = await db.from('hostels').select('*').eq('id', hostel_id || 1).single();
+                        if (hData && hData.name) hostelName = hData.name;
+                    } catch (e) {}
+
+                    // 2. Fetch Owner & Manager Emails/Phones
+                    const ownerEmail = (process.env.OWNER_EMAIL || 'sampathreddyvustela4@gmail.com').trim();
+                    const ownerPhone = (process.env.OWNER_PHONE || '916300642776').trim();
+
+                    let managerEmails = [];
+                    let managerPhones = [];
+                    try {
+                        const { data: mgrUsers } = await db.from('users').select('*').eq('role', 'manager').eq('hostel_id', hostel_id || 1);
+                        if (mgrUsers && mgrUsers.length > 0) {
+                            mgrUsers.forEach(m => {
+                                if (m.email) managerEmails.push(m.email.trim());
+                                if (m.phone) managerPhones.push(m.phone.trim());
+                            });
+                        }
+                    } catch (e) {}
+
+                    if (managerEmails.length === 0) managerEmails.push(ownerEmail);
+                    if (managerPhones.length === 0) managerPhones.push(ownerPhone);
+
+                    // Deduplicate target emails and phones to prevent duplicate sends if owner & manager share contacts
+                    const targetEmails = [...new Set([ownerEmail, ...managerEmails].map(e => e.toLowerCase()).filter(Boolean))];
+                    const targetPhones = [...new Set([ownerPhone, ...managerPhones].filter(Boolean))];
+
+                    const now = new Date();
+                    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                    const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    const hours = now.getHours();
+                    const timeOfDay = hours < 12 ? 'Morning' : (hours < 17 ? 'Afternoon' : (hours < 21 ? 'Evening' : 'Night'));
+                    const fullTimeLabel = `${timeOfDay} (${dateStr} at ${timeStr})`;
+
+                    // Construct Email HTML
+                    const emailSubject = `🔔 New Room Booking Request — ${name} (${hostelName})`;
+                    const emailHtml = `
+                      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+                        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff; padding: 24px; text-align: center;">
+                          <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #38bdf8;">🔔 NEW ROOM BOOKING REQUEST</h1>
+                          <p style="margin: 6px 0 0 0; opacity: 0.8; font-size: 14px;">VUSTELA PG Hostels & Accommodation</p>
+                        </div>
+                        <div style="padding: 24px; color: #334155;">
+                          <p style="font-size: 15px; margin-top: 0;">A new room booking request has been submitted on the VUSTELA Portal at <strong>${fullTimeLabel}</strong>.</p>
+
+                          <table style="width: 100%; border-collapse: collapse; margin: 20px 0; background: #f8fafc; border-radius: 8px; overflow: hidden;">
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px 16px; font-weight: 600; color: #64748b;">Hostel Branch</td><td style="padding: 12px 16px; font-weight: 700; color: #0f172a;">${hostelName}</td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px 16px; font-weight: 600; color: #64748b;">Tenant Name</td><td style="padding: 12px 16px; font-weight: 700; color: #0f172a;">${name}</td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px 16px; font-weight: 600; color: #64748b;">Tenant Phone</td><td style="padding: 12px 16px;"><a href="tel:${phone}" style="color: #2563eb; text-decoration: none; font-weight: 600;">${phone}</a></td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px 16px; font-weight: 600; color: #64748b;">Tenant Email</td><td style="padding: 12px 16px;"><a href="mailto:${email}" style="color: #2563eb; text-decoration: none;">${email}</a></td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px 16px; font-weight: 600; color: #64748b;">Room & Sharing</td><td style="padding: 12px 16px;">Room <strong>${room_num || 'N/A'}</strong> (${sharing || 'Standard'} Sharing)</td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px 16px; font-weight: 600; color: #64748b;">Date of Joining</td><td style="padding: 12px 16px;">${doj || 'Immediate'}</td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px 16px; font-weight: 600; color: #64748b;">ID Proof Type</td><td style="padding: 12px 16px;">${idtype || 'Aadhaar Card'}</td></tr>
+                            ${message ? `<tr><td style="padding: 12px 16px; font-weight: 600; color: #64748b;">Note / Message</td><td style="padding: 12px 16px; font-style: italic;">${message}</td></tr>` : ''}
+                          </table>
+
+                          <div style="background: #e0f2fe; border-left: 4px solid #0284c7; padding: 12px 16px; border-radius: 4px; margin: 20px 0; font-size: 13px; color: #0369a1;">
+                            ⚡ <strong>Action Required:</strong> Log in to your VUSTELA Manager or Owner Dashboard to accept or manage this booking request.
+                          </div>
+                        </div>
+                        <div style="background: #f1f5f9; padding: 16px; text-align: center; font-size: 12px; color: #94a3b8;">
+                          VUSTELA PG Hostel Management System &bull; Automatic Notification
+                        </div>
+                      </div>
+                    `;
+
+                    // Construct WhatsApp Text
+                    const waText = `🔔 *NEW ROOM BOOKING REQUEST* 🔔\n_VUSTELA PG Hostels_\n\n🏨 *Hostel:* ${hostelName}\n👤 *Tenant Name:* ${name}\n📞 *Tenant Phone:* ${phone}\n✉️ *Tenant Email:* ${email}\n🛏️ *Room / Bed:* Room ${room_num || 'N/A'} (${sharing || 'Standard'})\n📅 *Joining Date:* ${doj || 'Immediate'}\n🆔 *ID Proof:* ${idtype || 'Aadhaar Card'}\n⏰ *Time:* ${fullTimeLabel}${message ? `\n\n💬 *Note:* ${message}` : ''}\n\n⚡ *Action Needed:* Log in to Manager / Owner Dashboard to review.`;
+
+                    // Dispatch Email to target manager and owner emails
+                    const emailResults = [];
+                    for (const em of targetEmails) {
+                        try {
+                            const resEm = await sendEmailDirect(em, emailSubject, emailHtml);
+                            emailResults.push({ email: em, success: true, res: resEm });
+                            console.log(`[Booking Server] Sent Email successfully to: ${em}`);
+                        } catch (e) {
+                            console.error(`[Booking Server] Failed Email to ${em}:`, e.message);
+                            emailResults.push({ email: em, success: false, error: e.message });
+                        }
+                    }
+
+                    // Dispatch WhatsApp to target manager and owner phones
+                    const waResults = [];
+                    for (const ph of targetPhones) {
+                        try {
+                            const resWa = await sendWhatsappDirect(ph, waText);
+                            waResults.push({ phone: ph, success: true, res: resWa });
+                            console.log(`[Booking Server] Sent WhatsApp successfully to: ${ph}`);
+                        } catch (e) {
+                            console.error(`[Booking Server] Failed WhatsApp to ${ph}:`, e.message);
+                            waResults.push({ phone: ph, success: false, error: e.message });
+                        }
+                    }
+
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true, emailResults, waResults, targetEmails, targetPhones }));
+                }
+
                 // --- TEST DAILY REPORT ---
                 else if (req.url === '/test-daily-report') {
                     console.log('[Server] Manual trigger of Daily Report test');

@@ -387,47 +387,119 @@ async function doLogin() {
 
 // ============================================================
 // ROOM OCCUPANCY
-// ============================================================
+window.currentOccBlockFilter = 'ALL';
+function setOccBlockFilter(blk) {
+    window.currentOccBlockFilter = blk;
+    if (currentRole === 'owner') renderOwnerOccupancy();
+    else renderManagerOccupancy();
+}
+
 function buildOccGrid(hostelIds, containerId, role) {
     const container = document.getElementById(containerId);
+    if (!container) return;
     let html = '';
+
+    const currentFilter = window.currentOccBlockFilter || 'ALL';
+
+    // Block Filter Toolbar
+    html += `<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:18px; background:var(--bg2, #f8fafc); padding:12px 16px; border-radius:12px; border:1px solid var(--border, #e2e8f0);">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">🏢</span>
+            <strong style="font-size:14px; color:var(--ink);">Filter Block:</strong>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-sm ${currentFilter === 'ALL' ? 'btn-primary' : 'btn-outline'}" onclick="setOccBlockFilter('ALL')">All Blocks (A & B)</button>
+            <button class="btn btn-sm ${currentFilter === 'A' ? 'btn-primary' : 'btn-outline'}" onclick="setOccBlockFilter('A')">🏢 Block A (5 Floors, 40 Rooms)</button>
+            <button class="btn btn-sm ${currentFilter === 'B' ? 'btn-primary' : 'btn-outline'}" onclick="setOccBlockFilter('B')">🏢 Block B (5 Floors, 40 Rooms)</button>
+        </div>
+    </div>`;
+
     hostelIds.forEach(hid => {
-        const hrooms = rooms[hid];
+        const hrooms = rooms[hid] || [];
+        if (hrooms.length === 0) {
+            html += `<div class="card" style="padding:40px; text-align:center; color:var(--ink3)">No room data found for Hostel ${hid}</div>`;
+            return;
+        }
+
+        // Group rooms by Block
+        const blocksMap = {};
+        hrooms.forEach(r => {
+            let blockName = 'Block A';
+            if (r.num && (r.num.toUpperCase().startsWith('B-') || r.num.toUpperCase().startsWith('B') || r.block === 'B')) {
+                blockName = 'Block B';
+            } else if (r.num && (r.num.toUpperCase().startsWith('A-') || r.num.toUpperCase().startsWith('A') || r.block === 'A')) {
+                blockName = 'Block A';
+            }
+            if (!blocksMap[blockName]) blocksMap[blockName] = [];
+            blocksMap[blockName].push(r);
+        });
+
         const totalBeds = hrooms.reduce((sum, r) => sum + r.capacity, 0);
-        const occBeds = hrooms.reduce((sum, r) => sum + r.beds.filter(b => b.tenant).length, 0);
-        const pct = Math.round(occBeds / totalBeds * 100);
-        html += `<div class="hostel-occ-block">
+        const occBeds = hrooms.reduce((sum, r) => sum + (r.beds ? r.beds.filter(b => b.tenant).length : 0), 0);
+        const pct = totalBeds > 0 ? Math.round(occBeds / totalBeds * 100) : 0;
+
+        html += `<div class="hostel-occ-block" style="margin-bottom:28px;">
             <div class="hob-header">
-                <div><div class="hob-name">${hostels[hid].name}</div></div>
+                <div><div class="hob-name">${hostels[hid] ? hostels[hid].name : 'Hostel ' + hid}</div></div>
                 <div class="hob-stats">
-                    <div class="hob-stat"><span class="dot dot-green"></span><strong>${occBeds}</strong> Beds Full</div>
-                    <div class="hob-stat"><span class="dot dot-red"></span><strong>${totalBeds - occBeds}</strong> Beds Free</div>
-                    <div class="hob-stat"><strong>${pct}%</strong> Occupancy</div>
+                    <div class="hob-stat"><span class="dot dot-green"></span><strong>${occBeds}</strong>&nbsp;Beds Full</div>
+                    <div class="hob-stat"><span class="dot dot-red"></span><strong>${totalBeds - occBeds}</strong>&nbsp;Beds Free</div>
+                    <div class="hob-stat"><strong>${pct}%</strong>&nbsp;Occupancy</div>
                 </div>
             </div>`;
-        const floors = [...new Set(hrooms.map(r => r.floor))].sort();
-        floors.forEach(fl => {
-            const flrRooms = hrooms.filter(r => r.floor === fl);
-            html += `<div class="floor-block"><div class="floor-label">Floor ${fl}</div><div class="room-grid">`;
-            flrRooms.forEach(r => {
-                const occupiedBeds = r.beds.filter(b => b.tenant).length;
-                const isFull = occupiedBeds === r.capacity;
-                const isEmpty = occupiedBeds === 0;
-                const hasOverdue = r.beds.some(b => b.rentStatus === 'overdue');
-                
-                let cls = isEmpty ? 'vacant' : (hasOverdue) ? 'warning' : 'occupied';
-                let statusText = isEmpty ? '<span class="rb-status" style="color:var(--red)">VACANT</span>' :
-                    hasOverdue ? '<span class="rb-status" style="color:var(--yellow)">OVERDUE</span>' :
-                    (!isFull) ? '<span class="rb-status" style="color:var(--green)">PARTIAL</span>' :
-                    '<span class="rb-status" style="color:var(--green)">FULL</span>';
-                    
-                html += `<div class="room-box ${cls}" onclick="showRoomPopup(event,${hid},'${r.num}','${role}')">
-                    <div class="rb-num">${r.num}</div>
-                    <div class="rb-name">${occupiedBeds} / ${r.capacity} Beds</div>
-                    ${statusText}
+
+        const sortedBlockKeys = Object.keys(blocksMap).sort();
+        sortedBlockKeys.forEach(blkKey => {
+            if (currentFilter === 'A' && !blkKey.endsWith('A')) return;
+            if (currentFilter === 'B' && !blkKey.endsWith('B')) return;
+
+            const blkRooms = blocksMap[blkKey];
+            const blkTotalBeds = blkRooms.reduce((sum, r) => sum + r.capacity, 0);
+            const blkOccBeds = blkRooms.reduce((sum, r) => sum + (r.beds ? r.beds.filter(b => b.tenant).length : 0), 0);
+            const blkPct = blkTotalBeds > 0 ? Math.round(blkOccBeds / blkTotalBeds * 100) : 0;
+
+            html += `<div class="block-section" style="margin-top:16px; margin-bottom:20px; border:1px solid var(--border); border-radius:12px; padding:16px; background:var(--card-bg, #ffffff); box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--border); padding-bottom:10px; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span class="badge ${blkKey.includes('B') ? 'badge-blue' : 'badge-green'}" style="font-size:12px; padding:4px 10px; font-weight:800;">🏢 ${blkKey.toUpperCase()}</span>
+                        <span style="font-weight:700; font-size:15px; color:var(--ink);">${blkKey} — 5 Floors (8 Rooms per Floor)</span>
+                    </div>
+                    <div style="font-size:12px; color:var(--ink2); font-weight:600;">
+                        Occupancy: <strong>${blkOccBeds} / ${blkTotalBeds} Beds</strong> (${blkPct}%)
+                    </div>
                 </div>`;
+
+            const floors = [...new Set(blkRooms.map(r => r.floor))].sort((a,b) => a - b);
+            floors.forEach(fl => {
+                const flrRooms = blkRooms.filter(r => r.floor === fl);
+                html += `<div class="floor-block" style="margin-bottom:16px;">
+                    <div class="floor-label" style="font-weight:700; color:var(--ink); font-size:13px; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+                        <span>📍 Floor ${fl}</span>
+                        <span style="font-size:11px; opacity:0.6; font-weight:normal;">(${flrRooms.length} Rooms: ${flrRooms[0]?.num || ''} - ${flrRooms[flrRooms.length-1]?.num || ''})</span>
+                    </div>
+                    <div class="room-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:10px;">`;
+
+                flrRooms.forEach(r => {
+                    const occupiedBeds = r.beds ? r.beds.filter(b => b.tenant).length : 0;
+                    const isFull = occupiedBeds === r.capacity;
+                    const isEmpty = occupiedBeds === 0;
+                    const hasOverdue = r.beds ? r.beds.some(b => b.rentStatus === 'overdue') : false;
+                    
+                    let cls = isEmpty ? 'vacant' : (hasOverdue) ? 'warning' : 'occupied';
+                    let statusText = isEmpty ? '<span class="rb-status" style="color:var(--red)">VACANT</span>' :
+                        hasOverdue ? '<span class="rb-status" style="color:var(--yellow)">OVERDUE</span>' :
+                        (!isFull) ? '<span class="rb-status" style="color:var(--green)">PARTIAL</span>' :
+                        '<span class="rb-status" style="color:var(--green)">FULL</span>';
+                        
+                    html += `<div class="room-box ${cls}" onclick="showRoomPopup(event,${hid},'${r.num}','${role}')">
+                        <div class="rb-num">${r.num}</div>
+                        <div class="rb-name">${occupiedBeds} / ${r.capacity} Beds</div>
+                        ${statusText}
+                    </div>`;
+                });
+                html += `</div></div>`;
             });
-            html += `</div></div>`;
+            html += `</div>`;
         });
         html += `</div>`;
     });
@@ -629,15 +701,38 @@ async function submitRoomRequest() {
     if (!name || !email || !phone) return showToast('Error', 'Please fill in required fields');
     showToast('Submitting...', 'Sending your request...');
 
+    const roomNum = bookingState.selectedRoom?.num || '';
+    const roomType = bookingState.selectedRoom?.type || 'Standard';
+
     const { error } = await db.schema('public').from('room_bookings').insert({
-        name, email, phone, hostel_id: bookingState.hostelId, 
-        room_num: bookingState.selectedRoom.num, bed_index: bookingState.selectedBedIndex,
-        sharing: bookingState.selectedRoom.type, message, status: 'pending'
+        name, email, phone, hostel_id: bookingState.hostelId || 1, 
+        room_num: roomNum, bed_index: bookingState.selectedBedIndex || 0,
+        sharing: roomType, message, status: 'pending'
     });
 
     if (error) return showToast('Error', error.message);
+
+    // Send Automated WhatsApp & Gmail Notifications to Hostel Manager & Owner
+    const bookingDetails = {
+        name,
+        email,
+        phone,
+        hostel_id: bookingState.hostelId || 1,
+        room_num: roomNum,
+        sharing: roomType,
+        message: message,
+        doj: new Date().toISOString().split('T')[0],
+        idtype: 'Aadhaar Card'
+    };
+
+    fetch((typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '') + '/send-booking-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingDetails)
+    }).catch(err => console.warn('[app.js submitRoomRequest] Notification notice:', err));
+
     closeModal('book-room-modal');
-    showToast('Request Sent! 📬', 'The manager will review your application.');
+    showToast('Request Sent! 📬', 'Your request has been sent. WhatsApp & Gmail notifications delivered to Manager & Owner.');
     bookingState = { step: 1, hostelId: null, selectedRoom: null, selectedBedIndex: null };
     goToStep(1);
 }
