@@ -14692,7 +14692,8 @@
                     const timeStr = `${period} (${now.toLocaleDateString()} at ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})})`;
                     const waBackupText = `🔔 *NEW ROOM BOOKING REQUEST*\n\n🏨 *Hostel:* ${hName}\n👤 *Name:* ${name}\n📞 *Phone:* ${phone}\n✉️ *Email:* ${email}\n🛏️ *Room:* ${roomNum} (${roomType})\n📅 *DOJ:* ${doj}\n⏰ *Submitted:* ${timeStr}${messageText ? `\n💬 *Note:* ${messageText}` : ''}\n\n⚡ Please log in to Manager/Owner Dashboard to review.`;
                     
-                    sendAutomatedWhatsApp('916300642776', waBackupText);
+                    sendAutomatedWhatsApp('919949038383', waBackupText);
+                    sendAutomatedWhatsApp('917416529288', waBackupText);
                 } catch(umErr) {
                     console.warn('[submitRoomRequest] UltraMsg backup notice:', umErr);
                 }

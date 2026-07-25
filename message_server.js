@@ -512,8 +512,8 @@ function saveSentLog(log) {
 // --- TRIGGERS ---
 async function triggerDailyReport() {
     console.log('[Scheduler] Triggering Daily Report...');
-    const ownerEmail = process.env.OWNER_EMAIL || 'sampathreddyvustela4@gmail.com';
-    const ownerPhone = process.env.OWNER_PHONE || '916300642776';
+    const ownerEmail = process.env.OWNER_EMAIL || 'ishtaaprimeboyshostel@gmail.com';
+    const ownerPhone = process.env.OWNER_PHONE || '919949038383';
 
     try {
         const data = await getReportData();
@@ -599,8 +599,8 @@ async function triggerDailyReport() {
 
 async function triggerMonthlyReport() {
     console.log('[Scheduler] Triggering Monthly Report...');
-    const ownerEmail = process.env.OWNER_EMAIL || 'sampathreddyvustela4@gmail.com';
-    const ownerPhone = process.env.OWNER_PHONE || '916300642776';
+    const ownerEmail = process.env.OWNER_EMAIL || 'ishtaaprimeboyshostel@gmail.com';
+    const ownerPhone = process.env.OWNER_PHONE || '919949038383';
 
     try {
         const data = await getReportData();
@@ -1047,18 +1047,20 @@ const server = http.createServer((req, res) => {
                     console.log(`\n[Server] Received Room Booking Request from: ${name} (${email}, ${phone}) for Hostel ID ${hostel_id}`);
 
                     // 1. Fetch Hostel Name
-                    let hostelName = hostels[hostel_id]?.name || `Hostel Branch #${hostel_id || 1}`;
+                    let hostelName = (hostel_id == 2 ? 'ISHTAA PRIME GIRLS' : (hostel_id == 3 ? 'VUSTELA Madhapur' : 'ISHTAA PRIME BOYS'));
                     try {
                         const { data: hData } = await db.from('hostels').select('*').eq('id', hostel_id || 1).single();
                         if (hData && hData.name) hostelName = hData.name;
                     } catch (e) {}
 
                     // 2. Fetch Owner & Manager Emails/Phones
-                    const ownerEmail = (process.env.OWNER_EMAIL || 'sampathreddyvustela4@gmail.com').trim();
-                    const ownerPhone = (process.env.OWNER_PHONE || '916300642776').trim();
+                    const ownerEmail = (process.env.OWNER_EMAIL || 'ishtaaprimeboyshostel@gmail.com').trim();
+                    const ownerPhone = (process.env.OWNER_PHONE || '919949038383').trim();
+                    const defaultMgrEmail = (process.env.MANAGER_EMAIL || 'vustela.hostels@gmail.com').trim();
+                    const defaultMgrPhone = (process.env.MANAGER_PHONE || '917416529288').trim();
 
-                    let managerEmails = [];
-                    let managerPhones = [];
+                    let managerEmails = [defaultMgrEmail];
+                    let managerPhones = [defaultMgrPhone];
                     try {
                         const { data: mgrUsers } = await db.from('users').select('*').eq('role', 'manager').eq('hostel_id', hostel_id || 1);
                         if (mgrUsers && mgrUsers.length > 0) {
@@ -1068,9 +1070,6 @@ const server = http.createServer((req, res) => {
                             });
                         }
                     } catch (e) {}
-
-                    if (managerEmails.length === 0) managerEmails.push(ownerEmail);
-                    if (managerPhones.length === 0) managerPhones.push(ownerPhone);
 
                     // Deduplicate target emails and phones to prevent duplicate sends if owner & manager share contacts
                     const targetEmails = [...new Set([ownerEmail, ...managerEmails].map(e => e.toLowerCase()).filter(Boolean))];
