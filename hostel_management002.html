@@ -6888,17 +6888,18 @@
                     if (user.role === 'owner') {
                         currentRole = 'owner';
                         localStorage.setItem('vustela_session', JSON.stringify({ role: 'owner', email, password }));
-                        await loadData([1, 2, 3]);
-                        renderOwnerOccupancy();
-                        renderOwnerRentTable('all');
-                        renderOwnerExpenses();
-                        renderSalaries();
-                        renderOwnerComplaints();
-                        renderOwnerAllTenants();
-                        renderOwnerNotices();
-                        renderManagersTable();
                         goTo('pg-owner');
-                        showToast('Welcome back, Owner! 👑', 'Dashboard loaded.');
+                        showToast('Welcome back, Owner! 👑', 'Dashboard opening...');
+                        loadData([1, 2, 3]).then(() => {
+                            renderOwnerOccupancy();
+                            renderOwnerRentTable('all');
+                            renderOwnerExpenses();
+                            renderSalaries();
+                            renderOwnerComplaints();
+                            renderOwnerAllTenants();
+                            renderOwnerNotices();
+                            renderManagersTable();
+                        });
                         return;
                     } else if (user.role === 'manager') {
                         currentRole = 'manager';
@@ -6908,16 +6909,16 @@
                         document.getElementById('mgr-name-sb').textContent = h.mgr;
                         document.getElementById('mgr-hostel-sb').textContent = `Hostel ${currentHostel} — ${h.name.replace('VUSTELA ', '')}`;
                         document.getElementById('m-dash-title').textContent = h.name;
-
-                        await loadData([currentHostel]);
-                        renderManagerOccupancy();
-                        renderMgrRentTable('all');
-                        renderMgrExpenses();
-                        renderMgrTenants();
-                        renderMgrComplaints('all');
-                        renderMgrFoodMenu();
                         goTo('pg-manager');
                         showToast(`Welcome, ${h.mgr}! 🗂️`, `Managing ${h.name}`);
+                        loadData([currentHostel]).then(() => {
+                            renderManagerOccupancy();
+                            renderMgrRentTable('all');
+                            renderMgrExpenses();
+                            renderMgrTenants();
+                            renderMgrComplaints('all');
+                            renderMgrFoodMenu();
+                        });
                         return;
                     }
                 }
