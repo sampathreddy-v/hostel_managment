@@ -57,8 +57,8 @@ async function getReportData() {
     let totalUnpaidTenants = 0;
 
     const hostelStats = {
-        1: { name: 'VUSTELA Kokapet', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 },
-        2: { name: 'VUSTELA Gachibowli', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 },
+        1: { name: 'ISHTAA PRIME BOYS', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 },
+        2: { name: 'ISHTAA PRIME GIRLS', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 },
         3: { name: 'VUSTELA Madhapur', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 }
     };
 

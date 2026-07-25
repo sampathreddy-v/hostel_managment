@@ -147,13 +147,13 @@ const hostelPhotos = {
 
 const hostelDetails = {
     1: {
-        desc: "Our Kokapet property offers premium living in the heart of the Financial District. Ideal for IT professionals, it features ultra-modern amenities, high-speed connectivity, and a peaceful work-from-home environment.",
-        locFull: "Kokapet, Financial District, Hyderabad",
+        desc: "ISHTAA PRIME BOYS property at NARSINGI offers premium boys accommodation with ultra-modern amenities, high-speed connectivity, and comfortable living spaces.",
+        locFull: "NARSINGI, Hyderabad",
         mapUrl: "https://www.google.com/maps/search/?api=1&query=17.394860,78.324830"
     },
     2: {
-        desc: "Located in the bustling IT Hub of Gachibowli, this hostel is designed for convenience and community. Close to major tech parks, hospitals, and shopping centers, it provides a perfect balance of work and life.",
-        locFull: "Gachibowli, IT Hub, Hyderabad",
+        desc: "ISHTAA PRIME GIRLS property at NARSINGI provides safe, luxurious, and convenient girls accommodation close to IT hubs with top-class amenities.",
+        locFull: "NARSINGI, Hyderabad",
         mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448293,78.374185"
     },
     3: {
