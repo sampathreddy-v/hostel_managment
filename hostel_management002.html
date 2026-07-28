@@ -7422,14 +7422,14 @@
         }
 
         function renderOwnerOccupancy() {
-            buildOccGrid([1, 2, 3], 'owner-occ-grid', 'owner');
+            buildOccGrid([1, 2], 'owner-occ-grid', 'owner');
             
             let totalRooms = 0;
             let occupiedBeds = 0;
             let totalBeds = 0;
             let vacantBeds = 0;
             
-            [1, 2, 3].forEach(hid => {
+            [1, 2].forEach(hid => {
                 if (rooms[hid]) {
                     rooms[hid].forEach(r => {
                         totalRooms++;
@@ -7487,7 +7487,7 @@
             let advanceDepositTotal = 0;
 
             const rowsHtml = [];
-            const hostelIds = [1, 2, 3];
+            const hostelIds = [1, 2];
 
             hostelIds.forEach(hid => {
                 let expected = 0;
@@ -7675,7 +7675,7 @@
             if (subTitleEl) subTitleEl.textContent = `Showing late fees collected in ${hostelNameStr}`;
 
             let records = [];
-            const targetHostels = hostelFilter === 'all' ? [1, 2, 3] : [parseInt(hostelFilter, 10)];
+            const targetHostels = hostelFilter === 'all' ? [1, 2] : [parseInt(hostelFilter, 10)];
 
             if (isCurrent) {
                 targetHostels.forEach(hid => {
@@ -7752,7 +7752,7 @@
             if (subTitleEl) subTitleEl.textContent = `Showing active security deposits in ${hostelNameStr}`;
 
             let records = [];
-            const targetHostels = hostelFilter === 'all' ? [1, 2, 3] : [parseInt(hostelFilter, 10)];
+            const targetHostels = hostelFilter === 'all' ? [1, 2] : [parseInt(hostelFilter, 10)];
 
             targetHostels.forEach(hid => {
                 if (rooms[hid]) {
@@ -8427,7 +8427,7 @@
             let rentHtml = '';
             
             // Generate Rent HTML Grouped by Hostel
-            [1, 2, 3].forEach(hid => {
+            [1, 2].forEach(hid => {
                 const hostelName = hostels[hid] ? hostels[hid].name : `Hostel ${hid}`;
                 let hostelRentHtml = '';
                 let hostelTotalRent = 0;
@@ -8533,7 +8533,7 @@
 
         function renderOwnerRentTable(filter) {
             let allBeds = [];
-            [1, 2, 3].forEach(hid => {
+            [1, 2].forEach(hid => {
                 rooms[hid].forEach(r => {
                     r.beds.forEach((b, idx) => {
                         if (b.tenant) allBeds.push({ ...b, num: r.num, bedIdx: idx + 1, hostel: hid });
@@ -9039,7 +9039,7 @@
 
         function renderOwnerAllTenants() {
             let allBeds = [];
-            [1, 2, 3].forEach(hid => {
+            [1, 2].forEach(hid => {
                 rooms[hid].forEach(r => {
                     r.beds.forEach((b, idx) => { if (b.tenant) allBeds.push({ ...b, num: r.num, hostel: hid }); });
                 });
@@ -9059,7 +9059,7 @@
 
         function viewTenantProfile(tenantName) {
             let allBeds = [];
-            [1, 2, 3].forEach(hid => {
+            [1, 2].forEach(hid => {
                 rooms[hid].forEach(r => {
                     r.beds.forEach((b, idx) => { 
                         if (b.tenant) allBeds.push({ ...b, num: r.num, hostel: hid }); 
@@ -9175,7 +9175,7 @@
             activeProfileTenant.payment_style = newPaymentStyle;
             activeProfileTenant.bus_fee = newFee;
 
-            for (let hid of [1, 2, 3]) {
+            for (let hid of [1, 2]) {
                 if (rooms[hid]) {
                     rooms[hid].forEach(r => {
                         if (r.beds) {
@@ -9214,7 +9214,7 @@
 
             // 3. Room Grid Re-render (Owner & Manager)
             if (typeof renderOccupancyGrid === 'function') {
-                [1, 2, 3].forEach(hid => {
+                [1, 2].forEach(hid => {
                     try { renderOccupancyGrid(hid); } catch (e) {}
                 });
             }
@@ -9444,7 +9444,7 @@
                 document.getElementById('tp-deposit-status').textContent = cleanStatus;
                 
                 // Sync rooms array
-                [1, 2, 3].forEach(hid => {
+                [1, 2].forEach(hid => {
                     rooms[hid].forEach(r => {
                         const b = r.beds.find(bed => bed._id == bedId || bed.id == bedId);
                         if (b) b.deposit_status = cleanStatus;
@@ -10334,7 +10334,7 @@
                 
                 currentTenant.notice_status = 'pending';
                 
-                [1, 2, 3].forEach(hid => {
+                [1, 2].forEach(hid => {
                     rooms[hid].forEach(r => {
                         const b = r.beds.find(bed => bed.tenant_email === currentTenant.tenant_email);
                         if (b) b.notice_status = 'pending';
@@ -10387,7 +10387,7 @@
 
         async function renderNoticeRequests(role) {
             const allNoticeBeds = [];
-            [1, 2, 3].forEach(hid => {
+            [1, 2].forEach(hid => {
                 if (rooms[hid]) {
                     rooms[hid].forEach(r => {
                         r.beds.forEach((b, idx) => {
@@ -10531,7 +10531,7 @@
                 const { error } = await db.from('beds').update({ notice_status: null }).eq('id', bedId);
                 if (error) throw error;
 
-                [1, 2, 3].forEach(hid => {
+                [1, 2].forEach(hid => {
                     if (rooms[hid]) {
                         rooms[hid].forEach(r => {
                             const b = r.beds.find(bed => bed._id == bedId || bed.id == bedId);
@@ -11744,7 +11744,7 @@
                     if (sub.tenant_email) {
                         await db.from('beds').update({ rent_status: 'paid', deposit_status: 'Paid' }).ilike('tenant_email', sub.tenant_email.trim());
                     }
-                    [1, 2, 3].forEach(hid => {
+                    [1, 2].forEach(hid => {
                         if (rooms[hid]) {
                             rooms[hid].forEach(r => {
                                 r.beds.forEach(b => {
@@ -12518,7 +12518,7 @@
             }
 
             // Hostel Specific Columns
-            [1, 2, 3].forEach(hid => {
+            [1, 2].forEach(hid => {
                 const hostelNotices = notices.filter(n => n.hostel_id === hid);
                 const html = hostelNotices.map(n => {
                     const actionsHtml = getNoticeActionsHtml(n, true);
@@ -13546,7 +13546,7 @@
             csv.push("=== RENT COLLECTION STATUS ===");
             csv.push("Tenant Name,Room Number,Hostel Branch,Rent Amount,Rent Status");
             
-            [1, 2, 3].forEach(hid => {
+            [1, 2].forEach(hid => {
                 const hostelName = hostels[hid] ? hostels[hid].name : `Hostel ${hid}`;
                 if (rooms[hid]) {
                     rooms[hid].forEach(r => {
@@ -13596,7 +13596,7 @@
                 };
 
                 // Loop through rooms/beds
-                [1, 2, 3].forEach(hid => {
+                [1, 2].forEach(hid => {
                     if (rooms[hid]) {
                         rooms[hid].forEach(r => {
                             r.beds.forEach(b => {
@@ -13872,7 +13872,7 @@
 
                 // Table Body Rows
                 doc.setFont('Helvetica', 'normal');
-                [1, 2, 3].forEach(hid => {
+                [1, 2].forEach(hid => {
                     y += 8;
                     const stats = hostelStats[hid];
                     const netIncome = stats.collected - stats.maintenance;
@@ -14258,7 +14258,7 @@
 
             // Gather all unpaid/pending beds
             let unpaidBeds = [];
-            [1, 2, 3].forEach(hid => {
+            [1, 2].forEach(hid => {
                 if (rooms[hid]) {
                     rooms[hid].forEach(r => {
                         r.beds.forEach((b, idx) => {
@@ -14813,7 +14813,7 @@
                 }
             } catch(e) {}
             const branchCards = document.querySelectorAll('.branch-card');
-            [1, 2, 3].forEach((id, idx) => {
+            [1, 2].forEach((id, idx) => {
                 const card = branchCards[idx];
                 if (!card) return;
                 const h = hostels[id];
@@ -14842,7 +14842,7 @@
             if (!container) return;
             
             let html = '';
-            [1, 2, 3].forEach(id => {
+            [1, 2].forEach(id => {
                 const h = hostels[id] || { name: `Hostel ${id}` };
                 const d = hostelDetails[id] || { desc: '', locFull: '' };
                 const photos = hostelPhotos[id] || [];

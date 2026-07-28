@@ -284,7 +284,7 @@ async function doLogin() {
             currentRole = 'owner';
             showToast('Loading...', 'Fetching data from database...');
             try {
-                await loadData([1, 2, 3]);
+                await loadData([1, 2]);
             } catch (e) {
                 console.warn("Soft fail on loadData, proceeding anyway.");
             }
@@ -333,7 +333,7 @@ async function doLogin() {
     } else {
         // Tenant login
         let foundBed = null;
-        for (let hid of [1, 2, 3]) {
+        for (let hid of [1, 2]) {
             rooms[hid].forEach(r => {
                 r.beds.forEach(b => {
                     if (b.tenant_email && b.tenant_email.toLowerCase() === email.toLowerCase() && b.tenant_password === password) {
@@ -998,7 +998,7 @@ function rentBadge(s) {
 
 function renderOwnerRentTable(filter = 'all') {
     let allBeds = [];
-    [1, 2, 3].forEach(hid => {
+    [1, 2].forEach(hid => {
         if (!rooms[hid]) return;
         rooms[hid].forEach(r => {
             r.beds.forEach((b, idx) => {

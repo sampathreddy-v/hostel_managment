@@ -216,7 +216,7 @@ function generateMonthlyPDFBuffer(data, periodName) {
         // Rows
         doc.font('Helvetica')
            .fontSize(9);
-        [1, 2, 3].forEach(hid => {
+        [1, 2].forEach(hid => {
             tableY += 22;
             const stats = data.hostelStats[hid];
             const netIncome = stats.collected - stats.maintenance;
