@@ -4024,6 +4024,13 @@
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
+                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Bus Fee</td>
+                                <td style="padding: 12px 16px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; border: none;">
+                                    <span id="tp-bus-fee" style="color:var(--ink)"></span>
+                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantBusFee()">✏️ Edit</button>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--border);">
                                 <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Phone Number</td>
                                 <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
                                     <span id="tp-phone"></span>
@@ -4307,6 +4314,7 @@
                                     <th>Hostel</th>
                                     <th>Expected Rent</th>
                                     <th>Collected</th>
+                                    <th>Bus Fee</th>
                                     <th>
                                         <button onclick="openLateFeeDetailsModal('all')" style="background:none; border:none; color:inherit; font:inherit; font-weight:700; cursor:pointer; padding:0; text-decoration:underline; text-decoration-style:dashed;" title="Click to view tenant late fee breakdown">
                                             Late Fee Collected
@@ -7475,6 +7483,7 @@
 
             let expectedTotal = 0;
             let collectedTotal = 0;
+            let busFeeTotal = 0;
             let lateFeeTotal = 0;
             let pendingTotal = 0;
             let maintenanceTotal = 0;
@@ -7488,6 +7497,7 @@
             hostelIds.forEach(hid => {
                 let expected = 0;
                 let collected = 0;
+                let busFee = 0;
                 let lateFee = 0;
                 let pending = 0;
                 let maintenance = 0;
@@ -7500,6 +7510,8 @@
                             r.beds.forEach(b => {
                                 if (b.tenant) {
                                     expected += b.rent || 0;
+                                    const fee = getBusFeeForBed(b);
+                                    busFee += fee;
                                     const depStat = String(b.deposit_status || '').trim().toLowerCase();
                                     if (depStat === 'paid') {
                                         advanceDeposit += Number(b.advance_deposit || 0);
@@ -7548,10 +7560,11 @@
                         .reduce((sum, e) => sum + Number(e.amount || 0), 0);
                 }
 
-                const net = collected + lateFee - maintenance;
+                const net = collected + busFee + lateFee - maintenance;
 
                 expectedTotal += expected;
                 collectedTotal += collected;
+                busFeeTotal += busFee;
                 lateFeeTotal += lateFee;
                 pendingTotal += pending;
                 maintenanceTotal += maintenance;
@@ -7566,6 +7579,7 @@
                         <td><strong>${hName}</strong></td>
                         <td>₹${expected.toLocaleString()}</td>
                         <td style="color:var(--green);font-weight:700">₹${collected.toLocaleString()}</td>
+                        <td style="color:var(--accent);font-weight:700">₹${busFee.toLocaleString()}</td>
                         <td>
                             <button class="btn-sm" style="background:#e6f4ea; border:1px solid #137333; color:var(--green); font-weight:700; border-radius:6px; padding:3px 8px; cursor:pointer;" onclick="openLateFeeDetailsModal(${hid})" title="Click to view tenant late fee details">
                                 ₹${lateFee.toLocaleString()}
@@ -7589,6 +7603,7 @@
                     <td><strong>TOTAL</strong></td>
                     <td><strong>₹${expectedTotal.toLocaleString()}</strong></td>
                     <td style="color:var(--green);font-weight:800;font-size:16px">₹${collectedTotal.toLocaleString()}</td>
+                    <td style="color:var(--accent);font-weight:800">₹${busFeeTotal.toLocaleString()}</td>
                     <td>
                         <button class="btn-sm" style="background:#e6f4ea; border:1px solid #137333; color:var(--green); font-weight:800; border-radius:6px; padding:5px 12px; cursor:pointer; font-size:15px;" onclick="openLateFeeDetailsModal('all')" title="Click to view all late fee tenants">
                             ₹${lateFeeTotal.toLocaleString()}
@@ -8834,13 +8849,14 @@
             const { bedId, name, roomNum, tenantEmail, tenantPhone } = currentAcceptBookingData;
 
             const rentVal = Number(document.getElementById('ab-rent-input').value) || 5500;
+            const busFeeVal = Number(document.getElementById('ab-busfee-input')?.value) || 0;
             const depositVal = Number(document.getElementById('ab-deposit-input').value) || (rentVal * 2);
 
             closeModal('accept-booking-modal');
-            await acceptBooking(bedId, name, roomNum, tenantEmail, tenantPhone, rentVal, depositVal);
+            await acceptBooking(bedId, name, roomNum, tenantEmail, tenantPhone, rentVal, depositVal, busFeeVal);
         }
 
-        async function acceptBooking(bedId, name, roomNum, tenantEmail, tenantPhone, rentVal = 5500, depositVal = 11000) {
+        async function acceptBooking(bedId, name, roomNum, tenantEmail, tenantPhone, rentVal = 5500, depositVal = 11000, busFeeVal = 0) {
             showToast('Processing...', 'Accepting booking request...');
 
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -8862,6 +8878,15 @@
                 const idTypeVal   = freshBed?.id_proof_type || 'Aadhaar Card';
                 const photoUrlVal = freshBed?.photo_url || '';
 
+                let paymentStyleStr = freshBed?.payment_style || '';
+                if (busFeeVal > 0) {
+                    if (paymentStyleStr.includes('BUS_FEE:')) {
+                        paymentStyleStr = paymentStyleStr.replace(/BUS_FEE:\d+/, `BUS_FEE:${busFeeVal}`);
+                    } else {
+                        paymentStyleStr = `BUS_FEE:${busFeeVal}` + (paymentStyleStr ? `|${paymentStyleStr}` : '');
+                    }
+                }
+
                 const { error } = await db.from('beds').update({
                     tenant_name:     name,
                     tenant_email:    emailToSend,
@@ -8873,6 +8898,7 @@
                     advance_deposit: depositVal,
                     deposit_status:  'Pending',
                     rent_status:     'pending',
+                    payment_style:   paymentStyleStr,
                     tenant_password: tenantPwd
                 }).eq('id', bedId);
 
@@ -9107,7 +9133,74 @@
                 lateFeeEl.textContent = lateFeeVal > 0 ? `Rs. ${lateFeeVal.toLocaleString()} (Overdue ⚠️)` : 'Rs. 0 (No Fine)';
             }
             
+            const busFeeVal = getBusFeeForBed(tenant);
+            const busFeeEl = document.getElementById('tp-bus-fee');
+            if (busFeeEl) {
+                busFeeEl.textContent = busFeeVal > 0 ? `Rs. ${busFeeVal.toLocaleString()}` : 'Rs. 0';
+            }
+
             openModal('tenant-profile-modal');
+        }
+
+        function getBusFeeForBed(b) {
+            if (!b) return 0;
+            if (typeof b.bus_fee === 'number' && !isNaN(b.bus_fee)) return b.bus_fee;
+            const style = b.payment_style || b.paymentStyle || '';
+            if (style && style.includes('BUS_FEE:')) {
+                const parts = style.split('BUS_FEE:')[1];
+                if (parts) {
+                    const fee = parseInt(parts.split('|')[0]);
+                    if (!isNaN(fee)) return fee;
+                }
+            }
+            return 0;
+        }
+
+        async function editTenantBusFee() {
+            if (!activeProfileTenant) return;
+            const currentFee = getBusFeeForBed(activeProfileTenant);
+            const input = prompt(`Edit Bus Fee for ${getDisplayName(activeProfileTenant.tenant)}:`, currentFee);
+            if (input === null) return;
+            const newFee = Math.max(0, parseInt(input) || 0);
+
+            const bedId = activeProfileTenant._id || activeProfileTenant.id;
+            let newPaymentStyle = activeProfileTenant.payment_style || activeProfileTenant.paymentStyle || '';
+            if (newPaymentStyle.includes('BUS_FEE:')) {
+                newPaymentStyle = newPaymentStyle.replace(/BUS_FEE:\d+/, `BUS_FEE:${newFee}`);
+            } else {
+                newPaymentStyle = `BUS_FEE:${newFee}` + (newPaymentStyle ? `|${newPaymentStyle}` : '');
+            }
+
+            showToast('Updating...', 'Saving Bus Fee...');
+            const { error } = await db.from('beds').update({ payment_style: newPaymentStyle }).eq('id', bedId);
+            if (error) {
+                showToast('Error', 'Could not update Bus Fee.');
+                return;
+            }
+
+            activeProfileTenant.payment_style = newPaymentStyle;
+            activeProfileTenant.bus_fee = newFee;
+
+            for (let hid of [1, 2, 3]) {
+                if (rooms[hid]) {
+                    rooms[hid].forEach(r => {
+                        if (r.beds) {
+                            r.beds.forEach(b => {
+                                if ((b._id && bedId && String(b._id) === String(bedId)) || (b.id && bedId && String(b.id) === String(bedId))) {
+                                    b.payment_style = newPaymentStyle;
+                                    b.bus_fee = newFee;
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+
+            const busFeeEl = document.getElementById('tp-bus-fee');
+            if (busFeeEl) busFeeEl.textContent = newFee > 0 ? `Rs. ${newFee.toLocaleString()}` : 'Rs. 0';
+
+            refreshAllPortalsData();
+            showToast('Success', `Bus Fee updated to Rs. ${newFee.toLocaleString()}`);
         }
 
         function refreshAllPortalsData() {
