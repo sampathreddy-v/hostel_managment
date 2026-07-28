@@ -9,14 +9,13 @@ const db = createClient(
 
 const hostels = {
     1: { name: 'ISHTAA PRIME BOYS', loc: 'NARSINGI', mgr: 'sampath' },
-    2: { name: 'ISHTAA PRIME GIRLS', loc: 'NARSINGI', mgr: 'Suresh Babu' },
-    3: { name: 'VUSTELA Madhapur', loc: 'Madhapur', mgr: 'Kavita Reddy' }
+    2: { name: 'ISHTAA PRIME GIRLS', loc: 'NARSINGI', mgr: 'Suresh Babu' }
 };
 
-window.rooms = { 1: [], 2: [], 3: [] };
+window.rooms = { 1: [], 2: [] };
 window.complaints = [];
 window.notices = [];
-window.foodMenu = { 1: {}, 2: {}, 3: {} };
+window.foodMenu = { 1: {}, 2: {} };
 window.managers = [];
 
 async function loadData(hostelIds) {

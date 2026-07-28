@@ -1256,8 +1256,9 @@
 
         .hostel-branches {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 900px;
         }
 
         .branch-card {
@@ -3474,7 +3475,7 @@
                     <div class="hac-icon">🛏️</div>
                     <div class="hac-content">
                         <div class="hac-title">Book a Room</div>
-                        <div class="hac-desc">Find available beds and rooms at our ISHTAA PRIME BOYS, ISHTAA PRIME GIRLS, or Madhapur branches instantly.</div>
+                        <div class="hac-desc">Find available beds and rooms at our ISHTAA PRIME BOYS or ISHTAA PRIME GIRLS branches instantly.</div>
                     </div>
                     <div class="hac-arrow">→</div>
                 </div>
@@ -3522,18 +3523,6 @@
                             <div class="bs-item"><strong>18</strong>Rooms</div>
                             <div class="bs-item"><strong>3</strong>Vacant</div>
                             <div class="bs-item"><strong>₹6,000+</strong>/ month</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="branch-card" onclick="openHostelDetail(3)">
-                    <div class="branch-img" style="background-image: url('hostel3.png'); background-size: cover; background-position: center;"><span class="branch-num-badge">Hostel 3</span></div>
-                    <div class="branch-body">
-                        <div class="branch-name">VUSTELA Madhapur</div>
-                        <div class="branch-loc">📍 Madhapur, HITEC City</div>
-                        <div class="branch-stats">
-                            <div class="bs-item"><strong>22</strong>Rooms</div>
-                            <div class="bs-item"><strong>3</strong>Vacant</div>
-                            <div class="bs-item"><strong>₹5,000+</strong>/ month</div>
                         </div>
                     </div>
                 </div>
@@ -3866,7 +3855,6 @@
                 <select id="exp-hostel" class="input">
                     <option value="1">Hostel 1 — ISHTAA PRIME BOYS</option>
                     <option value="2">Hostel 2 — ISHTAA PRIME GIRLS</option>
-                    <option value="3">Hostel 3 — Madhapur</option>
                 </select>
             </div>
             <div class="input-group">
@@ -3918,7 +3906,6 @@
                     <option value="all">All Hostels</option>
                     <option value="1">Hostel 1 — ISHTAA PRIME BOYS</option>
                     <option value="2">Hostel 2 — ISHTAA PRIME GIRLS</option>
-                    <option value="3">Hostel 3 — Madhapur</option>
                 </select>
             </div>
 
@@ -4369,21 +4356,13 @@
                                     <td style="color:var(--yellow)">₹3,200</td>
                                     <td style="font-weight:800;font-family:var(--font-display)">₹98,800</td>
                                 </tr>
-                                <tr>
-                                    <td><strong>Hostel 3 — Madhapur</strong></td>
-                                    <td>₹95,000</td>
-                                    <td style="color:var(--green);font-weight:700">₹88,000</td>
-                                    <td style="color:var(--red);font-weight:700">₹7,000</td>
-                                    <td style="color:var(--yellow)">₹5,800</td>
-                                    <td style="font-weight:800;font-family:var(--font-display)">₹82,200</td>
-                                </tr>
                                 <tr style="background:var(--bg);font-weight:700">
                                     <td><strong>TOTAL</strong></td>
-                                    <td><strong>₹3,13,000</strong></td>
-                                    <td style="color:var(--green);font-weight:800;font-size:16px">₹2,88,000</td>
-                                    <td style="color:var(--red);font-weight:800">₹25,000</td>
-                                    <td style="color:var(--yellow);font-weight:800">₹17,500</td>
-                                    <td style="font-weight:800;font-size:17px;font-family:var(--font-display)">₹2,70,500
+                                    <td><strong>₹2,18,000</strong></td>
+                                    <td style="color:var(--green);font-weight:800;font-size:16px">₹2,00,000</td>
+                                    <td style="color:var(--red);font-weight:800">₹18,000</td>
+                                    <td style="color:var(--yellow);font-weight:800">₹11,700</td>
+                                    <td style="font-weight:800;font-size:17px;font-family:var(--font-display)">₹1,88,300
                                     </td>
                                 </tr>
                             </tbody>
@@ -4713,7 +4692,6 @@
                         <button class="fb on" onclick="filterSalaries('all', this)">All Staff</button>
                         <button class="fb" onclick="filterSalaries('h1', this)">Hostel 1</button>
                         <button class="fb" onclick="filterSalaries('h2', this)">Hostel 2</button>
-                        <button class="fb" onclick="filterSalaries('h3', this)">Hostel 3</button>
                     </div>
 
                     <div class="card" style="padding:0; overflow:hidden;">
@@ -4770,7 +4748,6 @@
                                     <option value="0">All Hostels (Global Announcement)</option>
                                     <option value="1">Hostel 1 (ISHTAA PRIME BOYS)</option>
                                     <option value="2">Hostel 2 (ISHTAA PRIME GIRLS)</option>
-                                    <option value="3">Hostel 3 (Madhapur)</option>
                                 </select>
                             </div>
                             <div class="input-group">
@@ -4791,7 +4768,7 @@
 
                     <div id="owner-global-notices" style="margin-bottom: 24px;"></div>
 
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;"
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;"
                         id="owner-hostel-notices-grid">
                         <div
                             style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
@@ -4806,13 +4783,6 @@
                                 style="font-size: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 16px; color: var(--ink1);">
                                 Hostel 2 (ISHTAA PRIME GIRLS)</h3>
                             <div id="o-notices-h2" style="display:flex; flex-direction:column; gap:12px;"></div>
-                        </div>
-                        <div
-                            style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
-                            <h3
-                                style="font-size: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 16px; color: var(--ink1);">
-                                Hostel 3 (Madhapur)</h3>
-                            <div id="o-notices-h3" style="display:flex; flex-direction:column; gap:12px;"></div>
                         </div>
                     </div>
                 </div>
@@ -4842,7 +4812,7 @@
                         <div class="mgr-card">
                             <div class="mgr-ava">👔</div>
                             <div class="mgr-info">
-                                <div class="mgr-name">Suresh Babu</div>
+                                <div class="mgr-name">Suresh Varma</div>
                                 <div class="mgr-hostel">Hostel 2 — ISHTAA PRIME GIRLS</div>
                                 <div class="mgr-stats">
                                     <div class="mgr-stat"><strong>15</strong>Rents Marked</div>
@@ -4853,36 +4823,6 @@
                                 </div>
                             </div>
                             <span class="badge badge-green">Active</span>
-                        </div>
-                        <div class="mgr-card">
-                            <div class="mgr-ava">👔</div>
-                            <div class="mgr-info">
-                                <div class="mgr-name">Kavita Reddy</div>
-                                <div class="mgr-hostel">Hostel 3 — Madhapur</div>
-                                <div class="mgr-stats">
-                                    <div class="mgr-stat"><strong>19</strong>Rents Marked</div>
-                                    <div class="mgr-stat"><strong>2</strong>Complaints Resolved</div>
-                                    <div class="mgr-stat"><strong>2.1 days</strong>Avg Resolution</div>
-                                </div>
-                                <div style="margin-top:8px;font-size:12px;color:var(--ink3)">Last login: Yesterday 6:45
-                                    PM</div>
-                            </div>
-                            <span class="badge badge-yellow">Away</span>
-                        </div>
-                        <div class="mgr-card">
-                            <div class="mgr-ava">👔</div>
-                            <div class="mgr-info">
-                                <div class="mgr-name">Ranjit Singh</div>
-                                <div class="mgr-hostel">Hostel 3 — Madhapur</div>
-                                <div class="mgr-stats">
-                                    <div class="mgr-stat"><strong>12</strong>Rents Marked</div>
-                                    <div class="mgr-stat"><strong>1</strong>Complaint Resolved</div>
-                                    <div class="mgr-stat"><strong>3.0 days</strong>Avg Resolution</div>
-                                </div>
-                                <div style="margin-top:8px;font-size:12px;color:var(--red)">Last login: 3 days ago ⚠️
-                                </div>
-                            </div>
-                            <span class="badge badge-red">Inactive</span>
                         </div>
                     </div>
 
@@ -4916,7 +4856,7 @@
                     <div class="dash-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                         <div>
                             <div class="dash-title">All Tenants</div>
-                            <div class="dash-subtitle">Complete tenant list across all 3 hostels</div>
+                            <div class="dash-subtitle">Complete tenant list across all hostels</div>
                         </div>
                         <button class="btn btn-outline" style="min-height: 40px; display: flex; align-items: center; gap: 6px; padding: 0 16px; border-radius: 20px; font-weight: 600;" onclick="openOldStudentDataModal()">
                             📂 Old Student Data
@@ -4974,7 +4914,7 @@
                     <div class="dash-header">
                         <div>
                             <div class="dash-title">Edit Dashboard Layouts</div>
-                            <div class="dash-subtitle">Manage details, photos, and room grids for Hostel 1, 2, and 3</div>
+                            <div class="dash-subtitle">Manage details, photos, and room grids for Hostels</div>
                         </div>
                     </div>
                     <div class="hostels-edit-grid" id="hostels-edit-container">
@@ -5447,7 +5387,6 @@
                         <select id="aw-hostel" required>
                             <option value="1">ISHTAA PRIME BOYS (H1)</option>
                             <option value="2">ISHTAA PRIME GIRLS (H2)</option>
-                            <option value="3">VUSTELA Hitech (H3)</option>
                             <option value="0">All Hostels (Global Staff)</option>
                         </select>
                     </div>
@@ -6388,18 +6327,17 @@
         // ============================================================
         const hostels = {
             1: { name: 'ISHTAA PRIME BOYS', mgr: 'Anil Kumar' },
-            2: { name: 'ISHTAA PRIME GIRLS', mgr: 'Suresh Babu' },
-            3: { name: 'VUSTELA Madhapur', mgr: 'Kavita Reddy' }
+            2: { name: 'ISHTAA PRIME GIRLS', mgr: 'Suresh Varma' }
         };
 
         // rooms and complaints are loaded from Supabase on login
-        let rooms = { 1: [], 2: [], 3: [] };
+        let rooms = { 1: [], 2: [] };
         let complaints = [];
         let expenses = [];
         let notices = [];
 
         // Data populated from Supabase on login
-        let foodMenu = { 1: {}, 2: {}, 3: {} };
+        let foodMenu = { 1: {}, 2: {} };
         let managers = [];
 
         async function loadData(hostelIds) {
@@ -6689,8 +6627,7 @@
 
         const defaultHostelPhotos = {
             1: ['hostel_single.png', 'hostel_common.png'],
-            2: ['hostel_triple.png', 'hostel_common.png'],
-            3: ['hostel_single.png', 'hostel_triple.png']
+            2: ['hostel_triple.png', 'hostel_common.png']
         };
 
         const defaultHostelDetails = {
@@ -6701,10 +6638,6 @@
             2: {
                 desc: "ISHTAA PRIME GIRLS property at NARSINGI provides safe, luxurious, and convenient girls accommodation close to IT hubs with top-class amenities.",
                 locFull: "NARSINGI, Hyderabad"
-            },
-            3: {
-                desc: "VUSTELA Madhapur brings you luxury living in the most vibrant part of the city. With spacious rooms and premium food services, it's the top choice for those who value comfort and accessibility.",
-                locFull: "Madhapur, HITEC City, Hyderabad"
             }
         };
 
@@ -6731,10 +6664,6 @@
                 2: {
                     mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448293,78.374185",
                     mapEmbedUrl: "https://www.openstreetmap.org/export/embed.html?bbox=78.3641%2C17.4382%2C78.3841%2C17.4582&layer=mapnik&marker=17.448293%2C78.374185"
-                },
-                3: {
-                    mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448550,78.390830",
-                    mapEmbedUrl: "https://www.openstreetmap.org/export/embed.html?bbox=78.3808%2C17.4385%2C78.4008%2C17.4585&layer=mapnik&marker=17.448550%2C78.390830"
                 }
             };
             const mapInfo = fallbackMapUrls[id] || fallbackMapUrls[1];
@@ -6820,7 +6749,7 @@
 
                     if (user) {
                         currentRole = 'owner';
-                        await loadData([1, 2, 3]);
+                        await loadData([1, 2]);
                         renderOwnerOccupancy();
                         renderOwnerRentTable('all');
                         renderOwnerExpenses();
@@ -6938,7 +6867,7 @@
                         localStorage.setItem('vustela_session', JSON.stringify({ role: 'owner', email, password }));
                         goTo('pg-owner');
                         showToast('Welcome back, Owner! 👑', 'Dashboard opening...');
-                        loadData([1, 2, 3]).then(() => {
+                        loadData([1, 2]).then(() => {
                             renderOwnerOccupancy();
                             renderOwnerRentTable('all');
                             renderOwnerExpenses();
@@ -6974,7 +6903,7 @@
                 // 2. If not found in users, check Tenant in beds table
                 let foundBed = null;
                 // Check local data first
-                for (let hid of [1, 2, 3]) {
+                for (let hid of [1, 2]) {
                     rooms[hid].forEach(r => {
                         r.beds.forEach(b => {
                             if (b.tenant && b.tenant.trim().length > 0 && b.tenant_email?.toLowerCase() === email.toLowerCase() && b.tenant_password === password) {
@@ -13663,8 +13592,7 @@
 
                 const hostelStats = {
                     1: { name: 'ISHTAA PRIME BOYS', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 },
-                    2: { name: 'ISHTAA PRIME GIRLS', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 },
-                    3: { name: 'VUSTELA Madhapur', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 }
+                    2: { name: 'ISHTAA PRIME GIRLS', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 }
                 };
 
                 // Loop through rooms/beds
@@ -15253,7 +15181,7 @@
             <div id="br-step-1">
                 <p style="color: var(--ink3); margin-bottom: 20px;">Choose a location to see available rooms:</p>
                 <div class="hostel-selector-grid"
-                    style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                    style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; max-width: 360px; margin-left: auto; margin-right: auto;">
                     <div class="hs-item" onclick="selectHostelForBooking(1)"
                         style="background: var(--white); border: 1px solid var(--border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow);"
                         onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='var(--accent)';"
@@ -15269,13 +15197,6 @@
                         <div class="hs-img" style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background-image: url('hostel2.png'); background-size: cover; background-position: center; border: 2px solid var(--border);"></div>
                         <div class="hs-name" style="font-weight: 700; font-size: 12px; color: var(--ink); line-height: 1.2;">ISHTAA PRIME GIRLS</div>
                         <div style="font-size: 11px; font-weight: 600; color: var(--ink3); margin-top: 4px;">NARSINGI</div>
-                    </div>
-                    <div class="hs-item" onclick="selectHostelForBooking(3)"
-                        style="background: var(--white); border: 1px solid var(--border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow);"
-                        onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='var(--accent)';"
-                        onmouseout="this.style.transform='none'; this.style.borderColor='var(--border)';">
-                        <div class="hs-img" style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background-image: url('hostel3.png'); background-size: cover; background-position: center; border: 2px solid var(--border);"></div>
-                        <div class="hs-name" style="font-weight: 700; font-size: 13px; color: var(--ink);">Madhapur</div>
                     </div>
                 </div>
             </div>
@@ -15377,7 +15298,6 @@
                     <option value="" disabled selected>Select Hostel...</option>
                     <option value="1">Hostel 1 — ISHTAA PRIME BOYS</option>
                     <option value="2">Hostel 2 — ISHTAA PRIME GIRLS</option>
-                    <option value="3">Hostel 3 — Madhapur</option>
                 </select>
             </div>
             <button class="btn btn-primary" style="width:100%; margin-top:16px" onclick="addNewManager()">Add Manager</button>

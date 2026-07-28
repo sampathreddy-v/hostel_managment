@@ -155,11 +155,6 @@ const hostelDetails = {
         desc: "ISHTAA PRIME GIRLS property at NARSINGI provides safe, luxurious, and convenient girls accommodation close to IT hubs with top-class amenities.",
         locFull: "NARSINGI, Hyderabad",
         mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448293,78.374185"
-    },
-    3: {
-        desc: "VUSTELA Madhapur brings you luxury living in the most vibrant part of the city. With spacious rooms and premium food services, it's the top choice for those who value comfort and accessibility.",
-        locFull: "Madhapur, HITEC City, Hyderabad",
-        mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448550,78.390830"
     }
 };
 
@@ -506,7 +501,7 @@ function buildOccGrid(hostelIds, containerId, role) {
     container.innerHTML = html;
 }
 
-function renderOwnerOccupancy() { buildOccGrid([1, 2, 3], 'owner-occ-grid', 'owner'); }
+function renderOwnerOccupancy() { buildOccGrid([1, 2], 'owner-occ-grid', 'owner'); }
 function renderManagerOccupancy() { buildOccGrid([currentHostel], 'manager-occ-grid', 'manager'); }
 
 // ============================================================

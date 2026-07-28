@@ -58,8 +58,7 @@ async function getReportData() {
 
     const hostelStats = {
         1: { name: 'ISHTAA PRIME BOYS', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 },
-        2: { name: 'ISHTAA PRIME GIRLS', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 },
-        3: { name: 'VUSTELA Madhapur', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 }
+        2: { name: 'ISHTAA PRIME GIRLS', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 }
     };
 
     if (rooms) {
@@ -1047,7 +1046,7 @@ const server = http.createServer((req, res) => {
                     console.log(`\n[Server] Received Room Booking Request from: ${name} (${email}, ${phone}) for Hostel ID ${hostel_id}`);
 
                     // 1. Fetch Hostel Name
-                    let hostelName = (hostel_id == 2 ? 'ISHTAA PRIME GIRLS' : (hostel_id == 3 ? 'VUSTELA Madhapur' : 'ISHTAA PRIME BOYS'));
+                    let hostelName = (hostel_id == 2 ? 'ISHTAA PRIME GIRLS' : 'ISHTAA PRIME BOYS');
                     try {
                         const { data: hData } = await db.from('hostels').select('*').eq('id', hostel_id || 1).single();
                         if (hData && hData.name) hostelName = hData.name;
