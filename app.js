@@ -132,12 +132,16 @@ function tenantTab(el, id) {
 // ============================================================
 function openMobileSidebar() {
     document.querySelectorAll('.sidebar').forEach(s => s.classList.add('mob-open'));
-    document.getElementById('sidebar-overlay').classList.add('on');
+    const ov = document.getElementById('sidebar-overlay');
+    if (ov) ov.classList.add('on');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeMobileSidebar() {
     document.querySelectorAll('.sidebar').forEach(s => s.classList.remove('mob-open'));
-    document.getElementById('sidebar-overlay').classList.remove('on');
+    const ov = document.getElementById('sidebar-overlay');
+    if (ov) ov.classList.remove('on');
+    document.body.style.overflow = '';
 }
 const hostelPhotos = {
     1: ['hostel_single.png', 'hostel_common.png'],
@@ -966,13 +970,15 @@ function togglePwd(btn) {
 // ============================================================
 function openMobileSidebar() {
     document.querySelectorAll('.sidebar').forEach(s => s.classList.add('mob-open'));
-    document.getElementById('sidebar-overlay').classList.add('on');
+    const ov = document.getElementById('sidebar-overlay');
+    if (ov) ov.classList.add('on');
     document.body.style.overflow = 'hidden';
 }
 
 function closeMobileSidebar() {
     document.querySelectorAll('.sidebar').forEach(s => s.classList.remove('mob-open'));
-    document.getElementById('sidebar-overlay').classList.remove('on');
+    const ov = document.getElementById('sidebar-overlay');
+    if (ov) ov.classList.remove('on');
     document.body.style.overflow = '';
 }
 

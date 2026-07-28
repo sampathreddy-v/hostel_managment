@@ -4202,6 +4202,9 @@
         </div>
     </div>
 
+    <!-- MOBILE SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
+
     <!-- LOGIN MODAL -->
     <div class="modal-overlay" id="login-modal">
         <div class="modal">
@@ -14545,14 +14548,16 @@
         function openMobileSidebar() {
             const sidebars = document.querySelectorAll('.sidebar');
             sidebars.forEach(s => s.classList.add('mob-open'));
-            document.getElementById('sidebar-overlay').classList.add('on');
+            const ov = document.getElementById('sidebar-overlay');
+            if (ov) ov.classList.add('on');
             document.body.style.overflow = 'hidden';
         }
 
         function closeMobileSidebar() {
             const sidebars = document.querySelectorAll('.sidebar');
             sidebars.forEach(s => s.classList.remove('mob-open'));
-            document.getElementById('sidebar-overlay').classList.remove('on');
+            const ov = document.getElementById('sidebar-overlay');
+            if (ov) ov.classList.remove('on');
             document.body.style.overflow = '';
         }
 
