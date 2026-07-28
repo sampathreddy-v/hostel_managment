@@ -7417,16 +7417,16 @@
                                 const isReq = b.rentStatus === 'Request' || (hasTenant && b.tenant.startsWith('PENDING:'));
                                 const isNotice = hasTenant && !b.tenant.startsWith('PENDING:') && b.notice_status === 'accepted';
                                 const isNoticePending = hasTenant && !b.tenant.startsWith('PENDING:') && b.notice_status === 'pending';
-                                const isOcc = hasTenant && !isReq;
                                 let isAdvance = false;
                                 if (hasTenant && !b.tenant.startsWith('PENDING:') && b.date_of_joining) {
                                     const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
                                     isAdvance = doj > today;
                                 }
-                                let color = isAdvance ? '#000000' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'var(--border)';
-                                let bg    = isAdvance ? '#000000' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'transparent';
-                                let title = isAdvance ? `Advance Booked (Joins on ${new Date(b.date_of_joining).toLocaleDateString('en-IN')})` : (b.tenant || 'Empty Bed');
-                                return `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:2px;border:1px solid ${color};background:${bg}" title="${title}"></span>`;
+                                const isOccToday = hasTenant && !isReq && !isAdvance;
+                                let border = isAdvance ? '1.5px solid #000000' : isNotice ? '1px solid #ff9800' : isNoticePending ? '1px solid #ffc107' : isOccToday ? '1px solid var(--green)' : isReq ? '1px solid var(--yellow)' : '1px solid var(--border)';
+                                let bg     = isAdvance ? 'transparent' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOccToday ? 'var(--green)' : isReq ? 'var(--yellow)' : 'transparent';
+                                let title  = isAdvance ? `Empty Today — Advance Booked by ${getDisplayName(b.tenant)} (Joins on ${new Date(b.date_of_joining).toLocaleDateString('en-IN')})` : (b.tenant || 'Empty Bed');
+                                return `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:2px;border:${border};background:${bg}" title="${title}"></span>`;
                             }).join('');
 
                             html += `<div class="room-box ${cls}" onclick="showRoomPopup(event,${hid},'${r.num}','${role}')">
@@ -8186,7 +8186,7 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                         <div style="font-size:11px; font-weight:700; color:var(--ink3);">${isAdvanceBed ? 'FUTURE BOOKING' : isReq ? 'PENDING REQUEST' : 'CURRENT TENANT'}</div>
                         ${isReq ? `<span class="badge badge-yellow" style="font-size:9px; padding:2px 6px;">Booking Request</span>` : ''}
-                        ${isAdvanceBed ? `<span style="font-size:9px; font-weight:800; background:#000000; color:#ffffff; padding:2px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:0.5px;">⬛ Advance Book</span>` : ''}
+                        ${isAdvanceBed ? `<span style="font-size:9px; font-weight:800; background:#f8fafc; color:#000000; border:1px solid #000000; padding:2px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:0.5px;">🔲 Empty Today — Advance Book</span>` : ''}
                     </div>
                     <div style="font-weight:600; color:var(--ink); margin-bottom:2px">${cleanName}</div>
                     ${isAdvanceBed ? `<div style="font-size:11px; color:#555; margin-bottom:4px;">Joins on: <strong>${advanceDojStr}</strong></div>` : ''}
