@@ -7387,7 +7387,7 @@
                                 return doj > today;
                             });
                             const hasActiveTenant = activeBeds.length > 0;
-                            const hasAdvanceBooking = advanceBookedBeds.length > 0 && !hasActiveTenant;
+                            const hasAdvanceBooking = advanceBookedBeds.length > 0;
 
                             const isFull = (occupiedBeds + pendingBookings) === r.capacity;
                             const isEmpty = (occupiedBeds + pendingBookings) === 0;
@@ -7423,9 +7423,10 @@
                                     const doj = new Date(b.date_of_joining); doj.setHours(0,0,0,0);
                                     isAdvance = doj > today;
                                 }
-                                let color = isAdvance ? '#90caf9' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'var(--border)';
-                                let bg    = isAdvance ? '#1565c0' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'transparent';
-                                return `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:2px;border:1px solid ${color};background:${bg}"></span>`;
+                                let color = isAdvance ? '#000000' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'var(--border)';
+                                let bg    = isAdvance ? '#000000' : isNotice ? '#ff9800' : isNoticePending ? '#ffc107' : isOcc ? 'var(--green)' : isReq ? 'var(--yellow)' : 'transparent';
+                                let title = isAdvance ? `Advance Booked (Joins on ${new Date(b.date_of_joining).toLocaleDateString('en-IN')})` : (b.tenant || 'Empty Bed');
+                                return `<span style="display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:2px;border:1px solid ${color};background:${bg}" title="${title}"></span>`;
                             }).join('');
 
                             html += `<div class="room-box ${cls}" onclick="showRoomPopup(event,${hid},'${r.num}','${role}')">
@@ -8181,11 +8182,11 @@
                 const localBedIdx = room.beds.findIndex(orgBed => orgBed._id === b._id);
 
                 return `
-                <div style="padding:10px; border:1px solid ${isAdvanceBed ? '#111' : 'var(--border)'}; border-radius:8px; margin-bottom:8px; background:var(--white)">
+                <div style="padding:10px; border:1px solid ${isAdvanceBed ? '#000000' : 'var(--border)'}; border-radius:8px; margin-bottom:8px; background:var(--white)">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                         <div style="font-size:11px; font-weight:700; color:var(--ink3);">${isAdvanceBed ? 'FUTURE BOOKING' : isReq ? 'PENDING REQUEST' : 'CURRENT TENANT'}</div>
                         ${isReq ? `<span class="badge badge-yellow" style="font-size:9px; padding:2px 6px;">Booking Request</span>` : ''}
-                        ${isAdvanceBed ? `<span style="font-size:9px; font-weight:800; color:#111; text-transform:uppercase; letter-spacing:0.5px;">⏳ Advance Book</span>` : ''}
+                        ${isAdvanceBed ? `<span style="font-size:9px; font-weight:800; background:#000000; color:#ffffff; padding:2px 6px; border-radius:4px; text-transform:uppercase; letter-spacing:0.5px;">⬛ Advance Book</span>` : ''}
                     </div>
                     <div style="font-weight:600; color:var(--ink); margin-bottom:2px">${cleanName}</div>
                     ${isAdvanceBed ? `<div style="font-size:11px; color:#555; margin-bottom:4px;">Joins on: <strong>${advanceDojStr}</strong></div>` : ''}
