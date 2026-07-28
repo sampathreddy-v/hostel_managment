@@ -559,8 +559,8 @@ async function addTenant() {
     const roomNum = document.getElementById('at-room').value;
     const rent = parseInt(document.getElementById('at-rent').value) || 5500;
     
-    if (!email.endsWith('@gmail.com')) {
-        showToast('Error', 'Invalid @gmail.com address');
+    if (!/^[a-z0-9._%+-]+@gmail\.com$/i.test(email)) {
+        showToast('Error', 'Invalid @gmail.com address. Only true Gmail addresses are accepted.');
         return;
     }
 

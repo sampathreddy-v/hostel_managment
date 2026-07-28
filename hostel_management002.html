@@ -4226,8 +4226,11 @@
                 <div class="input-group"><label>Email</label><input type="email" placeholder="your@email.com"
                         id="l-email" onkeypress="if(event.key==='Enter') doLogin()">
                 </div>
-                <div class="input-group"><label>Password</label><input type="password" placeholder="Your Password"
-                        id="l-pass" onkeypress="if(event.key==='Enter') doLogin()">
+                <div class="input-group"><label>Password</label>
+                    <div style="position:relative; display:flex; align-items:center;">
+                        <input type="password" placeholder="Your Password" id="l-pass" style="padding-right:40px; width:100%;" onkeypress="if(event.key==='Enter') doLogin()">
+                        <button type="button" onclick="togglePasswordVisibility('l-pass', this)" style="position:absolute; right:10px; background:none; border:none; cursor:pointer; font-size:16px; color:var(--ink3); padding:4px;" title="Show/Hide Password">👁️</button>
+                    </div>
                 </div>
             </div>
             <button class="btn-full" id="l-btn" onclick="doLogin()">Login</button>
@@ -6581,6 +6584,24 @@
                 dojInput.setAttribute('max', `${yyyy}-${mm}-${dd}`);
             } else {
                 dojInput.removeAttribute('max');
+            }
+        }
+
+        function isValidGmail(email) {
+            if (!email || typeof email !== 'string') return false;
+            const clean = email.trim().toLowerCase();
+            return /^[a-z0-9._%+-]+@gmail\.com$/.test(clean);
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const inp = document.getElementById(inputId);
+            if (!inp) return;
+            if (inp.type === 'password') {
+                inp.type = 'text';
+                if (btn) { btn.textContent = '🙈'; btn.title = 'Hide Password'; }
+            } else {
+                inp.type = 'password';
+                if (btn) { btn.textContent = '👁️'; btn.title = 'Show Password'; }
             }
         }
 
@@ -10698,7 +10719,7 @@
             const email = document.getElementById('new-mgr-email').value.trim().toLowerCase();
             const hostelId = parseInt(document.getElementById('new-mgr-hostel').value);
             
-            if (!email || !email.endsWith('@gmail.com')) {
+            if (!isValidGmail(email)) {
                 showToast('Error', 'Please enter a valid @gmail.com address.');
                 return;
             }
@@ -12079,8 +12100,12 @@
             const depStatus = document.getElementById('at-deposit-status').value || 'Paid';
 
             if (!name) { showToast('Error', 'Please enter the student full name.'); return; }
-            if (!email || !email.endsWith('@gmail.com')) {
-                showToast('Error', 'Student Gmail must be a valid @gmail.com address.');
+            if (!isValidGmail(email)) {
+                showToast('Error', 'Student Gmail must be a valid @gmail.com address (e.g. student@gmail.com). Only true Gmails accepted.');
+                return;
+            }
+            if (fatherEmail && !isValidGmail(fatherEmail)) {
+                showToast('Error', 'Father Gmail must be a valid @gmail.com address (e.g. father@gmail.com).');
                 return;
             }
             if (phone.length !== 10) {
@@ -14725,6 +14750,10 @@
 
             if (!name || !email || !phone) {
                 showToast('Error', 'Please fill in all required fields.');
+                return;
+            }
+            if (!isValidGmail(email)) {
+                showToast('Error', 'Please enter a valid Gmail address (e.g. name@gmail.com). Only true Gmail addresses are accepted.');
                 return;
             }
 
