@@ -1056,8 +1056,8 @@ const server = http.createServer((req, res) => {
                     // 2. Fetch Owner & Manager Emails/Phones
                     const ownerEmail = (process.env.OWNER_EMAIL || 'ishtaaprimeboyshostel@gmail.com').trim();
                     const ownerPhone = (process.env.OWNER_PHONE || '919949038383').trim();
-                    const defaultMgrEmail = (process.env.MANAGER_EMAIL || 'vustela.hostels@gmail.com').trim();
-                    const defaultMgrPhone = (process.env.MANAGER_PHONE || '917416529288').trim();
+                    const defaultMgrEmail = (process.env.MANAGER_EMAIL || 'saimohan158716@gmail.com').trim();
+                    const defaultMgrPhone = (process.env.MANAGER_PHONE || '919700635806').trim();
 
                     let managerEmails = [defaultMgrEmail];
                     let managerPhones = [defaultMgrPhone];
