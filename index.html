@@ -1758,17 +1758,34 @@
         .room-popup {
             display: none;
             position: fixed;
-            z-index: 400;
-            background: var(--white);
-            border-radius: var(--r);
-            border: 1px solid var(--border);
-            padding: 20px;
-            width: 260px;
-            box-shadow: var(--shadow-lg);
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
         }
 
         .room-popup.on {
-            display: block
+            display: flex !important;
+        }
+
+        .room-popup-card {
+            background: var(--white);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            width: 100%;
+            max-width: 440px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            animation: modalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .rp-header {
@@ -2589,9 +2606,9 @@
             }
 
             /* ROOM POPUP */
-            .room-popup {
-                width: calc(100vw - 32px);
-                left: 16px !important;
+            .room-popup-card {
+                max-width: 94vw;
+                padding: 18px;
             }
 
             /* FILTER BAR */
@@ -3396,13 +3413,15 @@
     </div>
 
     <!-- ROOM POPUP -->
-    <div class="room-popup" id="room-popup">
-        <div class="rp-header">
-            <div class="rp-room" id="rp-room-num">Room 101</div>
-            <button class="rp-close" onclick="closeRoomPopup()">×</button>
+    <div class="room-popup" id="room-popup" onclick="if(event.target===this) closeRoomPopup()">
+        <div class="room-popup-card">
+            <div class="rp-header">
+                <div class="rp-room" id="rp-room-num" style="font-size: 18px; font-weight: 700; color: var(--ink);">Room 101</div>
+                <button class="rp-close" onclick="closeRoomPopup()" style="background: none; border: none; font-size: 24px; font-weight: 600; color: var(--ink3); cursor: pointer; padding: 0 4px;">×</button>
+            </div>
+            <div id="rp-content"></div>
+            <div class="rp-actions" id="rp-actions"></div>
         </div>
-        <div id="rp-content"></div>
-        <div class="rp-actions" id="rp-actions"></div>
     </div>
 
     <!-- ============================================================ -->
@@ -8189,9 +8208,8 @@
                 ${hasComplaint ? `<div class="rp-row"><span class="rp-key">Complaint</span><span class="rp-val" style="color:var(--red)">⚠️ ${hasComplaint.subject}</span></div>` : ''}
                 <div style="margin-top:12px">${bedDetails}</div>
             `;
-            const rect = e.target.closest('.room-box').getBoundingClientRect();
-            popup.style.top = Math.min(rect.bottom + window.scrollY + 8, window.innerHeight + window.scrollY - 300) + 'px';
-            popup.style.left = Math.min(rect.left + window.scrollX, window.innerWidth - 280) + 'px';
+            popup.style.top = '';
+            popup.style.left = '';
             popup.classList.add('on');
         }
 

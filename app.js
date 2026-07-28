@@ -539,9 +539,8 @@ function showRoomPopup(e, hostelId, roomNum, role) {
         <div style="margin-top:12px">${bedDetails}</div>
     `;
     
-    const rect = e.target.closest('.room-box').getBoundingClientRect();
-    popup.style.top = Math.min(rect.bottom + window.scrollY + 8, window.innerHeight + window.scrollY - 300) + 'px';
-    popup.style.left = Math.min(rect.left + window.scrollX, window.innerWidth - 280) + 'px';
+    popup.style.top = '';
+    popup.style.left = '';
     popup.classList.add('on');
 }
 
