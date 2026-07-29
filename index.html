@@ -3432,7 +3432,10 @@
         <nav class="landing-nav">
             <div class="brand" onclick="goTo('pg-landing')">
                 <div class="brand-mark">V</div>
-                <div class="brand-name">VUSTELA <span class="brand-sub">PG MANAGEMENT</span></div>
+                <div class="brand-name" style="display:flex; flex-direction:column; align-items:flex-start; line-height:1.1;">
+                    <span style="font-family:var(--font-display); font-size:20px; font-weight:900; letter-spacing:1px; color:var(--ink);">VUSTELA</span>
+                    <span style="font-size:9px; font-weight:800; letter-spacing:2px; color:var(--accent); text-transform:uppercase; margin-top:-1px;">PG MANAGEMENT</span>
+                </div>
             </div>
             <div class="flex gap12">
                 <button class="btn btn-outline" onclick="scrollToInfo()">About Hostel</button>
@@ -3976,133 +3979,159 @@
 
     <!-- TENANT PROFILE MODAL -->
     <div class="modal-overlay" id="tenant-profile-modal">
-        <div class="modal" style="max-width: 500px; width: 90vw;">
-            <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-                <div class="modal-title">Tenant Profile</div>
-                <div style="margin-left: auto; margin-right: 12px;">
-                    <button class="btn btn-primary btn-sm" id="tp-checkout-btn" onclick="generateCheckoutReceipt()">Checkout Receipt</button>
+        <div class="modal" style="max-width: 480px; width: 92vw; padding: 16px 12px; box-sizing: border-box; border-radius: 16px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                <div class="modal-title" style="font-size: 16px; font-weight: 800;">Tenant Profile</div>
+                <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                    <button class="btn btn-primary btn-sm" id="tp-checkout-btn" style="padding: 4px 8px; font-size: 11px; white-space: nowrap; min-height: 26px;" onclick="generateCheckoutReceipt()">Checkout Receipt</button>
+                    <button class="modal-close" onclick="closeModal('tenant-profile-modal')">×</button>
                 </div>
-                <button class="modal-close" onclick="closeModal('tenant-profile-modal')">×</button>
             </div>
-            <div style="padding: 20px 0;">
-                <div style="text-align: center; margin-bottom: 20px;">
+            <div style="padding: 12px 0;">
+                <div style="text-align: center; margin-bottom: 16px;">
                     <!-- Avatar: shows passport photo if available, else initials -->
-                    <div id="tp-avatar" style="width: 80px; height: 80px; margin: 0 auto 10px auto; border-radius: 50%; overflow: hidden; border: 3px solid var(--border); background: var(--accent); display: flex; align-items: center; justify-content: center; position: relative;">
+                    <div id="tp-avatar" style="width: 72px; height: 72px; margin: 0 auto 8px auto; border-radius: 50%; overflow: hidden; border: 3px solid var(--border); background: var(--accent); display: flex; align-items: center; justify-content: center; position: relative;">
                         <img id="tp-photo" src="" alt="Tenant Photo" style="display:none; width:100%; height:100%; object-fit:cover; object-position:center top;">
-                        <span id="tp-initials" style="font-size: 26px; font-weight: 700; color: white; letter-spacing:1px;"></span>
+                        <span id="tp-initials" style="font-size: 24px; font-weight: 700; color: white; letter-spacing:1px;"></span>
                     </div>
-                    <h3 id="tp-name" style="margin: 0; font-size: 20px; font-weight: 700; color: var(--ink);"></h3>
-                    <div style="display: flex; justify-content: center; gap: 8px; margin-top: 8px; align-items: center;">
+                    <h3 id="tp-name" style="margin: 0; font-size: 18px; font-weight: 700; color: var(--ink);"></h3>
+                    <div style="display: flex; justify-content: center; gap: 8px; margin-top: 6px; align-items: center;">
                         <span id="tp-hostel-badge" class="badge badge-blue" style="display: inline-block; margin-top: 0;"></span>
                         <button class="btn btn-outline btn-sm" id="tp-history-btn" style="padding: 2px 8px; font-size: 11px; min-height: 22px;" onclick="openTenantHistory()">📜 History</button>
                     </div>
                 </div>
                 
-                <div style="border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--bg1); border-top: 1px solid var(--border); margin-top: 20px;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                <div style="border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg1); margin-top: 12px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; table-layout: fixed;">
                         <tbody>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); width: 40%; background: var(--bg2);">Room Number</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-room"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="openChangeRoomGrid()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); width: 38%; background: var(--bg2); vertical-align: middle;">Room Number</td>
+                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-room" style="word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="openChangeRoomGrid()">✏️ Edit</button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Rent Amount</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-rent-amount"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantRent()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Rent Amount</td>
+                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-rent-amount" style="word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantRent()">✏️ Edit</button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Rent Status</td>
-                                <td style="padding: 12px 16px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-rent-status"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px; color: #10b981; border-color: #10b981; font-weight:700;" onclick="editTenantRentStatus()">✅ Make Paid</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Rent Status</td>
+                                <td style="padding: 8px 10px; font-weight: 600; border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-rent-status" style="word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px; color: #10b981; border-color: #10b981; font-weight:700;" onclick="editTenantRentStatus()">✅ Make Paid</button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Late Fee / Fine</td>
-                                <td style="padding: 12px 16px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-late-fee" style="color:var(--danger)"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantLateFee()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Late Fee / Fine</td>
+                                <td style="padding: 8px 10px; font-weight: 600; border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-late-fee" style="color:var(--danger); word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantLateFee()">✏️ Edit</button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Bus Fee</td>
-                                <td style="padding: 12px 16px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-bus-fee" style="color:var(--ink)"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantBusFee()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Bus Fee</td>
+                                <td style="padding: 8px 10px; font-weight: 600; border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-bus-fee" style="color:var(--ink); word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantBusFee()">✏️ Edit</button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Phone Number</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-phone"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantPhone()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Phone Number</td>
+                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-phone" style="word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantPhone()">✏️ Edit</button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Parent Phone Number</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-parent-phone"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantParentPhone()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Parent Phone</td>
+                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-parent-phone" style="word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantParentPhone()">✏️ Edit</button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Father Email</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-father-email"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantFatherEmail()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Father Email</td>
+                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-father-email" style="word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantFatherEmail()">✏️ Edit</button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Email Address</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-email"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantEmail()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Email Address</td>
+                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-email" style="word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantEmail()">✏️ Edit</button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Date of Joining</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-joining-date"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantDOJ()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Date of Joining</td>
+                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-joining-date" style="word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantDOJ()">✏️ Edit</button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Advance Deposit</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-advance-deposit"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantDepositAmount()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Advance Deposit</td>
+                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-advance-deposit" style="word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantDepositAmount()">✏️ Edit</button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Deposit Status</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-deposit-status"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editDepositStatus()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Deposit Status</td>
+                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-deposit-status" style="word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editDepositStatus()">✏️ Edit</button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">Payment Style</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none; text-transform: capitalize;">
-                                    <span id="tp-payment-style"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantPaymentStyle()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Payment Style</td>
+                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle; text-transform: capitalize;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-payment-style" style="word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantPaymentStyle()">✏️ Edit</button>
+                                    </div>
                                 </td>
-                            </tr>
                             <tr>
-                                <td style="padding: 12px 16px; font-weight: 700; color: var(--ink3); background: var(--bg2);">ID Proof Type</td>
-                                <td style="padding: 12px 16px; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: space-between; border: none;">
-                                    <span id="tp-id-type"></span>
-                                    <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px; margin-left: 8px; min-height: 24px;" onclick="editTenantIDProofType()">✏️ Edit</button>
+                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">ID Proof Type</td>
+                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
+                                        <span id="tp-id-type" style="word-break: break-all; min-width: 0; flex: 1;"></span>
+                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantIDProofType()">✏️ Edit</button>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <div style="display: flex; gap: 12px; margin-top: 20px;">
                     <button class="btn btn-outline" style="flex: 1; min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="resetTenantPwdFromProfile()">
                         🔄 Reset Password
                     </button>
