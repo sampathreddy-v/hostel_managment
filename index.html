@@ -8994,36 +8994,7 @@
 
                 if (phoneToSend && phoneToSend !== 'undefined') {
                     const waMessage = `🎉 *Booking Confirmed!*\n\nHi ${name}, your booking at *${hostelName}* (Room ${roomNum}) has been accepted.\n\n🔑 Login: ${emailToSend}\n🔑 Password: ${tenantPwd}\n\n— VUSTELA`;
-                    const umCreds = getUltraMsgCredentials();
-                    if (umCreds.token && umCreds.instanceId) {
-                        sendAutomatedWhatsApp(phoneToSend, waMessage).then(sent => {
-                            if (sent) showToast('WhatsApp Sent ✅', `Confirmation auto-sent to ${phoneToSend} via UltraMsg`);
-                        });
-                    } else {
-                        fetch(API_BASE_URL + '/send-whatsapp', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                to:      phoneToSend,
-                                message: waMessage
-                            })
-                        }).then(res => res.json()).then(result => {
-                            if (result.success) {
-                                showToast('WhatsApp Sent ✅', `Confirmation sent to ${phoneToSend}`);
-                            } else {
-                                let cleanPhone = phoneToSend.replace(/\D/g, '');
-                                if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
-                                const manualUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
-                                const errMsg = result.error || 'Meta API Error';
-                                showToast('WhatsApp Failed ❌', `${errMsg}. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to send manually</a>`, 12000);
-                            }
-                        }).catch(e => {
-                            let cleanPhone = phoneToSend.replace(/\D/g, '');
-                            if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
-                            const manualUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`;
-                            showToast('WhatsApp Error ❌', `Could not reach server. <a href="${manualUrl}" target="_blank" style="color:var(--accent); font-weight:bold; text-decoration:underline;">Click to send manually</a>`, 10000);
-                        });
-                    }
+                    dispatchWhatsAppMessage(phoneToSend, waMessage, 'Booking Confirmation');
                 }
 
                 loadData([currentHostel]).then(() => {
@@ -9131,6 +9102,18 @@
             document.getElementById('tp-hostel-badge').textContent = hostels[tenant.hostel] ? hostels[tenant.hostel].name : `Hostel ${tenant.hostel}`;
             document.getElementById('tp-room').textContent = tenant.num;
             document.getElementById('tp-phone').textContent = tenant.tenant_phone || 'Not Provided';
+            
+            const rawPhone = (tenant.tenant_phone || '').replace(/\D/g, '');
+            const formattedPhone = rawPhone.length === 10 ? '91' + rawPhone : rawPhone;
+            const waBtn = document.getElementById('tp-wa-btn');
+            if (waBtn) {
+                if (formattedPhone) {
+                    waBtn.href = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(`Hi ${tenant.tenant}, regarding your stay at ${hostels[tenant.hostel]?.name || 'VUSTELA PG'}:`)}`;
+                    waBtn.style.display = 'inline-flex';
+                } else {
+                    waBtn.style.display = 'none';
+                }
+            }
             document.getElementById('tp-parent-phone').textContent = tenant.father_phone || 'Not Provided';
             document.getElementById('tp-father-email').textContent = tenant.father_email || 'Not Provided';
             document.getElementById('tp-email').textContent = tenant.tenant_email || 'Not Provided';
@@ -11811,19 +11794,10 @@
                     console.warn('[ManagerUPI] Rent history notice:', rhErr);
                 }
 
-                // 4. Send WhatsApp receipt (UltraMsg Automated or fallback)
+                // 4. Send WhatsApp receipt (UltraMsg / Relay / 1-Click WhatsApp App launch)
                 if (sub.tenant_phone || sub.tenant_email || sub.tenant_name) {
                     const receiptMsg = `🎉 *Payment Confirmed!*\n\nDear ${sub.tenant_name}, your rent payment of *₹${Number(sub.amount_claimed).toLocaleString()}* for Room *${sub.room_num}* has been verified and confirmed.\n\nUTR: ${sub.utr_number}\nStatus: Paid ✅\n\n— VUSTELA PG Hostels`;
-                    const umCreds = getUltraMsgCredentials();
-                    if (umCreds.token && umCreds.instanceId && sub.tenant_phone) {
-                        sendAutomatedWhatsApp(sub.tenant_phone, receiptMsg);
-                    } else {
-                        fetch(API_BASE_URL + '/send-whatsapp', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ to: sub.tenant_phone || sub.tenant_email || sub.tenant_name, message: receiptMsg })
-                        }).catch(e => console.error(e));
-                    }
+                    dispatchWhatsAppMessage(sub.tenant_phone || '', receiptMsg, 'Payment Receipt');
                 }
 
                 showToast('Approved! ✅', `Payment of ₹${Number(sub.amount_claimed).toLocaleString()} verified for ${sub.tenant_name}.`);
@@ -12163,7 +12137,12 @@
             renderMgrRentTable('all');
             renderMgrTenants();
 
-            showToast('Tenant Added ✅', `Sending welcome email with credentials...`);
+            showToast('Tenant Added ✅', `Sending welcome email & WhatsApp credentials...`);
+
+            if (phone) {
+                const welcomeWaMsg = `🎉 *Welcome to VUSTELA PG!* 🏠\n\nHi *${name}*, your room registration at *${hostels[currentHostel].name}* (Room ${roomNum}) is complete.\n\n🔑 *Login Email:* ${email}\n🔑 *Password:* ${genPwd}\n\nLogin here to manage rent & services:\n${window.location.origin}\n\n— VUSTELA PG Hostel Management`;
+                dispatchWhatsAppMessage(phone, welcomeWaMsg, 'Welcome Credentials');
+            }
 
             const pwd = genPwd;
             const emailBody = `
@@ -13143,6 +13122,51 @@
             } else {
                 showToast('API Check', 'Check your Instance ID, Token, or UltraMsg QR scan status.');
             }
+        }
+
+        async function dispatchWhatsAppMessage(phone, messageText, actionTitle = 'Notification') {
+            if (!phone || phone === 'undefined') return false;
+            const cleanPhone = String(phone).replace(/\D/g, '');
+            if (!cleanPhone) return false;
+            const formattedPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
+            const encodedText = encodeURIComponent(messageText);
+            const manualUrl = `https://wa.me/${formattedPhone}?text=${encodedText}`;
+
+            // 1. Try UltraMsg API if configured
+            const umCreds = getUltraMsgCredentials();
+            if (umCreds.token && umCreds.instanceId) {
+                const sent = await sendAutomatedWhatsApp(formattedPhone, messageText);
+                if (sent) {
+                    showToast('WhatsApp Sent ✅', `${actionTitle} auto-sent to ${formattedPhone} via UltraMsg.`);
+                    return true;
+                }
+            }
+
+            // 2. Try Backend Relay Server
+            try {
+                const res = await fetch(API_BASE_URL + '/send-whatsapp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ to: formattedPhone, message: messageText })
+                });
+                const result = await res.json();
+                if (result && result.success) {
+                    showToast('WhatsApp Sent ✅', `${actionTitle} delivered to ${formattedPhone}.`);
+                    return true;
+                }
+            } catch (e) {
+                console.warn('[dispatchWhatsAppMessage] Relay server notice:', e);
+            }
+
+            // 3. Fallback: Provide 1-Click WhatsApp App launch link in toast
+            showToast('WhatsApp Notification 💬', 
+                `<div style="font-size:12px; margin-bottom:4px;">${actionTitle} ready for +${formattedPhone}:</div>` +
+                `<a href="${manualUrl}" target="_blank" class="btn btn-sm" style="background:#25D366; color:white; font-weight:700; border-radius:20px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; margin-top:4px; padding:4px 12px; box-shadow: 0 2px 6px rgba(37,211,102,0.3);">` +
+                `📱 Open in WhatsApp App</a>`, 
+                15000
+            );
+
+            return false;
         }
 
         // ============================================================

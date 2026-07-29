@@ -446,10 +446,53 @@ function getTemplatePayload(toPhone, rawMessage) {
 }
 
 async function sendWhatsappDirect(to, message) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         let formattedTo = to.replace(/\D/g, '');
         if (formattedTo.length === 10) {
             formattedTo = '91' + formattedTo;
+        }
+
+        // 1. Try UltraMsg API if configured in env
+        const umInst = (process.env.ULTRAMSG_INSTANCE_ID || '').trim();
+        const umTok = (process.env.ULTRAMSG_TOKEN || '').trim();
+        if (umInst && umTok) {
+            try {
+                const postData = new URLSearchParams({ token: umTok, to: formattedTo, body: message }).toString();
+                const options = {
+                    hostname: 'api.ultramsg.com',
+                    port: 443,
+                    path: `/${umInst}/messages/chat`,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Content-Length': Buffer.byteLength(postData)
+                    }
+                };
+                const req = https.request(options, res => {
+                    let resData = '';
+                    res.on('data', chunk => resData += chunk);
+                    res.on('end', () => {
+                        try {
+                            const result = JSON.parse(resData);
+                            if (result && (result.sent === 'true' || result.id)) return resolve(result);
+                        } catch (e) {}
+                        console.warn('[UltraMsg Server Notice]', resData);
+                    });
+                });
+                req.on('error', () => {});
+                req.write(postData);
+                req.end();
+            } catch (e) {
+                console.warn('[UltraMsg Server Error]:', e.message);
+            }
+        }
+
+        // 2. Try Meta WhatsApp Cloud API
+        const metaPhoneId = (process.env.META_PHONE_NUMBER_ID || '').trim();
+        const metaToken = (process.env.META_ACCESS_TOKEN || '').trim();
+
+        if (!metaPhoneId || !metaToken) {
+            return reject(new Error('WhatsApp API Credentials missing. Configure META_PHONE_NUMBER_ID & META_ACCESS_TOKEN or ULTRAMSG_INSTANCE_ID in .env, or use direct WhatsApp link.'));
         }
 
         const payloadObj = getTemplatePayload(formattedTo, message);
@@ -458,10 +501,10 @@ async function sendWhatsappDirect(to, message) {
         const options = {
             hostname: 'graph.facebook.com',
             port: 443,
-            path: `/v20.0/${process.env.META_PHONE_NUMBER_ID}/messages`,
+            path: `/v20.0/${metaPhoneId}/messages`,
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${(process.env.META_ACCESS_TOKEN || '').trim()}`,
+                'Authorization': `Bearer ${metaToken}`,
                 'Content-Type': 'application/json',
                 'Content-Length': Buffer.byteLength(postData)
             }
