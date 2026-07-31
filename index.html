@@ -4317,7 +4317,10 @@
                             <div class="dash-title">Good Morning, Ramesh 👋</div>
                             <div class="dash-subtitle" id="owner-overview-subtitle">Here's your hostel overview for June 2025</div>
                         </div>
-                        <div class="flex gap8" style="align-items:flex-start;">
+                        <div class="flex gap8" style="align-items:flex-start; flex-wrap:wrap;">
+                            <button class="btn btn-outline" onclick="openOwnerHelpModal()" style="display:flex; align-items:center; gap:6px; font-weight:700; font-size:13px; padding:8px 16px; height:38px; color:var(--accent); border-color:var(--accent); background:rgba(200,75,49,0.05);">
+                                👑 What Owner Can Do
+                            </button>
                             <button class="btn btn-outline" onclick="openUltraMsgConfigModal()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px; color:var(--green); border-color:#bbf7d0;">
                                 💬 Auto WhatsApp API
                             </button>
@@ -4341,6 +4344,80 @@
                                 than 30 days — action required</span></div>
                         <button class="btn-sm btn-red"
                             onclick="ownerTab(document.querySelector('[onclick*=o-rent]'),'o-rent')">View →</button>
+                    </div>
+
+                    <!-- WHAT OWNER CAN DO GUIDE CARD -->
+                    <div class="card" id="what-owner-can-do-card" style="margin-bottom: 24px; padding: 20px; border-radius: 16px; border: 1px solid var(--border); background: var(--bg1); box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(200,75,49,0.1); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;">👑</div>
+                                <div>
+                                    <h2 style="font-size: 18px; font-weight: 800; color: var(--ink); margin: 0; letter-spacing: -0.3px;">What Owner Can Do</h2>
+                                    <div style="font-size: 12px; color: var(--ink3); margin-top: 2px;">Comprehensive guide to all owner powers, controls, and management tools</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline btn-sm" onclick="toggleWhatOwnerCanDoCard()" id="btn-toggle-owner-guide" style="font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px;">
+                                📖 Hide Guide
+                            </button>
+                        </div>
+
+                        <div id="what-owner-can-do-body" style="display: block;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 14px;">
+                                
+                                <!-- 1. OVERVIEW & MULTI-HOSTEL CONTROL -->
+                                <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--bg2);">
+                                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; color: var(--accent); margin-bottom: 10px;">
+                                        <span>📊</span> 1. Overview & Multi-Hostel Control
+                                    </div>
+                                    <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: var(--ink2); line-height: 1.6;">
+                                        <li><strong>Multi-Hostel Analytics:</strong> Monitor total revenue, collected rent, pending dues, maintenance expenses, and net income across all hostels (ISHTAA PRIME BOYS, GIRLS, etc.) in real-time.</li>
+                                        <li><strong>Live Room Occupancy:</strong> Track available beds, vacant rooms, filled beds, and occupancy percentages live across all properties.</li>
+                                        <li><strong>Monthly Historical Archives:</strong> Switch between months to review past financial history, income trends, and occupancy records.</li>
+                                        <li><strong>Report Exports:</strong> Download complete monthly financial summaries, tenant lists, and pending rent records as PDF or Excel files.</li>
+                                    </ul>
+                                </div>
+
+                                <!-- 2. FINANCE & REVENUE MANAGEMENT -->
+                                <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--bg2);">
+                                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; color: #10b981; margin-bottom: 10px;">
+                                        <span>💰</span> 2. Finance & Revenue Management
+                                    </div>
+                                    <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: var(--ink2); line-height: 1.6;">
+                                        <li><strong>Rent Tracker:</strong> View payment statuses (Paid vs. Pending vs. Overdue) for every tenant across all hostels.</li>
+                                        <li><strong>Expense Log:</strong> Track and approve hostel operating expenses (electricity, groceries, water, maintenance repairs).</li>
+                                        <li><strong>Staff Payroll & Salaries:</strong> Manage staff salaries (managers, cooks, wardens, housekeepers), record salary payouts, advance payments, and receipts.</li>
+                                        <li><strong>Deposits & Late Fees:</strong> Oversee advance security deposit collections, deposit refunds, bus fees, and late fee fine penalties.</li>
+                                    </ul>
+                                </div>
+
+                                <!-- 3. OPERATIONS, COMPLAINTS & NOTICES -->
+                                <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--bg2);">
+                                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; color: #3b82f6; margin-bottom: 10px;">
+                                        <span>🗣️</span> 3. Operations, Complaints & Notices
+                                    </div>
+                                    <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: var(--ink2); line-height: 1.6;">
+                                        <li><strong>Hostel Managers:</strong> Add, edit, or remove hostel managers, assign specific hostels to managers, and track manager actions.</li>
+                                        <li><strong>Full Tenant Directory:</strong> View complete tenant details, phone numbers, father contact numbers, email IDs, joining dates, and uploaded ID proofs.</li>
+                                        <li><strong>Complaints Resolution:</strong> Monitor student complaints (Wi-Fi, plumbing, food quality, maintenance), track resolution progress, and ensure prompt resolution.</li>
+                                        <li><strong>Broadcast Notices:</strong> Post announcements to all hostels or specific hostels with automated WhatsApp & Email notifications.</li>
+                                    </ul>
+                                </div>
+
+                                <!-- 4. CHECKOUTS, WHATSAPP API & CUSTOMIZATION -->
+                                <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--bg2);">
+                                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; color: #8b5cf6; margin-bottom: 10px;">
+                                        <span>⚡</span> 4. Checkouts, WhatsApp API & Customization
+                                    </div>
+                                    <ul style="margin: 0; padding-left: 18px; font-size: 12.5px; color: var(--ink2); line-height: 1.6;">
+                                        <li><strong>Notice Requests / Vacating:</strong> Review tenant checkout notices, calculate deposit refund amounts, inspect checkout receipts, and process room exits.</li>
+                                        <li><strong>Automated WhatsApp API:</strong> Configure UltraMsg or Meta API for instant automated WhatsApp rent receipts, welcome passwords, and emergency alerts.</li>
+                                        <li><strong>Edit Dashboard Layout:</strong> Customize hostel names, color themes, brand titles, and portal display configurations.</li>
+                                        <li><strong>Direct WhatsApp Chat:</strong> Launch 1-click WhatsApp chats with any tenant or manager directly from the dashboard.</li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
 
                     <!-- MONTHLY SUMMARY TABLE - MOST IMPORTANT -->
@@ -5521,6 +5598,71 @@
                         <tbody id="vwh-table-body"></tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WHAT OWNER CAN DO MODAL -->
+    <div class="modal-overlay" id="what-owner-can-do-modal">
+        <div class="modal" style="max-width: 680px; width: 92vw; max-height: 90vh; overflow-y: auto; padding: 24px; border-radius: 20px;">
+            <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(200,75,49,0.1); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;">👑</div>
+                    <div class="modal-title" style="font-size: 18px; font-weight: 800;">What Owner Can Do</div>
+                </div>
+                <button class="modal-close" onclick="closeModal('what-owner-can-do-modal')">×</button>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+                
+                <!-- Category 1 -->
+                <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--bg2);">
+                    <div style="font-weight: 800; font-size: 15px; color: var(--accent); margin-bottom: 8px;">📊 1. Overview & Multi-Hostel Control</div>
+                    <ul style="margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink2); line-height: 1.6;">
+                        <li><strong>Multi-Hostel Analytics:</strong> Monitor total revenue, collected rent, pending dues, maintenance expenses, and net income across all hostels (ISHTAA PRIME BOYS, GIRLS, etc.) in real-time.</li>
+                        <li><strong>Live Room Occupancy:</strong> Track available beds, vacant rooms, filled beds, and occupancy percentages live across all properties.</li>
+                        <li><strong>Monthly Historical Archives:</strong> Switch between months to review past financial history, income trends, and occupancy records.</li>
+                        <li><strong>Report Exports:</strong> Download complete monthly financial summaries, tenant lists, and pending rent records as PDF or Excel files.</li>
+                    </ul>
+                </div>
+
+                <!-- Category 2 -->
+                <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--bg2);">
+                    <div style="font-weight: 800; font-size: 15px; color: #10b981; margin-bottom: 8px;">💰 2. Finance & Revenue Management</div>
+                    <ul style="margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink2); line-height: 1.6;">
+                        <li><strong>Rent Tracker:</strong> View payment statuses (Paid vs. Pending vs. Overdue) for every tenant across all hostels.</li>
+                        <li><strong>Expense Log:</strong> Track and approve hostel operating expenses (electricity, groceries, water, maintenance repairs).</li>
+                        <li><strong>Staff Payroll & Salaries:</strong> Manage staff salaries (managers, cooks, wardens, housekeepers), record salary payouts, advance payments, and receipts.</li>
+                        <li><strong>Deposits & Late Fees:</strong> Oversee advance security deposit collections, deposit refunds, bus fees, and late fee fine penalties.</li>
+                    </ul>
+                </div>
+
+                <!-- Category 3 -->
+                <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--bg2);">
+                    <div style="font-weight: 800; font-size: 15px; color: #3b82f6; margin-bottom: 8px;">🗣️ 3. Operations, Complaints & Notices</div>
+                    <ul style="margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink2); line-height: 1.6;">
+                        <li><strong>Hostel Managers:</strong> Add, edit, or remove hostel managers, assign specific hostels to managers, and track manager actions.</li>
+                        <li><strong>Full Tenant Directory:</strong> View complete tenant details, phone numbers, father contact numbers, email IDs, joining dates, and uploaded ID proofs.</li>
+                        <li><strong>Complaints Resolution:</strong> Monitor student complaints (Wi-Fi, plumbing, food quality, maintenance), track resolution progress, and ensure prompt resolution.</li>
+                        <li><strong>Broadcast Notices:</strong> Post announcements to all hostels or specific hostels with automated WhatsApp & Email notifications.</li>
+                    </ul>
+                </div>
+
+                <!-- Category 4 -->
+                <div style="border: 1px solid var(--border); border-radius: 12px; padding: 16px; background: var(--bg2);">
+                    <div style="font-weight: 800; font-size: 15px; color: #8b5cf6; margin-bottom: 8px;">⚡ 4. Checkouts, WhatsApp API & Customization</div>
+                    <ul style="margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink2); line-height: 1.6;">
+                        <li><strong>Notice Requests / Vacating:</strong> Review tenant checkout notices, calculate deposit refund amounts, inspect checkout receipts, and process room exits.</li>
+                        <li><strong>Automated WhatsApp API:</strong> Configure UltraMsg or Meta API for instant automated WhatsApp rent receipts, welcome passwords, and emergency alerts.</li>
+                        <li><strong>Edit Dashboard Layout:</strong> Customize hostel names, color themes, brand titles, and portal display configurations.</li>
+                        <li><strong>Direct WhatsApp Chat:</strong> Launch 1-click WhatsApp chats with any tenant or manager directly from the dashboard.</li>
+                    </ul>
+                </div>
+
+            </div>
+            
+            <div style="margin-top: 20px; text-align: right;">
+                <button class="btn btn-primary" onclick="closeModal('what-owner-can-do-modal')">Got it!</button>
             </div>
         </div>
     </div>
@@ -13177,6 +13319,24 @@
         // ============================================================
         // SALARIES & STAFF MANAGEMENT (PERSISTENT & DELETION SYNC)
         // ============================================================
+        function toggleWhatOwnerCanDoCard() {
+            const body = document.getElementById('what-owner-can-do-body');
+            const btn = document.getElementById('btn-toggle-owner-guide');
+            if (body) {
+                if (body.style.display === 'none') {
+                    body.style.display = 'block';
+                    if (btn) btn.textContent = '📖 Hide Guide';
+                } else {
+                    body.style.display = 'none';
+                    if (btn) btn.textContent = '📖 Show Guide';
+                }
+            }
+        }
+
+        function openOwnerHelpModal() {
+            openModal('what-owner-can-do-modal');
+        }
+
         let currentWorkerPaymentProof = '';
         let workers = loadWorkersFromStorage();
         let currentSalaryFilter = 'all';
