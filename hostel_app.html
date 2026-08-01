@@ -13915,9 +13915,9 @@
                 return false;
             }
 
-            const cleanPhone = String(phoneNumber).replace(/\D/g, '');
-            if (!cleanPhone) return false;
-            const formattedPhone = cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone;
+            const rawDigits = String(phoneNumber).replace(/\D/g, '');
+            if (!rawDigits) return false;
+            const formattedPhone = rawDigits.length === 10 ? '+91' + rawDigits : '+' + rawDigits;
 
             try {
                 const response = await fetch(`https://api.ultramsg.com/${creds.instanceId}/messages/chat`, {
