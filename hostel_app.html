@@ -6581,7 +6581,7 @@
         // DATA (loaded from Supabase)
         // ============================================================
         const hostels = {
-            1: { name: 'ISHTAA PRIME BOYS', mgr: 'Anil Kumar' },
+            1: { name: 'ISHTAA PRIME', mgr: 'Anil Kumar' },
             2: { name: 'ISHTAA PRIME GIRLS', mgr: 'Suresh Varma' }
         };
 
@@ -7167,8 +7167,9 @@
                 const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
                 const regReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
 
-                const ownerHostel = savedHostels.find(h => h.id == user.hostel_id) || regReqs.find(r => r.id == user.hostel_id);
-                const hostelName = ownerHostel ? ownerHostel.name : (user.hostel_name || 'VUSTELA HOSTELS');
+                const targetHid = user.hostel_id || 1;
+                const ownerHostel = savedHostels.find(h => h.id == targetHid) || regReqs.find(r => r.id == targetHid) || hostels[targetHid];
+                const hostelName = ownerHostel ? ownerHostel.name : (user.hostel_name || 'ISHTAA PRIME');
 
                 const nameEl = document.getElementById('owner-name-sb');
                 const greetingEl = document.getElementById('owner-greeting-title');
@@ -7712,14 +7713,14 @@
 
             const targetHids = getOwnerHostelIds();
             let totalBedsCount = 0;
-            let hostelNameStr = 'VUSTELA HOSTELS';
+            let hostelNameStr = 'ISHTAA PRIME';
 
             targetHids.forEach(hid => {
                 let hObj = hostels[hid];
                 if (!hObj) {
                     const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
                     const regReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
-                    hObj = savedHostels.find(h => h.id == hid) || regReqs.find(r => r.id == hid) || { name: 'VUSTELA HOSTELS' };
+                    hObj = savedHostels.find(h => h.id == hid) || regReqs.find(r => r.id == hid) || { name: 'ISHTAA PRIME' };
                 }
                 if (hObj) hostelNameStr = hObj.name;
 
