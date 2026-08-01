@@ -9813,7 +9813,8 @@
 
         function renderOwnerAllTenants() {
             let allBeds = [];
-            const targetHids = Array.from(new Set([...getOwnerHostelIds(), ...Object.keys(rooms)]));
+            const seenKeys = new Set();
+            const targetHids = Array.from(new Set([...getOwnerHostelIds().map(String), ...Object.keys(rooms).map(String)]));
             targetHids.forEach(hid => {
                 if (!rooms[hid]) return;
                 rooms[hid].forEach(r => {
@@ -9821,13 +9822,17 @@
                         r.beds.forEach((b, idx) => {
                             const tenantName = b.tenant || b.tenant_name || b.name;
                             if (tenantName && !String(tenantName).startsWith('PENDING:')) {
-                                allBeds.push({ 
-                                    ...b, 
-                                    tenant: tenantName, 
-                                    num: r.num, 
-                                    hostel: hid,
-                                    hostelName: (typeof hostels !== 'undefined' && hostels[hid] ? hostels[hid].name : (hid == 1 ? 'ISHTAA PRIME' : `Hostel #${hid}`))
-                                }); 
+                                const bedKey = b.id || `${hid}-${r.num}-${b.num || idx}-${tenantName}`;
+                                if (!seenKeys.has(bedKey)) {
+                                    seenKeys.add(bedKey);
+                                    allBeds.push({ 
+                                        ...b, 
+                                        tenant: tenantName, 
+                                        num: r.num, 
+                                        hostel: hid,
+                                        hostelName: (typeof hostels !== 'undefined' && hostels[hid] ? hostels[hid].name : (String(hid) === '1' ? 'ISHTAA PRIME' : `Hostel #${hid}`))
+                                    }); 
+                                }
                             }
                         });
                     }
@@ -9854,7 +9859,7 @@
                 const tName = getDisplayName(b.tenant || 'Tenant');
                 const initials = tName.split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase() || 'TN';
                 const statusStr = b.rentStatus || 'pending';
-                const hName = b.hostelName || (b.hostel == 1 ? 'ISHTAA PRIME' : `Hostel #${b.hostel}`);
+                const hName = b.hostelName || (String(b.hostel) === '1' ? 'ISHTAA PRIME' : `Hostel #${b.hostel}`);
                 
                 return `
                     <tr>
@@ -9877,14 +9882,21 @@
 
         function viewTenantProfile(tenantName) {
             let allBeds = [];
-            const targetHids = Array.from(new Set([...getOwnerHostelIds(), ...Object.keys(rooms)]));
+            const seenKeys = new Set();
+            const targetHids = Array.from(new Set([...getOwnerHostelIds().map(String), ...Object.keys(rooms).map(String)]));
             targetHids.forEach(hid => {
                 if (!rooms[hid]) return;
                 rooms[hid].forEach(r => {
                     if (r.beds) {
                         r.beds.forEach((b, idx) => { 
                             const tName = b.tenant || b.tenant_name || b.name;
-                            if (tName) allBeds.push({ ...b, tenant: tName, num: r.num, hostel: hid }); 
+                            if (tName) {
+                                const bedKey = b.id || `${hid}-${r.num}-${b.num || idx}-${tName}`;
+                                if (!seenKeys.has(bedKey)) {
+                                    seenKeys.add(bedKey);
+                                    allBeds.push({ ...b, tenant: tName, num: r.num, hostel: hid }); 
+                                }
+                            }
                         });
                     }
                 });
