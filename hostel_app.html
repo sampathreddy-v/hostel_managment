@@ -7546,6 +7546,8 @@
                     if (typeof renderOwnerAllTenants === 'function') renderOwnerAllTenants();
                 } else if (secId === 'o-occupancy') {
                     if (typeof renderOwnerOccupancy === 'function') renderOwnerOccupancy();
+                } else if (secId === 'o-rent') {
+                    if (typeof renderOwnerRentTable === 'function') renderOwnerRentTable('all');
                 }
             } catch (err) {
                 console.warn('[ownerTab] Tab switch notice:', err);
@@ -9334,19 +9336,39 @@
             return '';
         }
 
-        function renderOwnerRentTable(filter) {
+        function renderOwnerRentTable(filter = 'all') {
             let allBeds = [];
-            [1, 2].forEach(hid => {
+            const seenKeys = new Set();
+            const targetHids = Array.from(new Set([...getOwnerHostelIds().map(String), ...Object.keys(rooms).map(String)]));
+
+            targetHids.forEach(hid => {
+                if (!rooms[hid]) return;
                 rooms[hid].forEach(r => {
-                    r.beds.forEach((b, idx) => {
-                        if (b.tenant) allBeds.push({ ...b, num: r.num, bedIdx: idx + 1, hostel: hid });
-                    });
+                    if (r.beds) {
+                        r.beds.forEach((b, idx) => {
+                            const tenantName = b.tenant || b.tenant_name || b.name;
+                            if (tenantName && !String(tenantName).startsWith('PENDING:')) {
+                                const bedKey = b.id || `${hid}-${r.num}-${b.num || idx}-${tenantName}`;
+                                if (!seenKeys.has(bedKey)) {
+                                    seenKeys.add(bedKey);
+                                    allBeds.push({ 
+                                        ...b, 
+                                        tenant: tenantName, 
+                                        num: r.num, 
+                                        bedIdx: idx + 1, 
+                                        hostel: hid,
+                                        hostelName: (typeof hostels !== 'undefined' && hostels[hid] ? hostels[hid].name : (String(hid) === '1' ? 'ISHTAA PRIME' : `Hostel #${hid}`))
+                                    });
+                                }
+                            }
+                        });
+                    }
                 });
             });
 
             // Calculate global statistics from all occupied beds (before filter)
             let paidCount = allBeds.filter(b => b.rentStatus === 'paid').length;
-            let pendingCount = allBeds.filter(b => b.rentStatus === 'pending').length;
+            let pendingCount = allBeds.filter(b => !b.rentStatus || b.rentStatus === 'pending').length;
             let overdueCount = allBeds.filter(b => b.rentStatus === 'overdue').length;
             let totalCount = allBeds.length;
 
@@ -9362,27 +9384,39 @@
             if (totalEl) totalEl.textContent = totalCount;
 
             if (filter === 'paid') allBeds = allBeds.filter(b => b.rentStatus === 'paid');
-            else if (filter === 'pending') allBeds = allBeds.filter(b => b.rentStatus === 'pending');
+            else if (filter === 'pending') allBeds = allBeds.filter(b => !b.rentStatus || b.rentStatus === 'pending');
             else if (filter === 'overdue') allBeds = allBeds.filter(b => b.rentStatus === 'overdue');
-            else if (filter === 'h1') allBeds = allBeds.filter(b => b.hostel === 1);
-            else if (filter === 'h2') allBeds = allBeds.filter(b => b.hostel === 2);
-            else if (filter === 'h3') allBeds = allBeds.filter(b => b.hostel === 3);
-            document.getElementById('owner-rent-table').innerHTML = allBeds.map(b => {
+            else if (filter === 'h1') allBeds = allBeds.filter(b => String(b.hostel) === '1');
+            else if (filter === 'h2') allBeds = allBeds.filter(b => String(b.hostel) === '2');
+            else if (filter === 'h3') allBeds = allBeds.filter(b => String(b.hostel) === '3');
+
+            const tableEl = document.getElementById('owner-rent-table');
+            if (!tableEl) return;
+
+            if (allBeds.length === 0) {
+                tableEl.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--ink3)">No occupied beds found for rent tracking.</td></tr>`;
+                return;
+            }
+
+            tableEl.innerHTML = allBeds.map(b => {
                 const proratedRent = getProratedRentForBed(b);
                 const isProrated = proratedRent < Number(b.rent || 5500);
                 const proratedStr = isProrated ? `<br><span style="font-size:10px;color:var(--accent);font-weight:600;">(Prorated)</span>` : '';
                 const lateFee = getLateFeeForBed(b);
                 const lateFeeStr = lateFee > 0 ? `<br><span style="font-size:11px;color:var(--red)">+ ₹${lateFee} (Fine)</span>` : '';
+                const hName = b.hostelName || (String(b.hostel) === '1' ? 'ISHTAA PRIME' : `Hostel #${b.hostel}`);
+                const statusStr = b.rentStatus || 'pending';
+
                 return `
                 <tr>
-                  <td><div class="flex gap8"><div class="ava" style="width:30px;height:30px;font-size:10px">${getDisplayName(b.tenant).split(' ').map(x => x[0]).join('')}</div><span style="font-weight:500">${getDisplayName(b.tenant)}</span></div></td>
-                  <td><span class="badge badge-blue">H${b.hostel}</span></td>
-                  <td class="mono">${b.num} <span style="font-size:11px;color:var(--ink3)">(Bed ${b.bedIdx})</span></td>
-                  <td style="font-weight:600">₹${proratedRent.toLocaleString()}${proratedStr}${lateFeeStr}</td>
+                  <td><div class="flex gap8" style="align-items:center;"><div class="ava" style="width:30px;height:30px;font-size:10px">${getDisplayName(b.tenant).split(' ').map(x => x[0]).join('')}</div><span style="font-weight:600">${getDisplayName(b.tenant)}</span></div></td>
+                  <td><span class="badge badge-blue" style="font-weight:700;">${hName}</span></td>
+                  <td class="mono" style="font-weight:700;">Room ${b.num} <span style="font-size:11px;color:var(--ink3)">(Bed ${b.bedIdx})</span></td>
+                  <td style="font-weight:700; color:var(--ink);">₹${proratedRent.toLocaleString()}${proratedStr}${lateFeeStr}</td>
                   <td style="color:var(--ink3)">Jun 5, 2025</td>
-                  <td>${rentBadge(b.rentStatus)}</td>
+                  <td>${rentBadge(statusStr)}</td>
                   <td><div class="flex gap8">
-                    ${b.rentStatus !== 'paid' ? `<button class="btn-sm btn-ghost" onclick="sendRentReminder(this, '${(b.tenant || '').replace(/'/g, "\\'")}', '${b.tenant_email || ''}', '${b.tenant_phone || ''}', ${proratedRent}, ${b.hostel}, '${b.num}', '${(b.father_email || '').replace(/'/g, "\\'")}', '${b.father_phone || ''}')">Remind</button>` : ''}
+                    ${statusStr !== 'paid' ? `<button class="btn-sm btn-ghost" style="font-weight:700; cursor:pointer;" onclick="sendRentReminder(this, '${(b.tenant || '').replace(/'/g, "\\'")}', '${b.tenant_email || ''}', '${b.tenant_phone || ''}', ${proratedRent}, ${b.hostel}, '${b.num}', '${(b.father_email || '').replace(/'/g, "\\'")}', '${b.father_phone || ''}')">Remind</button>` : ''}
                   </div></td>
                 </tr>`;
             }).join('');
