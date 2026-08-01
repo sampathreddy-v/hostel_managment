@@ -7542,6 +7542,10 @@
                     if (typeof renderOwnerExpenses === 'function') renderOwnerExpenses();
                 } else if (secId === 'o-subscription') {
                     if (typeof renderOwnerSubscription === 'function') renderOwnerSubscription();
+                } else if (secId === 'o-tenants') {
+                    if (typeof renderOwnerAllTenants === 'function') renderOwnerAllTenants();
+                } else if (secId === 'o-occupancy') {
+                    if (typeof renderOwnerOccupancy === 'function') renderOwnerOccupancy();
                 }
             } catch (err) {
                 console.warn('[ownerTab] Tab switch notice:', err);
@@ -7925,6 +7929,8 @@
                     if (typeof renderManagerUpiPayments === 'function') renderManagerUpiPayments();
                 } else if (secId === 'm-expenses') {
                     if (typeof renderMgrExpenses === 'function') renderMgrExpenses();
+                } else if (secId === 'm-tenants') {
+                    if (typeof renderMgrTenants === 'function') renderMgrTenants();
                 }
             } catch (err) {
                 console.warn('[mgrTab] Tab switch notice:', err);
