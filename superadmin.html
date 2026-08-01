@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vustela Super Admin Control Center</title>
+  <meta name="description" content="Super Admin Portal for Vustela SaaS Gateway. Manage hostel registration requests, subscription plans, and platform revenue.">
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body style="background-color: #070a12; color: #f8fafc;">
+
+  <!-- Master Admin Security PIN Overlay Modal -->
+  <div id="adminPinOverlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(7, 10, 18, 0.96); backdrop-filter: blur(25px); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+    <div style="background: #111827; border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 20px; padding: 2.5rem 2rem; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);">
+      <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(244, 63, 94, 0.15); color: #f43f5e; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1.25rem auto;">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem; font-family: 'Outfit', sans-serif;">Master Admin Access</h2>
+      <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.5rem;">
+        This portal is restricted to Vustela Super Admin only. Please enter your Master Passcode to unlock.
+      </p>
+
+      <form onsubmit="event.preventDefault(); verifyAdminPin();">
+        <div style="margin-bottom: 1.25rem;">
+          <input type="password" id="adminPinInput" class="form-control" placeholder="Enter Master Passcode..." style="text-align: center; font-size: 1.25rem; letter-spacing: 0.25em; padding: 0.75rem;" required autofocus>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; background: #d91b5c; padding: 0.75rem;">
+          <i class="fa-solid fa-key"></i> Unlock Super Admin Dashboard
+        </button>
+      </form>
+      <div style="margin-top: 1rem;">
+        <a href="index.html" style="color: var(--text-muted); font-size: 0.85rem; text-decoration: none;">&larr; Return to Public Gateway</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Main Interface (Hidden until PIN verified) -->
+  <div id="adminMainContent" style="display: none;">
+
+    <!-- Admin Header Navigation -->
+    <header class="app-header" style="background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.12);">
+      <div class="header-container">
+        
+        <!-- Top Left Branding -->
+        <a href="superadmin.html" class="brand-logo">
+          <div class="brand-icon" style="background: linear-gradient(135deg, #d91b5c, #a855f7);">V</div>
+          <div>
+            <div class="brand-name">Vustela <span style="color: #d91b5c; font-weight: 700;">Super Admin</span></div>
+          </div>
+          <span class="brand-tag" style="background: rgba(217, 27, 92, 0.2); color: #f43f5e; border-color: rgba(217, 27, 92, 0.4);">Control Center</span>
+        </a>
+
+        <!-- Top Right: ONLY 3-Lines Hamburger Menu Button -->
+        <div class="nav-actions">
+          <button class="hamburger-btn" onclick="toggleAdminDrawer()" title="Menu">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Right Slide-Out Navigation Drawer for Super Admin -->
+    <div id="adminDrawerOverlay" class="drawer-overlay" onclick="toggleAdminDrawer()"></div>
+    <aside id="adminNavDrawer" class="nav-drawer-right">
+      
+      <!-- Drawer Header with Square Close Button -->
+      <div class="drawer-right-header">
+        <button class="drawer-square-close" onclick="toggleAdminDrawer()">&times;</button>
+      </div>
+
+      <!-- Inside Drawer: Action Buttons & Navigation Links -->
+      <div style="padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; border-bottom: 1px solid var(--border-dark);">
+        <a href="index.html" class="btn btn-secondary" style="width: 100%; justify-content: center;">
+          <i class="fa-solid fa-globe"></i> View Public Gateway
+        </a>
+        <button class="btn btn-emerald" onclick="location.reload()" style="width: 100%; justify-content: center;">
+          <i class="fa-solid fa-rotate"></i> Refresh Requests
+        </button>
+      </div>
+
+      <nav class="drawer-right-menu">
+        <a href="javascript:void(0)" class="drawer-right-link active" onclick="switchAdminTab('registrations'); toggleAdminDrawer();">
+          <i class="fa-solid fa-building-flag text-rose"></i> Hostel Registrations
+        </a>
+        <a href="javascript:void(0)" class="drawer-right-link" onclick="switchAdminTab('subscriptions'); toggleAdminDrawer();">
+          <i class="fa-solid fa-credit-card text-purple"></i> Subscription Requests
+        </a>
+        <a href="javascript:void(0)" class="drawer-right-link" onclick="switchAdminTab('hostels'); toggleAdminDrawer();">
+          <i class="fa-solid fa-city text-cyan"></i> Live Hostels Directory
+        </a>
+        <a href="index.html" class="drawer-right-link" onclick="toggleAdminDrawer()">
+          <i class="fa-solid fa-arrow-left"></i> Exit to Gateway
+        </a>
+      </nav>
+
+    </aside>
+
+    <!-- Admin Main Dashboard Wrapper -->
+    <main class="main-wrapper" style="padding-top: 2rem;">
+
+      <!-- Metric Cards Top Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+        
+        <!-- Metric 1: Pending Hostel Registrations -->
+        <div style="background: var(--bg-card-dark); border: 1px solid var(--border-dark); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Pending Registration Requests</div>
+            <div style="font-size: 2.2rem; font-weight: 800; color: #f43f5e; font-family: 'Outfit', sans-serif;" id="statPendingRegs">0</div>
+          </div>
+          <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(244, 63, 94, 0.15); color: #f43f5e; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+            <i class="fa-solid fa-building-circle-check"></i>
+          </div>
+        </div>
+
+        <!-- Metric 2: Active Subscriptions -->
+        <div style="background: var(--bg-card-dark); border: 1px solid var(--border-dark); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Pending Subscriptions</div>
+            <div style="font-size: 2.2rem; font-weight: 800; color: #a855f7; font-family: 'Outfit', sans-serif;" id="statPendingSubs">0</div>
+          </div>
+          <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(168, 85, 247, 0.15); color: #a855f7; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+            <i class="fa-solid fa-crown"></i>
+          </div>
+        </div>
+
+        <!-- Metric 3: Total Active Hostels -->
+        <div style="background: var(--bg-card-dark); border: 1px solid var(--border-dark); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Active Live Hostels</div>
+            <div style="font-size: 2.2rem; font-weight: 800; color: #06b6d4; font-family: 'Outfit', sans-serif;" id="statActiveHostels">0</div>
+          </div>
+          <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(6, 182, 212, 0.15); color: #06b6d4; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+            <i class="fa-solid fa-building"></i>
+          </div>
+        </div>
+
+        <!-- Metric 4: Total Subscription Revenue -->
+        <div style="background: var(--bg-card-dark); border: 1px solid var(--border-dark); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Monthly SaaS Revenue</div>
+            <div style="font-size: 2.2rem; font-weight: 800; color: #10b981; font-family: 'Outfit', sans-serif;" id="statTotalRev">₹0</div>
+          </div>
+          <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+            <i class="fa-solid fa-indian-rupee-sign"></i>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <div style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border-dark); padding-bottom: 0.75rem;">
+        <button class="btn btn-secondary" id="atab-registrations" onclick="switchAdminTab('registrations')" style="background: var(--primary-600); color: #fff;">
+          <i class="fa-solid fa-building-flag"></i> Hostel Registrations (<span id="countRegBadge">0</span>)
+        </button>
+        <button class="btn btn-secondary" id="atab-subscriptions" onclick="switchAdminTab('subscriptions')">
+          <i class="fa-solid fa-credit-card"></i> Subscription Requests (<span id="countSubBadge">0</span>)
+        </button>
+        <button class="btn btn-secondary" id="atab-hostels" onclick="switchAdminTab('hostels')">
+          <i class="fa-solid fa-city"></i> Live Hostels Directory
+        </button>
+      </div>
+
+      <!-- TAB 1: HOSTEL REGISTRATION REQUESTS TABLE -->
+      <section id="sectionRegistrations" style="display: block;">
+        <div style="background: var(--bg-card-dark); border: 1px solid var(--border-dark); border-radius: 20px; padding: 2rem; box-shadow: var(--glass-shadow);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <div>
+              <h2 style="font-size: 1.5rem; font-weight: 800; color: #fff;"><i class="fa-solid fa-building-circle-exclamation text-rose"></i> Incoming Hostel Registration Requests</h2>
+              <p style="color: var(--text-muted); font-size: 0.875rem;">Review, approve, or reject new hostel onboarding requests submitted on Vustela Portal.</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="clearAllRequests('regs')"><i class="fa-solid fa-trash"></i> Clear Processed</button>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-dark); color: var(--text-muted);">
+                  <th style="padding: 1rem;">Hostel Name</th>
+                  <th style="padding: 1rem;">Location</th>
+                  <th style="padding: 1rem;">Category</th>
+                  <th style="padding: 1rem;">Owner / Manager</th>
+                  <th style="padding: 1rem;">Phone</th>
+                  <th style="padding: 1rem;">Date</th>
+                  <th style="padding: 1rem;">Status</th>
+                  <th style="padding: 1rem; text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tblRegistrationRequests">
+                <!-- Dynamically populated via admin script -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: SUBSCRIPTION & PAYMENT REQUESTS TABLE -->
+      <section id="sectionSubscriptions" style="display: none;">
+        
+        <!-- SAAS SETTINGS GRID -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+          
+          <!-- SAAS MASTER UPI SETTINGS CARD -->
+          <div style="background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 16px; padding: 1.25rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(168, 85, 247, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--accent-purple); flex-shrink: 0;">
+                <i class="fa-solid fa-qrcode"></i>
+              </div>
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); font-weight: 700;">Vustela SaaS Master Payment Receiver</div>
+                <div style="font-size: 0.95rem; font-weight: 800; color: #fff;">Official Master UPI ID for Subscription QR Codes</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem; background: var(--bg-dark); padding: 0.5rem 0.75rem; border-radius: 12px; border: 1px solid var(--border-dark);">
+              <i class="fa-solid fa-wallet" style="color: var(--accent-cyan);"></i>
+              <input type="text" id="inputMasterUpiId" value="vustelahostels@upi" style="background: none; border: none; color: #fff; font-size: 0.9rem; font-weight: 700; outline: none; width: 100%; font-family: monospace;">
+              <button class="btn btn-primary btn-sm" onclick="saveMasterUpiId()" style="background: linear-gradient(135deg, #a855f7, #6366f1); border: none; border-radius: 8px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+                <i class="fa-solid fa-floppy-disk"></i> Update UPI
+              </button>
+            </div>
+          </div>
+
+          <!-- SAAS EMAIL ALERT SETTINGS CARD -->
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 16px; padding: 1.25rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #10b981; flex-shrink: 0;">
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+              <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); font-weight: 700;">SuperAdmin Instant Email Notifications</div>
+                <div style="font-size: 0.95rem; font-weight: 800; color: #fff;">Gmail Address to Receive New Subscription Requests</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem; background: var(--bg-dark); padding: 0.5rem 0.75rem; border-radius: 12px; border: 1px solid var(--border-dark);">
+              <i class="fa-solid fa-at" style="color: #10b981;"></i>
+              <input type="email" id="inputAdminEmail" value="vustelasrinivasreddy456@gmail.com" style="background: none; border: none; color: #fff; font-size: 0.9rem; font-weight: 700; outline: none; width: 100%;">
+              <button class="btn btn-emerald btn-sm" onclick="saveAdminEmail()" style="border: none; border-radius: 8px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+                <i class="fa-solid fa-floppy-disk"></i> Save Gmail
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SUBSCRIPTION REQUESTS TABLE CARD -->
+        <div style="background: var(--bg-card-dark); border: 1px solid var(--border-dark); border-radius: 20px; padding: 2rem; box-shadow: var(--glass-shadow);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h2 style="font-size: 1.5rem; font-weight: 800; color: #fff;"><i class="fa-solid fa-crown text-purple"></i> Subscription Purchase Requests</h2>
+              <p style="color: var(--text-muted); font-size: 0.875rem;">Approve subscription upgrade requests from hostel owners (Pro PG Manager ₹499 / Enterprise ₹999).</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-secondary btn-sm" onclick="resetSamplePendingSubscription()"><i class="fa-solid fa-plus-circle text-cyan"></i> Add Sample Pending Request</button>
+              <button class="btn btn-secondary btn-sm" onclick="clearAllRequests('subs')"><i class="fa-solid fa-trash"></i> Clear Processed</button>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-dark); color: var(--text-muted);">
+                  <th style="padding: 1rem;">Hostel Name</th>
+                  <th style="padding: 1rem;">Subscription Plan</th>
+                  <th style="padding: 1rem;">Price</th>
+                  <th style="padding: 1rem;">UTR No / Ref</th>
+                  <th style="padding: 1rem;">Payment Screenshot</th>
+                  <th style="padding: 1rem;">Owner Contact</th>
+                  <th style="padding: 1rem;">Date</th>
+                  <th style="padding: 1rem;">Status</th>
+                  <th style="padding: 1rem; text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tblSubscriptionRequests">
+                <!-- Dynamically populated via admin script -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: LIVE HOSTELS DIRECTORY MATRIX -->
+      <section id="sectionHostels" style="display: none;">
+        <div style="background: var(--bg-card-dark); border: 1px solid var(--border-dark); border-radius: 20px; padding: 2rem; box-shadow: var(--glass-shadow);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <div>
+              <h2 style="font-size: 1.5rem; font-weight: 800; color: #fff;"><i class="fa-solid fa-city text-cyan"></i> Active Live Hostels Matrix</h2>
+              <p style="color: var(--text-muted); font-size: 0.875rem;">All active registered hostels currently operational on Vustela Portal platform.</p>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-dark); color: var(--text-muted);">
+                  <th style="padding: 1rem;">ID</th>
+                  <th style="padding: 1rem;">Hostel Name</th>
+                  <th style="padding: 1rem;">Location</th>
+                  <th style="padding: 1rem;">Code</th>
+                  <th style="padding: 1rem;">Category</th>
+                  <th style="padding: 1rem;">Subscription Rate (Per Bed)</th>
+                  <th style="padding: 1rem; text-align: right;">Portal Action</th>
+                </tr>
+              </thead>
+              <tbody id="tblLiveHostels">
+                <!-- Dynamically populated via admin script -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- PAYMENT SCREENSHOT PREVIEW MODAL -->
+  <div id="screenshotModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 24px;">
+    <div style="background: var(--bg-card-dark); border: 1px solid var(--border-dark); border-radius: 20px; max-width: 600px; width: 100%; padding: 24px; box-shadow: var(--glass-shadow); position: relative;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-dark); padding-bottom: 12px;">
+        <h3 style="color: #fff; font-size: 1.1rem; font-weight: 800;"><i class="fa-solid fa-receipt text-purple"></i> Payment Screenshot Verification</h3>
+        <button onclick="closeScreenshotModal()" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">×</button>
+      </div>
+      <div style="text-align: center; background: #000; padding: 12px; border-radius: 12px; margin-bottom: 16px;">
+        <img id="imgScreenshotFull" src="" alt="Payment Screenshot" style="max-width: 100%; max-height: 450px; border-radius: 8px;">
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted);">
+        <div>UTR: <strong id="lblScreenshotUTR" style="color: var(--accent-cyan); font-family: monospace;">-</strong></div>
+        <div>Hostel: <strong id="lblScreenshotHostel" style="color: #fff;">-</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOSTEL INFORMATION DETAILS MODAL -->
+  <div id="hostelInfoModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 24px;">
+    <div style="background: var(--bg-card-dark); border: 1px solid var(--border-dark); border-radius: 24px; max-width: 650px; width: 100%; padding: 28px; box-shadow: var(--glass-shadow); position: relative; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-dark); padding-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(6, 182, 212, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: var(--accent-cyan);">
+            <i class="fa-solid fa-building"></i>
+          </div>
+          <div>
+            <h3 id="infoHostelTitle" style="color: #fff; font-size: 1.25rem; font-weight: 800; margin: 0;">ISHTAA PRIME</h3>
+            <span id="infoHostelSub" style="color: var(--accent-cyan); font-size: 0.8rem; font-weight: 700;">Code: VUS-101 • Boys PG</span>
+          </div>
+        </div>
+        <button onclick="closeHostelInfoModal()" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">×</button>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px;">
+        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 14px; padding: 12px; text-align: center;">
+          <div style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Total Capacity</div>
+          <div id="infoTotalBeds" style="font-size: 1.2rem; font-weight: 900; color: #38bdf8; margin-top: 2px;">25 Beds</div>
+        </div>
+        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 14px; padding: 12px; text-align: center;">
+          <div style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Occupied Beds</div>
+          <div id="infoOccupiedBeds" style="font-size: 1.2rem; font-weight: 900; color: #10b981; margin-top: 2px;">18 Beds</div>
+        </div>
+        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 14px; padding: 12px; text-align: center;">
+          <div style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Vacant Beds</div>
+          <div id="infoVacantBeds" style="font-size: 1.2rem; font-weight: 900; color: #f59e0b; margin-top: 2px;">7 Beds</div>
+        </div>
+        <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 14px; padding: 12px; text-align: center;">
+          <div style="font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Sub Rate / Bed</div>
+          <div id="infoSubRate" style="font-size: 1.2rem; font-weight: 900; color: #c084fc; margin-top: 2px;">₹25/mo</div>
+        </div>
+      </div>
+
+      <!-- Detailed Info List -->
+      <div style="background: #090d16; border: 1px solid #1e293b; border-radius: 16px; padding: 18px; margin-bottom: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; font-size: 0.88rem;">
+          <div>
+            <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Location & Address:</span>
+            <strong id="infoLocation" style="color: #fff;">NARSINGI, HYDERABAD</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Hostel Code:</span>
+            <strong id="infoCode" style="color: var(--accent-cyan); font-family: monospace;">VUS-101</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Manager / Owner Name:</span>
+            <strong id="infoOwnerName" style="color: #fff;">K. Sampath Reddy</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Contact Phone:</span>
+            <strong id="infoOwnerPhone" style="color: #fff;">+91 98765 43210</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Subscription Plan Status:</span>
+            <strong id="infoSubPlan" style="color: #10b981;">Active 15-Day Free Trial</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Estimated Monthly SaaS Bill:</span>
+            <strong id="infoSaaSBill" style="color: #c084fc;">₹625 / month</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button id="infoBtnEditRate" class="btn btn-secondary btn-sm" style="flex: 1; border-color: rgba(168,85,247,0.4); color: #c084fc; cursor: pointer;">
+          <i class="fa-solid fa-pen-to-square"></i> Edit Subscription Cost
+        </button>
+        <a id="infoBtnOpenPortal" href="#" target="_blank" class="btn btn-primary btn-sm" style="flex: 1; text-align: center; text-decoration: none;">
+          <i class="fa-solid fa-arrow-right"></i> Open Owner Portal
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Super Admin Script -->
+  <script src="js/superadmin.js"></script>
+</body>
+</html>

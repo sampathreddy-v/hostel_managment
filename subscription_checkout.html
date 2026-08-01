@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VUSTELA - Subscription Payment Checkout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #090d16;
+            --card-bg: #0f172a;
+            --accent: #a855f7;
+            --accent-green: #10b981;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: #1e293b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .checkout-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 520px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .brand-title {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #c084fc, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .summary-box {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .summary-row label { color: var(--text-sub); }
+        .summary-row val { font-weight: 700; color: #fff; }
+
+        .total-row {
+            border-top: 1px dashed #334155;
+            padding-top: 12px;
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .qr-section {
+            text-align: center;
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .qr-box {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 12px 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .upi-id-badge {
+            background: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-control {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+        }
+
+        .preview-img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid #334155;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #d91b5c, #a855f7);
+            color: #fff;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(217, 27, 92, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-submit:hover { transform: translateY(-2px); }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #10b981;
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            display: none;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="checkout-card">
+        <div class="header">
+            <div class="brand-title">VUSTELA SAAS PAYMENT</div>
+            <p style="color: var(--text-sub); font-size: 13px; margin-top: 4px;">Complete your subscription upgrade via UPI Payment</p>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-row">
+                <label>Hostel Name:</label>
+                <val id="chk-hostel">VUSTELA HOSTELS</val>
+            </div>
+            <div class="summary-row">
+                <label>Selected Plan:</label>
+                <val id="chk-plan" style="color: #c084fc;">4 Months Plan</val>
+            </div>
+            <div class="summary-row">
+                <label>Hostel Capacity:</label>
+                <val id="chk-beds" style="color: #38bdf8;">7 Beds</val>
+            </div>
+            <div class="total-row">
+                <span style="font-weight: 800; font-size: 15px;">Total Amount Payable:</span>
+                <strong id="chk-total" style="font-size: 22px; color: #10b981; font-weight: 900;">₹630</strong>
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <div style="font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Scan QR Code using PhonePe / Google Pay / Paytm</div>
+            
+            <div class="qr-box">
+                <img id="chk-qr-img" src="" alt="UPI Payment QR Code" width="180" height="180">
+            </div>
+
+            <div>
+                <div class="upi-id-badge" onclick="copyUPI()">
+                    <i class="fa-solid fa-copy"></i> UPI ID: <span id="chk-upi-text">vustelahostels@upi</span>
+                </div>
+            </div>
+        </div>
+
+        <form id="payment-form" onsubmit="handlePaymentSubmit(event)">
+            <div class="input-group">
+                <label>Contact Phone Number</label>
+                <input type="text" id="chk-phone" class="input-control" placeholder="+91 98765 43210" required>
+            </div>
+
+            <div class="input-group">
+                <label>12-Digit UTR / Transaction Reference Number</label>
+                <input type="text" id="chk-utr" class="input-control" placeholder="e.g. 421098765432" maxlength="12" required pattern="[0-9]{12}" title="Please enter valid 12-digit UTR number">
+            </div>
+
+            <div class="input-group">
+                <label>Upload Payment Screenshot</label>
+                <input type="file" id="chk-file" class="input-control" accept="image/*" required onchange="previewScreenshot(event)">
+                <img id="img-preview" class="preview-img" alt="Payment Screenshot Preview">
+            </div>
+
+            <button type="submit" class="btn-submit">
+                🚀 Submit Payment Verification
+            </button>
+        </form>
+    </div>
+
+    <div id="toast" class="toast">Payment Verified & Submitted! Redirecting...</div>
+
+    <script>
+        let screenshotBase64 = '';
+        let params = new URLSearchParams(window.location.search);
+        
+        const hostelName = params.get('hostel_name') || 'VUSTELA HOSTELS';
+        const hostelId = params.get('hostel_id') || '1';
+        const planName = params.get('plan') || '4 Months Plan';
+        const beds = params.get('beds') || '7';
+        const total = params.get('amount') || '630';
+
+        document.getElementById('chk-hostel').textContent = hostelName;
+        document.getElementById('chk-plan').textContent = planName;
+        document.getElementById('chk-beds').textContent = `${beds} Beds`;
+        document.getElementById('chk-total').textContent = `₹${Number(total).toLocaleString()}`;
+
+        const masterUpi = localStorage.getItem('vustela_saas_upi_id') || 'vustelahostels@upi';
+        const upiTxtEl = document.getElementById('chk-upi-text');
+        if (upiTxtEl) upiTxtEl.textContent = masterUpi;
+
+        // QR Code URL
+        const upiUrl = `upi://pay?pa=${encodeURIComponent(masterUpi)}&pn=VUSTELA%20HOSTELS&am=${total}&cu=INR`;
+        document.getElementById('chk-qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUrl)}`;
+
+        function copyUPI() {
+            navigator.clipboard.writeText(masterUpi);
+            alert(`UPI ID copied to clipboard: ${masterUpi}`);
+        }
+
+        function previewScreenshot(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                screenshotBase64 = evt.target.result;
+                const img = document.getElementById('img-preview');
+                img.src = screenshotBase64;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function handlePaymentSubmit(e) {
+            e.preventDefault();
+            const phone = document.getElementById('chk-phone').value.trim();
+            const utr = document.getElementById('chk-utr').value.trim();
+
+            if (!utr || utr.length < 12) {
+                alert('Please enter a valid 12-digit UTR transaction number.');
+                return;
+            }
+
+            const subRequest = {
+                id: Date.now(),
+                hostel_name: hostelName,
+                hostel_id: Number(hostelId),
+                plan: `${planName} (${beds} Beds)`,
+                price: `₹${Number(total).toLocaleString()}`,
+                phone: phone,
+                utr: utr,
+                screenshot: screenshotBase64,
+                date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+                status: 'Pending'
+            };
+
+            // Save to local storage for SuperAdmin sync
+            let existing = JSON.parse(localStorage.getItem('vustela_sub_requests')) || [];
+            existing.unshift(subRequest);
+            localStorage.setItem('vustela_sub_requests', JSON.stringify(existing));
+
+            // Send instant email notification to SuperAdmin Gmail
+            const adminEmail = localStorage.getItem('vustela_admin_email') || 'vustelasrinivasreddy456@gmail.com';
+            fetch(`https://formsubmit.co/ajax/${encodeURIComponent(adminEmail)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    _subject: `🚨 NEW SUBSCRIPTION REQUEST: ${subRequest.hostel_name} (${subRequest.plan}) - ${subRequest.price}`,
+                    Hostel_Name: subRequest.hostel_name,
+                    Subscription_Plan: subRequest.plan,
+                    Amount: subRequest.price,
+                    UTR_Number: subRequest.utr,
+                    Owner_Phone: subRequest.phone,
+                    Date: subRequest.date
+                })
+            }).catch(err => console.warn('Email dispatch warning:', err));
+
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+
+            setTimeout(() => {
+                window.location.href = `hostel_app.html?sub_submitted=true`;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

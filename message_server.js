@@ -1189,6 +1189,91 @@ const server = http.createServer((req, res) => {
                     res.end(JSON.stringify({ success: true, emailResults, waResults, targetEmails, targetPhones }));
                 }
 
+                // --- NEW PG REGISTRATION NOTIFICATION (ALERT TO SUPERADMIN / vustela.hostels@gmail.com) ---
+                else if (req.url === '/api/notify-new-hostel') {
+                    const { name, loc, category, mgr, phone, email, rooms } = data;
+                    console.log(`\n[Server] New PG Registration Request received: ${name} (${loc}) by ${mgr}`);
+
+                    const targetEmail = 'vustela.hostels@gmail.com';
+                    const emailSubject = `🔔 New PG Registration Request — ${name} (${loc})`;
+                    const emailHtml = `
+                      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+                        <div style="background: #0f172a; color: #ffffff; padding: 24px; text-align: center;">
+                          <h1 style="margin: 0; font-size: 22px; color: #38bdf8;">🏢 NEW PG REGISTRATION REQUEST</h1>
+                          <p style="margin: 6px 0 0 0; opacity: 0.8; font-size: 14px;">Vustela Multi-Tenant PG Platform</p>
+                        </div>
+                        <div style="padding: 24px; color: #334155;">
+                          <p style="font-size: 15px; margin-top: 0;">A new hostel owner has submitted a registration request on the Vustela Gateway.</p>
+                          <table style="width: 100%; border-collapse: collapse; margin: 20px 0; background: #f8fafc; border-radius: 8px; overflow: hidden;">
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px; font-weight: 600; color: #64748b;">Hostel / PG Name</td><td style="padding: 12px; font-weight: 700; color: #0f172a;">${name}</td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px; font-weight: 600; color: #64748b;">Location / City</td><td style="padding: 12px; font-weight: 700; color: #0f172a;">${loc}</td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px; font-weight: 600; color: #64748b;">Category</td><td style="padding: 12px;">${category}</td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px; font-weight: 600; color: #64748b;">Owner Full Name</td><td style="padding: 12px; font-weight: 700;">${mgr}</td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px; font-weight: 600; color: #64748b;">Owner Email</td><td style="padding: 12px;"><a href="mailto:${email}">${email}</a></td></tr>
+                            <tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 12px; font-weight: 600; color: #64748b;">WhatsApp Phone</td><td style="padding: 12px;"><a href="tel:${phone}">${phone}</a></td></tr>
+                            <tr><td style="padding: 12px; font-weight: 600; color: #64748b;">Rooms / Capacity</td><td style="padding: 12px;">${rooms || '20 Rooms'}</td></tr>
+                          </table>
+                          <div style="background: #e0f2fe; border-left: 4px solid #0284c7; padding: 12px; border-radius: 4px; font-size: 13px; color: #0369a1;">
+                            ⚡ <strong>Action Required:</strong> Open SuperAdmin Control Center (<code>superadmin.html</code>) to review and approve this hostel request.
+                          </div>
+                        </div>
+                      </div>
+                    `;
+
+                    try {
+                        await sendEmailDirect(targetEmail, emailSubject, emailHtml);
+                        if (email && email !== targetEmail) {
+                            await sendEmailDirect(email, emailSubject, emailHtml);
+                        }
+                    } catch(e) {
+                        console.error('[Server] Failed to send registration email:', e.message);
+                    }
+
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true, message: 'Registration alert dispatched' }));
+                }
+
+                // --- HOSTEL APPROVAL CREDENTIALS DISPATCH (EMAIL & WHATSAPP TO OWNER) ---
+                else if (req.url === '/api/approve-hostel-credentials') {
+                    const { name, mgr, email, phone, password, slug } = data;
+                    console.log(`\n[Server] Approved Hostel ${name}. Dispatching credentials to ${email} / ${phone}`);
+
+                    const emailSubject = `🎉 Your Vustela Portal for ${name} Has Been Approved!`;
+                    const emailHtml = `
+                      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+                        <div style="background: #0f172a; color: #ffffff; padding: 24px; text-align: center;">
+                          <h1 style="margin: 0; font-size: 22px; color: #10b981;">🎉 HOSTEL REGISTRATION APPROVED</h1>
+                          <p style="margin: 6px 0 0 0; opacity: 0.8; font-size: 14px;">Welcome to Vustela PG Management</p>
+                        </div>
+                        <div style="padding: 24px; color: #334155;">
+                          <p style="font-size: 15px; margin-top: 0;">Dear <strong>${mgr}</strong>,</p>
+                          <p style="font-size: 14px;">Congratulations! Your registration for <strong>${name}</strong> has been reviewed and approved by Vustela SuperAdmin.</p>
+                          
+                          <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 16px; margin: 20px 0;">
+                            <h3 style="margin-top: 0; color: #0f172a; font-size: 15px;">🔑 Your Owner Login Credentials</h3>
+                            <p style="margin: 4px 0; font-size: 14px;"><strong>Email / Username:</strong> ${email}</p>
+                            <p style="margin: 4px 0; font-size: 14px;"><strong>Password:</strong> <code style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">${password || 'Vustela#2026'}</code></p>
+                            <p style="margin: 4px 0; font-size: 14px;"><strong>Hostel Portal Link:</strong> <a href="https://${slug || 'isthaprime'}.vustelamanagement.com/" style="color: #2563eb; font-weight: 600;">https://${slug || 'isthaprime'}.vustelamanagement.com/</a></p>
+                          </div>
+
+                          <p style="font-size: 13px; color: #64748b;">You can now log in to your Owner Portal, add manager profiles, allocate rooms/beds, and invite tenants.</p>
+                        </div>
+                      </div>
+                    `;
+
+                    const waText = `🎉 *HOSTEL REGISTRATION APPROVED!*\n_Vustela PG Management_\n\nDear *${mgr}*,\nYour hostel *${name}* is now live on Vustela PG Network.\n\n🔑 *Login Credentials:*\n📧 *Email:* ${email}\n🔐 *Password:* ${password || 'Vustela#2026'}\n🌐 *Portal Link:* https://${slug || 'isthaprime'}.vustelamanagement.com/\n\nLog in to your Owner Portal to create manager profiles and manage rooms.`;
+
+                    try {
+                        if (email) await sendEmailDirect(email, emailSubject, emailHtml);
+                        if (phone) await sendWhatsappDirect(phone, waText);
+                    } catch(e) {
+                        console.error('[Server] Failed to dispatch credentials:', e.message);
+                    }
+
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true, message: 'Credentials dispatched successfully' }));
+                }
+
                 // --- TEST DAILY REPORT ---
                 else if (req.url === '/test-daily-report') {
                     console.log('[Server] Manual trigger of Daily Report test');

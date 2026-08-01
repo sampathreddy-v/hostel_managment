@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register PG / Hostel — Vustela PG Management</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body style="background: var(--bg-dark); color: var(--text-light); font-family: var(--font-main); min-height: 100vh; display: flex; flex-direction: column;">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-logo">
+        <div class="brand-icon">V</div>
+        <div>
+          <div class="brand-name">VUSTELA <span style="color: var(--accent-rose); font-weight: 700;">PG MANAGEMENT</span></div>
+        </div>
+      </a>
+      <div class="header-right-group">
+        <a href="hostel_app.html?action=signin" class="btn-pg-login" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Full Page Register Form Container -->
+  <main style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 3rem 1.5rem;">
+    <div style="width: 100%; max-width: 540px; background: var(--bg-card-dark); border: 1px solid var(--border-color); border-radius: 24px; padding: 2.5rem; box-shadow: 0 20px 50px rgba(0,0,0,0.5); backdrop-filter: blur(16px);">
+      
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(244, 63, 94, 0.1); border: 1px solid var(--accent-rose); display: inline-flex; align-items: center; justify-content: center; font-size: 1.75rem; color: var(--accent-rose); margin-bottom: 1rem;">
+          <i class="fa-solid fa-building-circle-check"></i>
+        </div>
+        <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-light); margin-bottom: 0.5rem;">Register Your PG / Hostel</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;">
+          Join the Vustela network to launch a dedicated subdomain portal for your hostel management.
+        </p>
+      </div>
+
+      <form id="fullRegisterForm" onsubmit="handleFullRegister(event)">
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Hostel / PG Name *</label>
+          <input type="text" id="reg_name" class="form-control" placeholder="e.g. ISHTAA ROYAL PALACE" required style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem 1rem; color: #fff; font-size: 0.95rem;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+          <div class="form-group">
+            <label class="form-label" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Location / City *</label>
+            <input type="text" id="reg_loc" class="form-control" placeholder="e.g. NARSINGI, Hyderabad" required style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem 1rem; color: #fff; font-size: 0.95rem;">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Category</label>
+            <select id="reg_category" class="form-control" style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem 1rem; color: #fff; font-size: 0.95rem;">
+              <option value="Boys PG">Boys PG</option>
+              <option value="Girls PG">Girls PG</option>
+              <option value="Coliving">Coliving Hostel</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+          <div class="form-group">
+            <label class="form-label" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Owner Full Name *</label>
+            <input type="text" id="reg_mgr" class="form-control" placeholder="e.g. Sampath Reddy" required style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem 1rem; color: #fff; font-size: 0.95rem;">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Owner Email Address *</label>
+            <input type="email" id="reg_email" class="form-control" placeholder="owner@gmail.com" required style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem 1rem; color: #fff; font-size: 0.95rem;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.75rem;">
+          <div class="form-group">
+            <label class="form-label" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Mobile Phone (WhatsApp) *</label>
+            <input type="tel" id="reg_phone" class="form-control" placeholder="+91 98765 43210" required style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem 1rem; color: #fff; font-size: 0.95rem;">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">Total Rooms / Capacity</label>
+            <input type="text" id="reg_rooms" class="form-control" placeholder="e.g. 25 Rooms / 75 Beds" style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem 1rem; color: #fff; font-size: 0.95rem;">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-accent" style="width: 100%; padding: 1rem; font-size: 1rem; font-weight: 700; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+          <i class="fa-solid fa-check-circle"></i> Complete Registration Request
+        </button>
+      </form>
+
+      <div id="successNotice" style="display: none; text-align: center; padding: 1.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 16px; margin-top: 1rem;">
+        <h4 style="color: #10b981; margin-bottom: 0.5rem;"><i class="fa-solid fa-circle-check"></i> Registration Submitted!</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Your hostel portal space has been logged on Vustela PG Management network.</p>
+        <a href="index.html" class="btn btn-secondary btn-sm" style="text-decoration: none;">Return to Directory Gateway</a>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+  <script>
+    async function handleFullRegister(e) {
+      e.preventDefault();
+      await handleNewHostelSubmit();
+      document.getElementById('fullRegisterForm').style.display = 'none';
+      document.getElementById('successNotice').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
