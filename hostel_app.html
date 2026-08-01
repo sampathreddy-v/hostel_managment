@@ -9806,33 +9806,80 @@
 
         function renderOwnerAllTenants() {
             let allBeds = [];
-            getOwnerHostelIds().forEach(hid => {
+            const targetHids = Array.from(new Set([...getOwnerHostelIds(), ...Object.keys(rooms)]));
+            targetHids.forEach(hid => {
                 if (!rooms[hid]) return;
                 rooms[hid].forEach(r => {
-                    r.beds.forEach((b, idx) => { if (b.tenant) allBeds.push({ ...b, num: r.num, hostel: hid }); });
+                    if (r.beds) {
+                        r.beds.forEach((b, idx) => {
+                            const tenantName = b.tenant || b.tenant_name || b.name;
+                            if (tenantName && !String(tenantName).startsWith('PENDING:')) {
+                                allBeds.push({ 
+                                    ...b, 
+                                    tenant: tenantName, 
+                                    num: r.num, 
+                                    hostel: hid,
+                                    hostelName: (typeof hostels !== 'undefined' && hostels[hid] ? hostels[hid].name : (hid == 1 ? 'ISHTAA PRIME' : `Hostel #${hid}`))
+                                }); 
+                            }
+                        });
+                    }
                 });
             });
-            document.getElementById('o-all-tenants-table').innerHTML = allBeds.map(b => `
-    <tr>
-      <td><div class="flex gap8"><div class="ava" style="width:30px;height:30px;font-size:10px">${getDisplayName(b.tenant).split(' ').map(x => x[0]).join('')}</div><span style="font-weight:500">${getDisplayName(b.tenant)}</span></div></td>
-      <td><span class="badge badge-blue">H${b.hostel}</span></td>
-      <td class="mono">${b.num}</td>
-      <td>Monthly</td>
-      <td style="color:var(--ink3)">Mar 2025</td>
-      <td>${rentBadge(b.rentStatus)}</td>
-      <td><button class="btn-sm btn-ghost" onclick="viewTenantProfile('${escapeJS(b.tenant)}')">View</button></td>
-    </tr>
-  `).join('');
+
+            const table = document.getElementById('o-all-tenants-table');
+            if (!table) return;
+
+            if (allBeds.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--ink3);">
+                            <div style="font-size: 2rem; margin-bottom: 8px;">👥</div>
+                            <div style="font-weight: 700; font-size: 1.1rem; color: var(--ink);">No Occupied Tenants Found</div>
+                            <div style="font-size: 0.85rem; margin-top: 4px;">Assign beds in Room Occupancy or Onboard Tenants to see them listed here.</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            table.innerHTML = allBeds.map(b => {
+                const tName = getDisplayName(b.tenant || 'Tenant');
+                const initials = tName.split(' ').map(x => x[0]).join('').substring(0, 2).toUpperCase() || 'TN';
+                const statusStr = b.rentStatus || 'pending';
+                const hName = b.hostelName || (b.hostel == 1 ? 'ISHTAA PRIME' : `Hostel #${b.hostel}`);
+                
+                return `
+                    <tr>
+                      <td>
+                        <div class="flex gap8" style="align-items: center;">
+                          <div class="ava" style="width:32px; height:32px; font-size:11px; font-weight: 700; background: var(--accent); color:#fff; display: flex; align-items:center; justify-content:center; border-radius: 50%;">${initials}</div>
+                          <span style="font-weight:700; color: var(--ink);">${tName}</span>
+                        </div>
+                      </td>
+                      <td><span class="badge badge-blue" style="font-weight:700;">${hName}</span></td>
+                      <td class="mono" style="font-weight:700;">Room ${b.num}</td>
+                      <td>Monthly</td>
+                      <td style="color:var(--ink3)">Joined 2025</td>
+                      <td>${rentBadge(statusStr)}</td>
+                      <td><button class="btn-sm btn-ghost" style="font-weight:700; cursor:pointer;" onclick="viewTenantProfile('${escapeJS(b.tenant)}')">View Profile</button></td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function viewTenantProfile(tenantName) {
             let allBeds = [];
-            getOwnerHostelIds().forEach(hid => {
+            const targetHids = Array.from(new Set([...getOwnerHostelIds(), ...Object.keys(rooms)]));
+            targetHids.forEach(hid => {
                 if (!rooms[hid]) return;
                 rooms[hid].forEach(r => {
-                    r.beds.forEach((b, idx) => { 
-                        if (b.tenant) allBeds.push({ ...b, num: r.num, hostel: hid }); 
-                    });
+                    if (r.beds) {
+                        r.beds.forEach((b, idx) => { 
+                            const tName = b.tenant || b.tenant_name || b.name;
+                            if (tName) allBeds.push({ ...b, tenant: tName, num: r.num, hostel: hid }); 
+                        });
+                    }
                 });
             });
             
