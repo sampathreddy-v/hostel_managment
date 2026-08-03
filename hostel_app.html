@@ -6581,8 +6581,9 @@
         // DATA (loaded from Supabase)
         // ============================================================
         const hostels = {
-            1: { name: 'ISHTAA PRIME', mgr: 'Anil Kumar' },
-            2: { name: 'ISHTAA PRIME GIRLS', mgr: 'Suresh Varma' }
+            1: { name: 'ISHTAA PRIME BOYS', mgr: 'Anil Kumar', loc: 'NARSINGI' },
+            2: { name: 'ISHTAA PRIME GIRLS', mgr: 'Suresh Varma', loc: 'NARSINGI' },
+            1785479749186: { name: 'ISHTAA PRIME GIRLS', mgr: 'Suresh Varma', loc: 'NARSINGI' }
         };
 
         // rooms and complaints are loaded from Supabase on login
@@ -8185,16 +8186,14 @@
         }
 
         function getOwnerHostelIds() {
-            const activeSessionStr = localStorage.getItem('vustela_session');
-            if (activeSessionStr) {
-                try {
-                    const sess = JSON.parse(activeSessionStr);
-                    if (sess.hostel_id && sess.hostel_id != 1 && sess.hostel_id != 2) {
-                        return [sess.hostel_id];
-                    }
-                } catch(e) {}
-            }
-            return [1, 2];
+            let ids = [1, 1785479749186];
+            const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+            savedHostels.forEach(h => {
+                if (h.id && !ids.includes(h.id) && !ids.includes(Number(h.id)) && !ids.includes(String(h.id))) {
+                    ids.push(h.id);
+                }
+            });
+            return ids;
         }
 
         function renderOwnerOccupancy() {
@@ -8297,16 +8296,13 @@
             let unpaidCountTotal = 0;
             let advanceDepositTotal = 0;
 
-            let hostelIds = [1, 2];
-            const activeSessionStr = localStorage.getItem('vustela_session');
-            if (activeSessionStr) {
-                try {
-                    const sess = JSON.parse(activeSessionStr);
-                    if (sess.hostel_id && sess.hostel_id != 1 && sess.hostel_id != 2) {
-                        hostelIds = [sess.hostel_id];
-                    }
-                } catch(e) {}
-            }
+            let hostelIds = [1, 1785479749186];
+            const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+            savedHostels.forEach(h => {
+                if (h.id && !hostelIds.includes(h.id) && !hostelIds.includes(Number(h.id))) {
+                    hostelIds.push(h.id);
+                }
+            });
 
             hostelIds.forEach(hid => {
                 let expected = 0;
@@ -8320,31 +8316,38 @@
 
                 let hObj = hostels[hid];
                 if (!hObj) {
-                    const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
                     const regReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
-                    hObj = savedHostels.find(h => h.id == hid) || regReqs.find(r => r.id == hid) || { name: 'VUSTELA HOSTELS' };
+                    hObj = savedHostels.find(h => String(h.id) === String(hid)) || regReqs.find(r => String(r.id) === String(hid)) || { name: (String(hid) === '1' ? 'ISHTAA PRIME BOYS' : 'ISHTAA PRIME GIRLS') };
                 }
-                const hName = hObj ? hObj.name : `Hostel ${hid}`;
+                const hName = hObj ? hObj.name : (String(hid) === '1' ? 'ISHTAA PRIME BOYS' : 'ISHTAA PRIME GIRLS');
 
                 if (rooms[hid]) {
                     rooms[hid].forEach(r => {
                         if (r.beds) {
                             r.beds.forEach(b => {
-                                if (b.tenant) {
-                                    expected += b.rent || 0;
+                                const tenantName = b.tenant || b.tenant_name || b.name;
+                                if (tenantName && !String(tenantName).startsWith('PENDING:')) {
+                                    const proratedRent = typeof getProratedRentForBed === 'function' ? getProratedRentForBed(b) : Number(b.rent || b.price || 5500);
+                                    expected += proratedRent;
+
                                     const fee = typeof getBusFeeForBed === 'function' ? getBusFeeForBed(b) : 0;
                                     busFee += fee;
+
                                     const depStat = String(b.deposit_status || '').trim().toLowerCase();
                                     if (depStat === 'paid') {
                                         advanceDeposit += Number(b.advance_deposit || 0);
                                     }
-                                    if (b.rentStatus === 'paid') {
-                                        collected += b.rent || 0;
+
+                                    const statusStr = String(b.rentStatus || 'pending').toLowerCase();
+                                    if (statusStr === 'paid') {
+                                        collected += proratedRent;
                                     } else {
-                                        pending += b.rent || 0;
+                                        pending += proratedRent;
                                         unpaidCount++;
                                     }
-                                    lateFee += b.late_fee_collected || 0;
+
+                                    const lateFeeVal = typeof getLateFeeForBed === 'function' ? getLateFeeForBed(b) : Number(b.late_fee_collected || 0);
+                                    lateFee += lateFeeVal;
                                 }
                             });
                         }
