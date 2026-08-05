@@ -7043,6 +7043,9 @@
                         renderMgrFoodMenu();
                         if (typeof renderMgrBookings === 'function') renderMgrBookings();
                         goTo('pg-manager');
+                        if (user.is_first_login !== false) {
+                            setTimeout(() => openModal('managerSetupModal'), 600);
+                        }
                         return;
                     }
                 } else if (role === 'tenant') {
@@ -7546,6 +7549,7 @@
                     if (typeof renderOwnerAllTenants === 'function') renderOwnerAllTenants();
                 } else if (secId === 'o-occupancy') {
                     if (typeof renderOwnerOccupancy === 'function') renderOwnerOccupancy();
+                    if (typeof checkAndOpenRoomWizard === 'function') checkAndOpenRoomWizard();
                 } else if (secId === 'o-rent') {
                     if (typeof renderOwnerRentTable === 'function') renderOwnerRentTable('all');
                 }
@@ -8197,12 +8201,81 @@
             return [1, 2];
         }
 
+        function checkAndOpenRoomWizard() {
+            const primaryHid = getOwnerHostelIds()[0] || 1;
+            const existingWizardRooms = JSON.parse(localStorage.getItem(`vustela_rooms_${primaryHid}`));
+            if ((!rooms[primaryHid] || rooms[primaryHid].length === 0) && !existingWizardRooms) {
+                const wizardBranchName = hostels[primaryHid] ? hostels[primaryHid].name : 'ISHTAA PRIME BOYS';
+                const nameEl = document.getElementById('wizard-branch-name');
+                if (nameEl) nameEl.value = wizardBranchName;
+                openModal('roomSetupWizardModal');
+            }
+        }
+
+        function saveRoomOccupancyWizard() {
+            const floorsCount = parseInt(document.getElementById('wizard-floors-count').value || '4', 10);
+            const roomsPerFloor = parseInt(document.getElementById('wizard-rooms-per-floor').value || '16', 10);
+            const capacity = parseInt(document.getElementById('wizard-sharing-type').value || '2', 10);
+            const rentPrice = parseInt(document.getElementById('wizard-rent-price').value || '7500', 10);
+
+            const primaryHid = getOwnerHostelIds()[0] || 1;
+            let generatedRooms = [];
+
+            const shareTypeStr = capacity === 1 ? 'Single Room' : (capacity === 2 ? 'Double (2-Sharing)' : (capacity === 3 ? 'Triple (3-Sharing)' : '4-Sharing'));
+
+            for (let f = 1; f <= floorsCount; f++) {
+                for (let r = 1; r <= roomsPerFloor; r++) {
+                    const roomNumStr = `${f}${r < 10 ? '0' + r : r}`;
+                    let beds = [];
+                    for (let b = 1; b <= capacity; b++) {
+                        beds.push({
+                            id: `${primaryHid}-${roomNumStr}-${b}`,
+                            num: `${b}`,
+                            rent: rentPrice,
+                            rentStatus: 'vacant',
+                            tenant: null
+                        });
+                    }
+                    generatedRooms.push({
+                        id: `${primaryHid}-${roomNumStr}`,
+                        num: roomNumStr,
+                        floor: f,
+                        type: shareTypeStr,
+                        capacity: capacity,
+                        price: rentPrice,
+                        beds: beds
+                    });
+                }
+            }
+
+            rooms[primaryHid] = generatedRooms;
+            localStorage.setItem(`vustela_rooms_${primaryHid}`, JSON.stringify(generatedRooms));
+
+            closeModal('roomSetupWizardModal');
+            renderOwnerOccupancy();
+            showToast('Rooms Configured! 🎉', `Generated ${generatedRooms.length} rooms for ${hostels[primaryHid]?.name || 'branch'}.`);
+
+            // Automatically navigate to Managers tab and open Add Manager modal (Image 5)
+            setTimeout(() => {
+                ownerTab(document.querySelector('[onclick*=o-managers]'), 'o-managers');
+                openModal('add-manager-modal');
+            }, 500);
+        }
+
+        function completeManagerSetup() {
+            closeModal('managerSetupModal');
+            showToast('Portal Setup Complete! 🚀', 'Your manager portal is now fully configured.');
+        }
+
         function renderOwnerOccupancy() {
             const targetHostelIds = getOwnerHostelIds();
             
             // Auto-initialize rooms for custom hostel if empty
             targetHostelIds.forEach(hid => {
-                if (!rooms[hid] || rooms[hid].length === 0) {
+                const savedWizardRooms = JSON.parse(localStorage.getItem(`vustela_rooms_${hid}`));
+                if (savedWizardRooms && savedWizardRooms.length > 0) {
+                    rooms[hid] = savedWizardRooms;
+                } else if (!rooms[hid] || rooms[hid].length === 0) {
                     rooms[hid] = [
                         {
                             id: `${hid}-101`,
@@ -11570,52 +11643,98 @@
             }
         }
 
+        let activeMgrOtp = null;
+
+        function sendMgrOtp() {
+            const phoneEl = document.getElementById('new-mgr-phone');
+            const phone = phoneEl ? phoneEl.value.trim() : '';
+            if (!phone || phone.length < 10) {
+                showToast('Error', 'Please enter a valid 10-digit manager phone number.');
+                return;
+            }
+            activeMgrOtp = String(Math.floor(100000 + Math.random() * 900000));
+            
+            // UltraMsg WhatsApp OTP
+            const instanceId = localStorage.getItem('ultramsg_instance') || 'instance187011';
+            const token = localStorage.getItem('ultramsg_token') || 'jdaa3d454xknt0bv';
+            let cleanPhone = String(phone).replace(/\D/g, '');
+            if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+            if (!cleanPhone.startsWith('+')) cleanPhone = '+' + cleanPhone;
+
+            fetch(`https://api.ultramsg.com/${instanceId}/messages/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ token, to: cleanPhone, body: `Your VUSTELA Manager Registration OTP is ${activeMgrOtp}. Valid for 5 minutes.` })
+            }).catch(err => console.warn(err));
+
+            showToast('OTP Sent 📲', `WhatsApp OTP ${activeMgrOtp} sent to +91 ${phone}!`);
+        }
+
         async function addNewManager() {
             const name = document.getElementById('new-mgr-name').value.trim() || 'Manager';
+            const phone = document.getElementById('new-mgr-phone').value.trim();
+            const enteredOtp = document.getElementById('new-mgr-otp').value.trim();
             const email = document.getElementById('new-mgr-email').value.trim().toLowerCase();
-            const hostelId = parseInt(document.getElementById('new-mgr-hostel').value);
-            
-            if (!isValidGmail(email)) {
-                showToast('Error', 'Please enter a valid @gmail.com address.');
+            const customPass = document.getElementById('new-mgr-pass').value.trim();
+            const hostelId = parseInt(document.getElementById('new-mgr-hostel').value) || getOwnerHostelIds()[0] || 1;
+
+            if (!phone || phone.length < 10) {
+                showToast('Error', 'Please enter a valid 10-digit manager phone number.');
                 return;
             }
-            if (!hostelId) {
-                showToast('Error', 'Please select a hostel to assign the manager to.');
+            if (activeMgrOtp && enteredOtp !== activeMgrOtp) {
+                showToast('Error', 'Invalid OTP entered.');
+                return;
+            }
+            if (!email || !email.includes('@')) {
+                showToast('Error', 'Please enter a valid manager email address.');
                 return;
             }
 
+            const cleanPhone = phone.replace(/\D/g, '');
             const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let newPwd = 'MgrVustela#';
-            for (let i = 0; i < 4; i++) newPwd += chars[Math.floor(Math.random() * chars.length)];
+            let newPwd = customPass || 'MgrVustela#';
+            if (!customPass) {
+                for (let i = 0; i < 4; i++) newPwd += chars[Math.floor(Math.random() * chars.length)];
+            }
 
-            showToast('Saving...', 'Adding new manager...');
+            showToast('Saving...', 'Adding new manager & sending credentials...');
             try {
                 const { data, error } = await db.from('users').insert({
                     email: email,
+                    phone: cleanPhone,
                     password: newPwd,
                     role: 'manager',
-                    hostel_id: hostelId
+                    hostel_id: hostelId,
+                    is_first_login: true
                 }).select().single();
-                
-                if (error) {
-                    if (error.code === '23505') {
-                        showToast('Error', 'A user with this email already exists.');
-                        return;
-                    }
-                    throw error;
+
+                if (error && error.code !== '23505') {
+                    console.warn('Supabase manager insert fallback:', error);
                 }
 
-                await db.from('hostels').update({ manager_name: name }).eq('id', hostelId);
-                hostels[hostelId].mgr = name;
+                if (hostels[hostelId]) hostels[hostelId].mgr = name;
 
-                managers.push({ email, password: newPwd, role: 'manager', hostel_id: hostelId });
+                managers.push({ email, phone: cleanPhone, password: newPwd, role: 'manager', hostel_id: hostelId, is_first_login: true });
                 renderManagersTable();
                 closeModal('add-manager-modal');
-                document.getElementById('new-mgr-name').value = '';
-                document.getElementById('new-mgr-email').value = '';
-                document.getElementById('new-mgr-hostel').value = '';
 
-                // Send email
+                // Send WhatsApp Credentials via UltraMsg
+                const instanceId = localStorage.getItem('ultramsg_instance') || 'instance187011';
+                const token = localStorage.getItem('ultramsg_token') || 'jdaa3d454xknt0bv';
+                let waPhone = cleanPhone;
+                if (waPhone.length === 10) waPhone = '91' + waPhone;
+                if (!waPhone.startsWith('+')) waPhone = '+' + waPhone;
+
+                const msgBody = `👔 Welcome to VUSTELA Manager Portal!\n\nHi ${name},\nYou have been assigned as Manager for ${hostels[hostelId]?.name || 'Hostel'}.\n\n🔑 Your Login Credentials:\nURL: ${window.location.origin}/hostel_app.html\nUser ID / Phone: +91 ${cleanPhone}\nPassword: ${newPwd}\n\nPlease login to setup your manager portal.`;
+
+                fetch(`https://api.ultramsg.com/${instanceId}/messages/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ token, to: waPhone, body: msgBody })
+                }).catch(e => console.warn(e));
+
+                // Send Email Credentials
                 fetch(API_BASE_URL + '/send-email', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -11625,22 +11744,19 @@
                         html: `<div style="font-family: sans-serif; padding: 20px; color: #333; max-width: 600px; border: 1px solid #eee; border-radius: 12px;">
                             <h2 style="color: #C84B31;">Welcome to VUSTELA! 👔</h2>
                             <p>Hi <strong>${name}</strong>,</p>
-                            <p>You have been assigned as the Manager for <strong>Hostel ${hostelId}</strong> by the Owner.</p>
+                            <p>You have been assigned as Manager for <strong>${hostels[hostelId]?.name || 'Hostel'}</strong>.</p>
                             <div style="background: #f9f9f9; padding: 16px; border-radius: 8px; margin: 20px 0;">
-                                <h3 style="margin-top: 0;">🔑 Your Login Details:</h3>
+                                <h3 style="margin-top: 0;">🔑 Your Login Credentials:</h3>
+                                <p style="margin-bottom: 8px;"><strong>Phone / ID:</strong> +91 ${cleanPhone}</p>
                                 <p style="margin-bottom: 8px;"><strong>Email:</strong> ${email}</p>
                                 <p style="margin-bottom: 0;"><strong>Password:</strong> <code style="background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #ddd;">${newPwd}</code></p>
                             </div>
-                            <p>You can login here to access the Manager Dashboard and oversee your hostel operations:</p>
-                            <a href="${window.location.origin}" style="display: inline-block; background: #1A1814; color: white; padding: 12px 24px; text-decoration: none; border-radius: 40px; font-weight: 600;">Login to Manager Portal</a>
-                            <br><br>
-                            <hr style="border: 0; border-top: 1px solid #eee; margin: 24px 0;">
-                            <p style="font-size: 12px; color: #999;">— VUSTELA PG Hostel Management</p>
+                            <a href="${window.location.origin}/hostel_app.html" style="display: inline-block; background: #1A1814; color: white; padding: 12px 24px; text-decoration: none; border-radius: 40px; font-weight: 600;">Login to Manager Portal</a>
                         </div>`
                     })
                 }).catch(e => console.error(e));
 
-                showToast('Success ✅', `Manager added and credentials emailed.`);
+                showToast('Success ✅', `Manager added! Credentials sent via WhatsApp & Email.`);
             } catch (err) {
                 console.error(err);
                 showToast('Error', 'Failed to add manager.');
@@ -16366,7 +16482,76 @@
         </div>
     </div>
 
-    <!-- ADD MANAGER MODAL -->
+    <!-- ROOM OCCUPANCY CONFIGURATION WIZARD MODAL -->
+    <div class="modal-overlay" id="roomSetupWizardModal">
+        <div class="modal" style="max-width: 480px;">
+            <div class="modal-header">
+                <div class="modal-title">🏠 Setup Room Occupancy Grid</div>
+                <button class="modal-close" onclick="closeModal('roomSetupWizardModal')">×</button>
+            </div>
+            <p style="font-size: 13px; color: var(--ink3); margin-bottom: 16px;">
+                Configure your branch floor plan, room numbers, and room sharing types.
+            </p>
+            <div class="input-group">
+                <label>Branch Name</label>
+                <input type="text" id="wizard-branch-name" readonly style="background: var(--bg); font-weight:700;">
+            </div>
+            <div class="input-group">
+                <label>Number of Floors *</label>
+                <input type="number" id="wizard-floors-count" value="4" min="1" max="20" placeholder="e.g. 4">
+            </div>
+            <div class="input-group">
+                <label>Rooms Per Floor *</label>
+                <input type="number" id="wizard-rooms-per-floor" value="16" min="1" max="50" placeholder="e.g. 16">
+            </div>
+            <div class="input-group">
+                <label>Default Sharing Capacity Per Room *</label>
+                <select id="wizard-sharing-type">
+                    <option value="1">Single Room (1 Bed)</option>
+                    <option value="2" selected>Double Sharing (2 Beds)</option>
+                    <option value="3">Triple Sharing (3 Beds)</option>
+                    <option value="4">4-Sharing (4 Beds)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Monthly Rent Per Bed (₹) *</label>
+                <input type="number" id="wizard-rent-price" value="7500" placeholder="e.g. 7500">
+            </div>
+            <button class="btn btn-primary" style="width:100%; margin-top:16px; font-weight:800;" onclick="saveRoomOccupancyWizard()">
+                ⚡ Generate Rooms & Proceed to Managers →
+            </button>
+        </div>
+    </div>
+
+    <!-- MANAGER FIRST-TIME PORTAL SETUP MODAL -->
+    <div class="modal-overlay" id="managerSetupModal">
+        <div class="modal" style="max-width: 480px;">
+            <div class="modal-header">
+                <div class="modal-title">👔 Setup Manager Portal</div>
+                <button class="modal-close" onclick="closeModal('managerSetupModal')">×</button>
+            </div>
+            <p style="font-size: 13px; color: var(--ink3); margin-bottom: 16px;">
+                Welcome to VUSTELA! Confirm your branch manager setup details.
+            </p>
+            <div class="input-group">
+                <label>Manager Name</label>
+                <input type="text" id="mgr-setup-name" placeholder="Your Name">
+            </div>
+            <div class="input-group">
+                <label>Contact Phone Number</label>
+                <input type="tel" id="mgr-setup-phone" placeholder="Mobile Number">
+            </div>
+            <div class="input-group">
+                <label>Emergency Staff Contact</label>
+                <input type="tel" id="mgr-setup-emergency" placeholder="Emergency Helpline Number">
+            </div>
+            <button class="btn btn-primary" style="width:100%; margin-top:16px; font-weight:800;" onclick="completeManagerSetup()">
+                🚀 Finish Setup & Open Portal
+            </button>
+        </div>
+    </div>
+
+    <!-- ADD MANAGER MODAL (Phone + OTP + Gmail + Password) -->
     <div class="modal-overlay" id="add-manager-modal">
         <div class="modal" style="max-width: 450px;">
             <div class="modal-header">
@@ -16378,18 +16563,33 @@
                 <input type="text" id="new-mgr-name" placeholder="John Doe">
             </div>
             <div class="input-group">
-                <label>Manager Email (Login ID)</label>
-                <input type="email" id="new-mgr-email" placeholder="manager@gmail.com">
+                <label>Manager Mobile Phone * (Login ID)</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="tel" id="new-mgr-phone" placeholder="10-Digit Phone Number" required>
+                    <button class="btn btn-outline" style="white-space:nowrap; font-size:11px;" onclick="sendMgrOtp()">📲 Send OTP</button>
+                </div>
             </div>
             <div class="input-group">
-                <label>Assign to Hostel</label>
+                <label>Enter 6-Digit OTP *</label>
+                <input type="text" id="new-mgr-otp" placeholder="6-Digit OTP" maxlength="6">
+            </div>
+            <div class="input-group">
+                <label>Manager Gmail Address</label>
+                <input type="email" id="new-mgr-email" placeholder="manager@gmail.com" required>
+            </div>
+            <div class="input-group">
+                <label>Create Manager Password *</label>
+                <input type="password" id="new-mgr-pass" placeholder="Create Password" required>
+            </div>
+            <div class="input-group">
+                <label>Assign to Hostel Branch</label>
                 <select id="new-mgr-hostel">
                     <option value="" disabled selected>Select Hostel...</option>
                     <option value="1">Hostel 1 — ISHTAA PRIME BOYS</option>
-                    <option value="2">Hostel 2 — ISHTAA PRIME GIRLS</option>
+                    <option value="1785479749186">Hostel 2 — ISHTAA PRIME GIRLS</option>
                 </select>
             </div>
-            <button class="btn btn-primary" style="width:100%; margin-top:16px" onclick="addNewManager()">Add Manager</button>
+            <button class="btn btn-primary" style="width:100%; margin-top:16px; font-weight:800;" onclick="addNewManager()">📲 Add Manager & Send Credentials</button>
         </div>
     </div>
 

@@ -442,76 +442,124 @@
   </div>
 
 
-  <!-- Register New Hostel Modal -->
+  <!-- Top Account Setup Banner (Image 1 & 2) -->
+  <div id="setupAccountBanner" style="display: none; background: linear-gradient(135deg, #1e1b4b, #311b92); border: 2px solid #818cf8; border-radius: 16px; padding: 16px 24px; margin: 20px auto; max-width: 1200px; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.4); align-items: center; justify-content: space-between; gap: 16px;">
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div style="width: 46px; height: 46px; background: rgba(255,255,255,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;">⚙️</div>
+      <div>
+        <div style="font-size: 1.1rem; font-weight: 800; color: #fff;" id="setupBannerTitle">Setup Your Account</div>
+        <div style="font-size: 0.88rem; color: #c7d2fe; margin-top: 2px;" id="setupBannerSub">Click setup to set your hostel name and branch names.</div>
+      </div>
+    </div>
+    <button class="btn btn-accent" style="padding: 10px 22px; font-weight: 800; font-size: 0.95rem; border-radius: 10px; cursor: pointer; white-space: nowrap;" onclick="openModal('setupAccountModal')">
+      <i class="fa-solid fa-sliders"></i> Setup Your Account →
+    </button>
+  </div>
+
+  <!-- Register New Hostel Owner Modal (Phone + WhatsApp OTP + Password) -->
   <div id="registerHostelModal" class="modal-overlay">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width: 480px;">
       <button class="modal-close" onclick="closeModal('registerHostelModal')">&times;</button>
-      <h3 style="margin-bottom: 0.4rem; color: var(--accent-cyan);"><i class="fa-solid fa-plus-circle"></i> Register New Hostel</h3>
+      <h3 style="margin-bottom: 0.4rem; color: var(--accent-cyan);"><i class="fa-solid fa-user-plus"></i> Owner Registration</h3>
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-        Register your hostel on Vustela to automatically create a portal space for your hostel.
+        Register your mobile number to create your Vustela Hostel Owner account.
       </p>
 
-      <form onsubmit="event.preventDefault(); handleNewHostelSubmit();">
-        <div class="form-group">
-          <label class="form-label">Hostel / PG Name *</label>
-          <input type="text" id="reg_name" class="form-control" placeholder="e.g. ISHTAA ROYAL PG" required>
+      <form onsubmit="event.preventDefault(); submitOwnerRegistration();">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Owner Full Name *</label>
+          <input type="text" id="reg_mgr" class="form-control" placeholder="e.g. Sampath Reddy" required>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Location / City Area *</label>
-            <input type="text" id="reg_loc" class="form-control" placeholder="e.g. NARSINGI, Hyderabad" required>
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Mobile Phone Number *</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="tel" id="reg_phone" class="form-control" placeholder="e.g. 9876543210" required>
+            <button type="button" class="btn btn-secondary" style="white-space: nowrap; font-size: 0.8rem; font-weight: 700;" onclick="sendRegisterOTP()" id="btnSendRegOtp">
+              📲 Send OTP
+            </button>
           </div>
-          <div class="form-group">
-            <label class="form-label">Category</label>
-            <select id="reg_category" class="form-control">
-              <option value="Boys PG">Boys PG</option>
-              <option value="Girls PG">Girls PG</option>
-              <option value="Coliving">Coliving Hostel</option>
-            </select>
-          </div>
+          <div id="regOtpStatus" style="font-size: 0.78rem; color: #38bdf8; margin-top: 4px; display: none;"></div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Owner / Manager Name</label>
-            <input type="text" id="reg_mgr" class="form-control" placeholder="e.g. Sampath Reddy">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Mobile Number</label>
-            <input type="tel" id="reg_phone" class="form-control" placeholder="+91 98765 43210">
-          </div>
+        <div class="form-group" style="margin-bottom: 1rem;" id="regOtpGroup">
+          <label class="form-label">Enter 6-Digit OTP *</label>
+          <input type="text" id="reg_otp" class="form-control" placeholder="6-Digit WhatsApp OTP" maxlength="6">
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label">Create Owner Password *</label>
+          <input type="password" id="reg_password" class="form-control" placeholder="Create a strong password" required>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
           <button type="button" class="btn btn-secondary" onclick="closeModal('registerHostelModal')">Cancel</button>
-          <button type="submit" class="btn btn-emerald">
-            <i class="fa-solid fa-check-circle"></i> Submit Registration Request
+          <button type="submit" class="btn btn-emerald" style="font-weight: 800;">
+            <i class="fa-solid fa-check-circle"></i> Submit
           </button>
         </div>
       </form>
     </div>
   </div>
 
+  <!-- Setup Hostel Account & Branches Modal (Image 2 & 3) -->
+  <div id="setupAccountModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 500px;">
+      <button class="modal-close" onclick="closeModal('setupAccountModal')">&times;</button>
+      <h3 style="margin-bottom: 0.4rem; color: var(--accent-cyan);"><i class="fa-solid fa-sliders"></i> Setup Your Account</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Enter your primary hostel name and branches to add them to your portal directory.
+      </p>
 
-  <!-- Gateway Login Modal -->
+      <form onsubmit="event.preventDefault(); saveAccountSetup();">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Hostel Name * (indicated in header)</label>
+          <input type="text" id="setup_hostel_name" class="form-control" placeholder="e.g. VUSTELA HOSTELS" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label">Branch Names * (comma-separated for multiple branches)</label>
+          <input type="text" id="setup_branch_names" class="form-control" placeholder="e.g. ISHTAA PRIME BOYS, ISHTAA PRIME GIRLS" required>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">These branch names will be displayed in your public directory cards.</div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label">Location / City Area</label>
+          <input type="text" id="setup_location" class="form-control" placeholder="e.g. NARSINGI, Hyderabad">
+        </div>
+
+        <button type="submit" class="btn btn-accent" style="width: 100%; padding: 0.85rem; font-weight: 800; border-radius: 12px;">
+          <i class="fa-solid fa-save"></i> Save Account & Launch Directory
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- Gateway Login Modal (Image 4 - Phone/Email + Password + Forgot Password) -->
   <div id="gatewayLoginModal" class="modal-overlay">
     <div class="modal-box" style="max-width: 440px;">
       <button class="modal-close" onclick="closeModal('gatewayLoginModal')">&times;</button>
-      <h3 style="margin-bottom: 0.4rem; color: var(--accent-cyan);"><i class="fa-solid fa-right-to-bracket"></i> Login to Hostel Portal</h3>
+      <h3 style="margin-bottom: 0.4rem; color: var(--accent-cyan);"><i class="fa-solid fa-right-to-bracket"></i> Login to Portal</h3>
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-        Enter your credentials to access your hostel portal.
+        Enter your mobile phone number or email and password to access your portal.
       </p>
 
       <form onsubmit="event.preventDefault(); handleGatewayLoginSubmit();">
         <div class="form-group" style="margin-bottom: 1rem;">
-          <label class="form-label">Email or Mobile Phone *</label>
-          <input type="text" id="gw_email" class="form-control" placeholder="your@email.com" required>
+          <label class="form-label">Phone Number or Email *</label>
+          <input type="text" id="gw_email" class="form-control" placeholder="Enter phone number or email" required>
         </div>
 
-        <div class="form-group" style="margin-bottom: 1.5rem;">
+        <div class="form-group" style="margin-bottom: 0.5rem;">
           <label class="form-label">Password *</label>
           <input type="password" id="gw_pass" class="form-control" placeholder="Your Password" required>
+        </div>
+
+        <div style="text-align: right; margin-bottom: 1.25rem;">
+          <a href="javascript:void(0)" style="color: #38bdf8; font-size: 0.82rem; font-weight: 600; text-decoration: none;" onclick="closeModal('gatewayLoginModal'); openModal('forgotPasswordModal');">
+            🔑 Forgot Password?
+          </a>
         </div>
 
         <button type="submit" class="btn btn-accent" style="width: 100%; padding: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border: none; border-radius: 12px; cursor: pointer;">
@@ -524,6 +572,44 @@
           <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Full Portal App Screen directly →
         </a>
       </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Reset Modal -->
+  <div id="forgotPasswordModal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 440px;">
+      <button class="modal-close" onclick="closeModal('forgotPasswordModal')">&times;</button>
+      <h3 style="margin-bottom: 0.4rem; color: var(--accent-cyan);"><i class="fa-solid fa-key"></i> Reset Password</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Enter your registered phone number to receive a WhatsApp OTP and set a new password.
+      </p>
+
+      <form onsubmit="event.preventDefault(); resetOwnerPassword();">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Registered Phone Number *</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="tel" id="fp_phone" class="form-control" placeholder="Enter phone number" required>
+            <button type="button" class="btn btn-secondary" style="white-space: nowrap; font-size: 0.8rem; font-weight: 700;" onclick="sendForgotOTP()" id="btnSendFpOtp">
+              📲 Send OTP
+            </button>
+          </div>
+          <div id="fpOtpStatus" style="font-size: 0.78rem; color: #38bdf8; margin-top: 4px; display: none;"></div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label">Enter OTP *</label>
+          <input type="text" id="fp_otp" class="form-control" placeholder="6-Digit OTP" maxlength="6" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label">New Password *</label>
+          <input type="password" id="fp_password" class="form-control" placeholder="Enter new password" required>
+        </div>
+
+        <button type="submit" class="btn btn-emerald" style="width: 100%; padding: 0.85rem; font-weight: 800; border-radius: 12px;">
+          <i class="fa-solid fa-check-circle"></i> Reset Password & Login
+        </button>
+      </form>
     </div>
   </div>
 

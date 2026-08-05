@@ -459,9 +459,21 @@ async function handleGatewayLoginSubmit() {
   let role = 'owner';
   let hostelId = 1;
 
-  if (supabaseClient) {
+  // Check phone / email matching in registered owners
+  const registeredOwners = JSON.parse(localStorage.getItem('vustela_registered_owners')) || [];
+  const cleanInput = email.replace(/\D/g, '');
+  const matchedOwner = registeredOwners.find(o => 
+    (o.email && o.email.toLowerCase() === email.toLowerCase()) || 
+    (cleanInput.length >= 10 && String(o.phone).replace(/\D/g, '') === cleanInput)
+  );
+
+  if (matchedOwner && matchedOwner.password === pass) {
+    role = 'owner';
+    hostelId = matchedOwner.id || 1;
+    localStorage.setItem('vustela_session', JSON.stringify({ role: 'owner', phone: matchedOwner.phone, email: matchedOwner.email, password: pass, hostel_id: hostelId, name: matchedOwner.name }));
+  } else if (supabaseClient) {
     try {
-      const { data: user } = await supabaseClient.from('users').select('*').eq('email', email).eq('password', pass).single();
+      const { data: user } = await supabaseClient.from('users').select('*').or(`email.eq.${email},phone.eq.${email}`).eq('password', pass).single();
       if (user) {
         role = user.role;
         hostelId = user.hostel_id || 1;
@@ -472,7 +484,7 @@ async function handleGatewayLoginSubmit() {
   }
 
   // Store session in localStorage so hostel_app.html loads user session immediately
-  localStorage.setItem('vustela_session', JSON.stringify({ role: role, email: email, password: pass, hostel_id: hostelId }));
+  localStorage.setItem('vustela_session', JSON.stringify({ role: role, email: email, phone: cleanInput, password: pass, hostel_id: hostelId }));
 
   closeModal('gatewayLoginModal');
 
@@ -482,72 +494,182 @@ async function handleGatewayLoginSubmit() {
   window.open(targetUrl, '_blank');
 }
 
-// Handle New Hostel Registration Request Submission (Sent to Super Admin Control)
-async function handleNewHostelSubmit() {
-  const nameEl = document.getElementById("reg_name");
-  const locEl = document.getElementById("reg_loc");
-  const catEl = document.getElementById("reg_category");
-  const mgrEl = document.getElementById("reg_mgr");
-  const phoneEl = document.getElementById("reg_phone");
-  const emailEl = document.getElementById("reg_email");
-  const roomsEl = document.getElementById("reg_rooms");
+let activeRegisterOtp = null;
+let activeForgotOtp = null;
 
-  const name = nameEl ? nameEl.value.trim() : "";
-  const loc = locEl ? locEl.value.trim().toUpperCase() : "";
-  const category = catEl ? catEl.value : "Boys PG";
-  const mgr = mgrEl ? mgrEl.value.trim() : "Owner";
-  const phone = phoneEl ? phoneEl.value.trim() : "";
-  const email = emailEl ? emailEl.value.trim() : "vustela.hostels@gmail.com";
-  const rooms = roomsEl ? roomsEl.value.trim() : "20 Rooms";
+function sendUltraMsgWhatsApp(phone, message) {
+  const instanceId = localStorage.getItem('ultramsg_instance') || 'instance187011';
+  const token = localStorage.getItem('ultramsg_token') || 'jdaa3d454xknt0bv';
+  let cleanPhone = String(phone).replace(/\D/g, '');
+  if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+  if (!cleanPhone.startsWith('+')) cleanPhone = '+' + cleanPhone;
 
-  if (!name || !loc) {
-    alert("Please fill in Hostel Name and Location.");
+  fetch(`https://api.ultramsg.com/${instanceId}/messages/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ token, to: cleanPhone, body: message })
+  }).catch(err => console.warn('UltraMsg fetch error:', err));
+}
+
+function sendRegisterOTP() {
+  const phoneEl = document.getElementById('reg_phone');
+  const phone = phoneEl ? phoneEl.value.trim() : '';
+  if (!phone || phone.length < 10) {
+    alert('Please enter a valid 10-digit mobile phone number.');
+    return;
+  }
+  activeRegisterOtp = String(Math.floor(100000 + Math.random() * 900000));
+  const statusEl = document.getElementById('regOtpStatus');
+  if (statusEl) {
+    statusEl.style.display = 'block';
+    statusEl.textContent = `✅ OTP ${activeRegisterOtp} sent to WhatsApp number +91 ${phone}!`;
+  }
+  sendUltraMsgWhatsApp(phone, `Your VUSTELA Owner Registration OTP is ${activeRegisterOtp}. Valid for 5 minutes.`);
+  alert(`📲 OTP Sent via WhatsApp to +91 ${phone}! (Code: ${activeRegisterOtp})`);
+}
+
+function submitOwnerRegistration() {
+  const nameEl = document.getElementById('reg_mgr');
+  const phoneEl = document.getElementById('reg_phone');
+  const otpEl = document.getElementById('reg_otp');
+  const passEl = document.getElementById('reg_password');
+
+  const name = nameEl ? nameEl.value.trim() : 'Owner';
+  const phone = phoneEl ? phoneEl.value.trim() : '';
+  const enteredOtp = otpEl ? otpEl.value.trim() : '';
+  const pass = passEl ? passEl.value.trim() : '';
+
+  if (!name || !phone || !pass) {
+    alert('Please complete Name, Mobile Phone Number, and Password.');
     return;
   }
 
-  const newId = Date.now();
-  const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-  const regRequestObj = {
-    id: newId,
-    name: name,
-    loc: loc,
-    category: category,
-    mgr: mgr || "Owner",
-    phone: phone || "Not Provided",
-    email: email,
-    rooms: rooms,
-    slug: slug,
-    date: new Date().toLocaleDateString(),
-    status: "Pending"
-  };
-
-  // 1. Log request to local storage for Super Admin
-  state.regRequests.unshift(regRequestObj);
-  saveState();
-
-  // 2. Insert into Supabase database if connected
-  if (supabaseClient) {
-    try {
-      await supabaseClient.from('hostel_requests').insert([regRequestObj]);
-    } catch (err) {
-      console.warn("Supabase integration warning:", err);
-    }
+  if (activeRegisterOtp && enteredOtp !== activeRegisterOtp) {
+    alert('Invalid OTP entered. Please enter the 6-digit OTP sent to your WhatsApp.');
+    return;
   }
 
-  // 3. Send alert notification email to vustela.hostels@gmail.com
-  try {
-    fetch('http://localhost:3000/api/notify-new-hostel', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(regRequestObj)
-    }).catch(e => console.warn('Notification fetch fallback:', e));
-  } catch(e) {}
+  const cleanPhone = phone.replace(/\D/g, '');
+  const newOwner = {
+    id: Date.now(),
+    name: name,
+    phone: cleanPhone,
+    password: pass,
+    role: 'owner',
+    hostel_name: 'VUSTELA HOSTELS',
+    created_at: new Date().toISOString()
+  };
 
-  // Reset UI elements if present
-  if (nameEl) nameEl.value = "";
-  if (locEl) locEl.value = "";
-  if (typeof closeModal === 'function') closeModal('registerHostelModal');
+  const registeredOwners = JSON.parse(localStorage.getItem('vustela_registered_owners')) || [];
+  registeredOwners.unshift(newOwner);
+  localStorage.setItem('vustela_registered_owners', JSON.stringify(registeredOwners));
+
+  // Store active session
+  localStorage.setItem('vustela_session', JSON.stringify({ role: 'owner', phone: cleanPhone, password: pass, name: name, hostel_id: newOwner.id }));
+  localStorage.setItem('vustela_pending_setup_owner', JSON.stringify(newOwner));
+
+  closeModal('registerHostelModal');
+
+  // Reveal Top Account Setup Banner & Open Setup Modal (Image 1 & 2)
+  const bannerEl = document.getElementById('setupAccountBanner');
+  if (bannerEl) {
+    bannerEl.style.display = 'flex';
+  }
+  const setupNameEl = document.getElementById('setup_hostel_name');
+  if (setupNameEl) setupNameEl.value = 'VUSTELA HOSTELS';
+  openModal('setupAccountModal');
+}
+
+function saveAccountSetup() {
+  const hostelNameEl = document.getElementById('setup_hostel_name');
+  const branchNamesEl = document.getElementById('setup_branch_names');
+  const locEl = document.getElementById('setup_location');
+
+  const hostelName = hostelNameEl ? hostelNameEl.value.trim().toUpperCase() : 'VUSTELA HOSTELS';
+  const branchStr = branchNamesEl ? branchNamesEl.value.trim() : '';
+  const loc = locEl ? locEl.value.trim().toUpperCase() : 'NARSINGI, HYDERABAD';
+
+  if (!hostelName || !branchStr) {
+    alert('Please enter both Hostel Name and Branch Names.');
+    return;
+  }
+
+  const branchList = branchStr.split(',').map(b => b.trim()).filter(Boolean);
+  const registeredHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+
+  branchList.forEach((bName, idx) => {
+    const branchObj = {
+      id: Date.now() + idx,
+      name: bName.toUpperCase(),
+      mainHostelName: hostelName,
+      loc: loc,
+      beds: '80 Total Beds',
+      price: '₹7,500+ / month',
+      category: idx % 2 === 0 ? 'Boys PG' : 'Girls PG',
+      image: idx % 2 === 0 ? 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80' : 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=600&q=80'
+    };
+    registeredHostels.unshift(branchObj);
+    state.hostels.unshift(branchObj);
+  });
+
+  localStorage.setItem('vustela_registered_hostels', JSON.stringify(registeredHostels));
+  saveState();
+  renderHostelGrid();
+
+  const bannerEl = document.getElementById('setupAccountBanner');
+  if (bannerEl) bannerEl.style.display = 'none';
+
+  closeModal('setupAccountModal');
+  alert(`🎉 Setup Complete! ${branchList.length} branches added to your portal directory.`);
+}
+
+function sendForgotOTP() {
+  const phoneEl = document.getElementById('fp_phone');
+  const phone = phoneEl ? phoneEl.value.trim() : '';
+  if (!phone || phone.length < 10) {
+    alert('Please enter your registered mobile phone number.');
+    return;
+  }
+  activeForgotOtp = String(Math.floor(100000 + Math.random() * 900000));
+  const statusEl = document.getElementById('fpOtpStatus');
+  if (statusEl) {
+    statusEl.style.display = 'block';
+    statusEl.textContent = `✅ Password Reset OTP ${activeForgotOtp} sent via WhatsApp!`;
+  }
+  sendUltraMsgWhatsApp(phone, `Your VUSTELA Password Reset OTP is ${activeForgotOtp}. Valid for 5 minutes.`);
+  alert(`📲 Reset OTP Sent via WhatsApp to +91 ${phone}! (Code: ${activeForgotOtp})`);
+}
+
+function resetOwnerPassword() {
+  const phoneEl = document.getElementById('fp_phone');
+  const otpEl = document.getElementById('fp_otp');
+  const passEl = document.getElementById('fp_password');
+
+  const phone = phoneEl ? phoneEl.value.trim().replace(/\D/g, '') : '';
+  const enteredOtp = otpEl ? otpEl.value.trim() : '';
+  const newPass = passEl ? passEl.value.trim() : '';
+
+  if (!phone || !enteredOtp || !newPass) {
+    alert('Please enter your Phone Number, OTP, and New Password.');
+    return;
+  }
+
+  if (activeForgotOtp && enteredOtp !== activeForgotOtp) {
+    alert('Invalid OTP. Please enter the 6-digit OTP sent to your WhatsApp.');
+    return;
+  }
+
+  const registeredOwners = JSON.parse(localStorage.getItem('vustela_registered_owners')) || [];
+  const owner = registeredOwners.find(o => String(o.phone).replace(/\D/g, '') === phone);
+  if (owner) {
+    owner.password = newPass;
+    localStorage.setItem('vustela_registered_owners', JSON.stringify(registeredOwners));
+  }
+
+  closeModal('forgotPasswordModal');
+  alert('🔑 Password successfully reset! Logging in now...');
+  localStorage.setItem('vustela_session', JSON.stringify({ role: 'owner', phone: phone, password: newPass }));
+  window.open(`hostel_app.html?action=login&role=owner&phone=${phone}`, '_blank');
 }
 
 // Handle Subscription Purchase Request (Sent to Super Admin Control)
