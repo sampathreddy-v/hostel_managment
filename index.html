@@ -615,5 +615,17 @@
 
   <!-- Application Script -->
   <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isSetup = urlParams.get('action') === 'setup' || localStorage.getItem('vustela_show_setup') === 'true';
+      if (isSetup) {
+        localStorage.removeItem('vustela_show_setup');
+        const bannerEl = document.getElementById('setupAccountBanner');
+        if (bannerEl) bannerEl.style.display = 'flex';
+        setTimeout(() => openModal('setupAccountModal'), 300);
+      }
+    });
+  </script>
 </body>
 </html>
