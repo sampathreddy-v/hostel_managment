@@ -151,12 +151,12 @@ const hostelPhotos = {
 
 const hostelDetails = {
     1: {
-        desc: "ISHTAA PRIME BOYS property at NARSINGI offers premium boys accommodation with ultra-modern amenities, high-speed connectivity, and comfortable living spaces.",
+        desc: "VUSTELA BOYS property at NARSINGI offers premium boys accommodation with ultra-modern amenities, high-speed connectivity, and comfortable living spaces.",
         locFull: "NARSINGI, Hyderabad",
         mapUrl: "https://www.google.com/maps/search/?api=1&query=17.394860,78.324830"
     },
     2: {
-        desc: "ISHTAA PRIME GIRLS property at NARSINGI provides safe, luxurious, and convenient girls accommodation close to IT hubs with top-class amenities.",
+        desc: "VUSTELA GIRLS property at NARSINGI provides safe, luxurious, and convenient girls accommodation close to IT hubs with top-class amenities.",
         locFull: "NARSINGI, Hyderabad",
         mapUrl: "https://www.google.com/maps/search/?api=1&query=17.448293,78.374185"
     }

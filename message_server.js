@@ -57,8 +57,8 @@ async function getReportData() {
     let totalUnpaidTenants = 0;
 
     const hostelStats = {
-        1: { name: 'ISHTAA PRIME BOYS', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 },
-        2: { name: 'ISHTAA PRIME GIRLS', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 }
+        1: { name: 'VUSTELA BOYS', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 },
+        2: { name: 'VUSTELA GIRLS', expected: 0, collected: 0, pending: 0, maintenance: 0, paidTenants: 0, unpaidTenants: 0 }
     };
 
     if (rooms) {
@@ -554,7 +554,7 @@ function saveSentLog(log) {
 // --- TRIGGERS ---
 async function triggerDailyReport() {
     console.log('[Scheduler] Triggering Daily Report...');
-    const ownerEmail = process.env.OWNER_EMAIL || 'ishtaaprimeboyshostel@gmail.com';
+    const ownerEmail = process.env.OWNER_EMAIL || 'vustelaprimeboyshostel@gmail.com';
     const ownerPhone = process.env.OWNER_PHONE || '919949038383';
 
     try {
@@ -641,7 +641,7 @@ async function triggerDailyReport() {
 
 async function triggerMonthlyReport() {
     console.log('[Scheduler] Triggering Monthly Report...');
-    const ownerEmail = process.env.OWNER_EMAIL || 'ishtaaprimeboyshostel@gmail.com';
+    const ownerEmail = process.env.OWNER_EMAIL || 'vustelaprimeboyshostel@gmail.com';
     const ownerPhone = process.env.OWNER_PHONE || '919949038383';
 
     try {
@@ -1089,14 +1089,14 @@ const server = http.createServer((req, res) => {
                     console.log(`\n[Server] Received Room Booking Request from: ${name} (${email}, ${phone}) for Hostel ID ${hostel_id}`);
 
                     // 1. Fetch Hostel Name
-                    let hostelName = (hostel_id == 2 ? 'ISHTAA PRIME GIRLS' : 'ISHTAA PRIME BOYS');
+                    let hostelName = (hostel_id == 2 ? 'VUSTELA GIRLS' : 'VUSTELA BOYS');
                     try {
                         const { data: hData } = await db.from('hostels').select('*').eq('id', hostel_id || 1).single();
                         if (hData && hData.name) hostelName = hData.name;
                     } catch (e) {}
 
                     // 2. Fetch Owner & Manager Emails/Phones
-                    const ownerEmail = (process.env.OWNER_EMAIL || 'ishtaaprimeboyshostel@gmail.com').trim();
+                    const ownerEmail = (process.env.OWNER_EMAIL || 'vustelaprimeboyshostel@gmail.com').trim();
                     const ownerPhone = (process.env.OWNER_PHONE || '919949038383').trim();
                     const defaultMgrEmail = (process.env.MANAGER_EMAIL || 'saimohan158716@gmail.com').trim();
                     const defaultMgrPhone = (process.env.MANAGER_PHONE || '919700635806').trim();

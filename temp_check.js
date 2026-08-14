@@ -1,6320 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VUSTELA — Premium PG Hostel in NARSINGI, Hyderabad</title>
-
-    <!-- Auto-Redirect old domain to vustelamanagement.com -->
-    <script>
         if (window.location.hostname.includes('financepro.life')) {
             window.location.replace('https://vustelamanagement.com' + window.location.pathname + window.location.search);
         }
-    </script>
+    
 
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="VUSTELA PG Hostel offers premium paying guest accommodation in NARSINGI, Hyderabad. Book a room, pay rent online, raise complaints, and manage everything in one place.">
-    <meta name="keywords" content="PG hostel Kokapet, PG hostel Hyderabad, paying guest Hyderabad, VUSTELA hostel, student accommodation Hyderabad, PG rooms Kokapet, hostel management">
-    <meta name="author" content="VUSTELA Hostel Management">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://vustelamanagement.com/">
-
-    <!-- Open Graph (for Google, WhatsApp, Facebook previews) -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://vustelamanagement.com/">
-    <meta property="og:title" content="VUSTELA — Premium PG Hostel in NARSINGI, Hyderabad">
-    <meta property="og:description" content="Premium PG hostel accommodation in NARSINGI, Hyderabad. Book a room, pay rent online, and manage everything seamlessly.">
-    <meta property="og:image" content="https://vustelamanagement.com/hero_hostel.png">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="VUSTELA — Premium PG Hostel in NARSINGI, Hyderabad">
-    <meta name="twitter:description" content="Premium PG hostel accommodation in NARSINGI, Hyderabad. Book a room, pay rent online, and manage everything seamlessly.">
-    <meta name="twitter:image" content="https://vustelamanagement.com/hero_hostel.png">
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <style>
-        :root {
-            --bg: #F7F5F0;
-            --bg2: #EFECEA;
-            --bg3: #E5E1DB;
-            --white: #FFFFFF;
-            --ink: #1A1814;
-            --ink2: #3D3A35;
-            --ink3: #7A756E;
-            --accent: #C84B31;
-            --accent2: #E8673A;
-            --green: #2D7D5A;
-            --green-bg: #EBF5EF;
-            --red: #C84B31;
-            --red-bg: #FAEEE9;
-            --yellow: #B8860B;
-            --yellow-bg: #FDF6E3;
-            --blue: #2B5EA7;
-            --blue-bg: #EBF0FA;
-            --border: rgba(26, 24, 20, 0.1);
-            --shadow: 0 2px 16px rgba(26, 24, 20, 0.08);
-            --shadow-lg: 0 8px 40px rgba(26, 24, 20, 0.12);
-            --r: 16px;
-            --rs: 10px;
-            --font: 'DM Sans', sans-serif;
-            --font-display: 'Syne', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box
-        }
-
-        html {
-            scroll-behavior: smooth
-        }
-
-        body {
-            font-family: var(--font);
-            background: var(--bg);
-            color: var(--ink);
-            min-height: 100vh;
-            overflow-x: hidden
-        }
-
-        ::-webkit-scrollbar {
-            width: 4px
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg2)
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 2px
-        }
-
-        /* PAGES */
-        .pg {
-            display: none;
-            min-height: 100vh;
-            animation: fadeIn 0.35s ease
-        }
-
-        .pg.on {
-            display: block
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0)
-            }
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(24px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0)
-            }
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-16px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0)
-            }
-        }
-
-        /* TYPOGRAPHY */
-        h1,
-        h2,
-        h3,
-        h4 {
-            font-family: var(--font-display);
-            font-weight: 700
-        }
-
-        .mono {
-            font-family: var(--font-mono)
-        }
-
-        /* UTILITY */
-        .flex {
-            display: flex;
-            align-items: center
-        }
-
-        .between {
-            justify-content: space-between
-        }
-
-        .gap4 {
-            gap: 4px
-        }
-
-        .gap8 {
-            gap: 8px
-        }
-
-        .gap12 {
-            gap: 12px
-        }
-
-        .gap16 {
-            gap: 16px
-        }
-
-        .gap20 {
-            gap: 20px
-        }
-
-        .gap24 {
-            gap: 24px
-        }
-
-        .wrap {
-            flex-wrap: wrap
-        }
-
-        .col {
-            flex-direction: column;
-            align-items: flex-start
-        }
-
-        .center {
-            justify-content: center;
-            align-items: center
-        }
-
-        /* BUTTONS */
-        .btn {
-            font-family: var(--font);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            border-radius: 40px;
-            transition: all 0.2s;
-            letter-spacing: 0.2px
-        }
-
-        .btn-primary {
-            background: var(--ink);
-            color: var(--white);
-            padding: 12px 24px
-        }
-
-        .btn-primary:hover {
-            background: var(--ink2);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(26, 24, 20, 0.2)
-        }
-
-        .btn-accent {
-            background: var(--accent);
-            color: var(--white);
-            padding: 12px 24px
-        }
-
-        .btn-accent:hover {
-            background: var(--accent2);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(200, 75, 49, 0.3)
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1.5px solid var(--border);
-            color: var(--ink);
-            padding: 10px 20px
-        }
-
-        .btn-outline:hover {
-            border-color: var(--ink);
-            background: rgba(26, 24, 20, 0.04)
-        }
-
-        .btn-sm {
-            font-family: var(--font);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            border-radius: 20px;
-            padding: 6px 14px;
-            transition: all 0.2s
-        }
-
-        .btn-ghost {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--ink2);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: var(--font)
-        }
-
-        .btn-ghost:hover {
-            background: var(--bg2)
-        }
-
-        .btn-green {
-            background: var(--green-bg);
-            color: var(--green);
-            border: 1px solid rgba(45, 125, 90, 0.2)
-        }
-
-        .btn-green:hover {
-            background: var(--green);
-            color: white
-        }
-
-        .btn-red {
-            background: var(--red-bg);
-            color: var(--red);
-            border: 1px solid rgba(200, 75, 49, 0.2)
-        }
-
-        .btn-red:hover {
-            background: var(--red);
-            color: white
-        }
-
-        .btn-full {
-            width: 100%;
-            background: var(--ink);
-            color: var(--white);
-            padding: 14px;
-            border-radius: var(--rs);
-            font-family: var(--font);
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s
-        }
-
-        .btn-full:hover {
-            background: var(--ink2);
-            box-shadow: var(--shadow)
-        }
-
-        /* BADGES & PILLS */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.3px
-        }
-
-        .badge-green {
-            background: var(--green-bg);
-            color: var(--green)
-        }
-
-        .badge-red {
-            background: var(--red-bg);
-            color: var(--red)
-        }
-
-        .badge-yellow {
-            background: var(--yellow-bg);
-            color: var(--yellow)
-        }
-
-        .badge-blue {
-            background: var(--blue-bg);
-            color: var(--blue)
-        }
-
-        .badge-grey {
-            background: var(--bg3);
-            color: var(--ink3)
-        }
-
-        .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            display: inline-block
-        }
-
-        .dot-green {
-            background: var(--green)
-        }
-
-        .dot-red {
-            background: var(--red)
-        }
-
-        .dot-yellow {
-            background: var(--yellow)
-        }
-
-        /* CARDS & PANELS */
-        .card {
-            background: var(--white);
-            border-radius: var(--r);
-            border: 1px solid var(--border);
-            padding: 24px;
-            box-shadow: var(--shadow)
-        }
-
-        .card-sm {
-            background: var(--white);
-            border-radius: var(--rs);
-            border: 1px solid var(--border);
-            padding: 16px
-        }
-
-        .panel {
-            background: var(--bg2);
-            border-radius: var(--rs);
-            padding: 16px
-        }
-
-
-        /* STAT CARD */
-        .stat-card {
-            background: var(--white);
-            border-radius: var(--r);
-            border: 1px solid var(--border);
-            padding: 16px 20px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-
-        .stat-num {
-            font-family: var(--font-display);
-            font-size: clamp(20px, 2.2vw, 32px);
-            font-weight: 800;
-            color: var(--ink);
-            line-height: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: var(--ink3);
-            margin-top: 4px;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .stat-sub {
-            font-size: 12px;
-            color: var(--ink2);
-            margin-top: 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* INPUTS */
-        .input-group {
-            margin-bottom: 16px
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--ink2);
-            margin-bottom: 6px
-        }
-
-        .input-group input,
-        .input-group select,
-        .input-group textarea {
-            width: 100%;
-            padding: 11px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: var(--rs);
-            font-family: var(--font);
-            font-size: 14px;
-            color: var(--ink);
-            background: var(--white);
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-group input:focus,
-        .input-group select:focus,
-        .input-group textarea:focus {
-            border-color: var(--ink)
-        }
-
-        .input-group textarea {
-            resize: vertical;
-            min-height: 80px
-        }
-
-        /* TOAST */
-        #toast {
-            position: fixed;
-            bottom: 28px;
-            right: 28px;
-            z-index: 9999;
-            background: var(--ink);
-            color: var(--white);
-            padding: 14px 20px;
-            border-radius: var(--rs);
-            box-shadow: var(--shadow-lg);
-            max-width: 320px;
-            transform: translateY(80px);
-            opacity: 0;
-            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-            pointer-events: none;
-        }
-
-        #toast.on {
-            transform: translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        #toast-title {
-            font-weight: 700;
-            font-size: 14px;
-            margin-bottom: 3px
-        }
-
-        #toast-body {
-            font-size: 13px;
-            opacity: 0.75
-        }
-
-        /* MODAL */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 10000;
-            background: rgba(26, 24, 20, 0.5);
-            backdrop-filter: blur(4px);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-overlay.on {
-            display: flex;
-        }
-
-        .modal {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 32px;
-            width: 100%;
-            max-width: 480px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-lg);
-            animation: fadeUp 0.3s ease
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px
-        }
-
-        .modal-title {
-            font-family: var(--font-display);
-            font-size: 20px;
-            font-weight: 700
-        }
-
-        .modal-close {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--bg2);
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s
-        }
-
-        .modal-close:hover {
-            background: var(--bg3)
-        }
-
-        /* FULL-SCREEN HOSTEL PAGE */
-        #hostel-detail-modal {
-            background: var(--white);
-            backdrop-filter: none;
-            align-items: flex-start;
-            justify-content: flex-start;
-            padding: 0;
-            display: none;
-            z-index: 1000;
-        }
-
-        #hostel-detail-modal.on {
-            display: flex;
-            animation: slideUpFull 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideUpFull {
-            from {
-                transform: translateY(100%);
-            }
-
-            to {
-                transform: translateY(0);
-            }
-        }
-
-        .detail-modal {
-            max-width: none;
-            width: 100%;
-            height: 100vh;
-            border-radius: 0;
-            box-shadow: none;
-            display: flex;
-            flex-direction: column;
-            background: var(--white);
-        }
-
-        .detail-header-fixed {
-            padding: 24px 52px;
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-        }
-
-        .detail-header-fixed h2 {
-            font-family: var(--font-display);
-            font-size: 32px;
-            font-weight: 800;
-            letter-spacing: -1.5px;
-            color: var(--ink);
-        }
-
-        .detail-split {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            height: calc(100vh - 84px);
-            overflow: hidden;
-        }
-
-        .detail-gallery {
-            position: relative;
-            height: 100%;
-            background: #000;
-        }
-
-        .detail-gallery img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .detail-info {
-            padding: 80px 120px;
-            overflow-y: auto;
-            background: #fdfdfb;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .detail-section-title {
-            font-family: var(--font-display);
-            font-size: 13px;
-            font-weight: 800;
-            color: var(--accent);
-            letter-spacing: 4px;
-            margin-bottom: 24px;
-            text-transform: uppercase;
-        }
-
-        #hd-desc {
-            font-family: var(--font);
-            font-size: 26px;
-            font-weight: 300;
-            line-height: 1.6;
-            color: var(--ink);
-            margin-bottom: 52px;
-            letter-spacing: -0.5px;
-            opacity: 0.9;
-        }
-
-        .sharing-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 28px;
-            margin-bottom: 60px;
-        }
-
-        .sharing-card {
-            background: white;
-            padding: 40px 24px;
-            border-radius: 28px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
-            border: 1px solid var(--border);
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .sharing-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--accent);
-            box-shadow: 0 20px 50px rgba(200, 75, 49, 0.1);
-        }
-
-        .sc-icon {
-            font-size: 36px;
-            margin-bottom: 16px;
-        }
-
-        .sc-label {
-            font-size: 12px;
-            color: var(--ink3);
-            font-weight: 700;
-            margin-bottom: 6px;
-            letter-spacing: 1px;
-        }
-
-        .sc-val {
-            font-family: var(--font-display);
-            font-size: 42px;
-            font-weight: 800;
-            color: var(--ink);
-        }
-
-        .location-box {
-            background: var(--ink);
-            color: white;
-            padding: 48px;
-            border-radius: 40px;
-            margin-top: auto;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .location-box::after {
-            content: '📍';
-            position: absolute;
-            right: -20px;
-            bottom: -20px;
-            font-size: 120px;
-            opacity: 0.1;
-        }
-
-        .loc-tag {
-            color: var(--accent2);
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 16px;
-            display: block;
-            font-family: var(--font-display);
-        }
-
-        @media (max-width: 1024px) {
-            .detail-modal {
-                height: auto;
-                min-height: 100vh;
-                overflow-y: auto;
-            }
-
-            .detail-split {
-                grid-template-columns: 1fr;
-                height: auto;
-                overflow: visible;
-            }
-
-            .detail-gallery {
-                height: 400px;
-                flex-shrink: 0;
-            }
-
-            .detail-info {
-                padding: 40px 24px;
-                height: auto;
-            }
-
-            #hd-desc {
-                font-size: 20px;
-                margin-bottom: 32px;
-            }
-
-            .sharing-grid {
-                gap: 16px;
-                margin-bottom: 40px;
-            }
-
-            .location-box {
-                padding: 32px 24px;
-                border-radius: 24px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .detail-header-fixed {
-                padding: 16px 20px;
-                position: sticky;
-                top: 0;
-            }
-
-            .detail-header-fixed h2 {
-                font-size: 20px;
-            }
-
-            .detail-gallery {
-                height: 300px;
-            }
-
-            .sharing-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .detail-info {
-                padding: 32px 20px;
-            }
-
-            #hd-desc {
-                font-size: 18px;
-            }
-        }
-
-        /* ===== LANDING PAGE ===== */
-        .landing-nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 200;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 52px;
-            height: 64px;
-            background: rgba(247, 245, 240, 0.92);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer
-        }
-
-        .brand-mark {
-            width: 36px;
-            height: 36px;
-            background: var(--ink);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 16px;
-            color: var(--white);
-        }
-
-        .brand-name {
-            font-family: var(--font-display);
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--ink);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .brand-name .brand-sub {
-            font-family: var(--font-display);
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--ink);
-            background: transparent;
-            padding: 0;
-            border-radius: 0;
-            letter-spacing: normal;
-            text-transform: uppercase;
-            box-shadow: none;
-        }
-
-        .brand-name span {
-            color: var(--ink);
-        }
-
-        .hero {
-            min-height: 100vh;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            align-items: center;
-            padding: 100px 52px 60px;
-            gap: 60px;
-        }
-
-        .hero-eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--red-bg);
-            border: 1px solid rgba(200, 75, 49, 0.2);
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--accent);
-            margin-bottom: 20px;
-        }
-
-        .hero h1 {
-            font-size: clamp(44px, 5.5vw, 72px);
-            font-weight: 800;
-            line-height: 1.05;
-            letter-spacing: -1.5px;
-            margin-bottom: 18px;
-            color: var(--ink)
-        }
-
-        .hero h1 em {
-            font-style: italic;
-            color: var(--accent)
-        }
-
-        .hero-desc {
-            font-size: 16px;
-            color: var(--ink3);
-            line-height: 1.7;
-            max-width: 440px;
-            margin-bottom: 32px
-        }
-
-        .hero-btns {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap
-        }
-
-        .hero-action-card {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 24px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow);
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .hero-action-card:hover {
-            transform: translateY(-4px) scale(1.01);
-            border-color: var(--accent);
-            box-shadow: 0 12px 30px rgba(200, 75, 49, 0.08);
-        }
-
-        .hac-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 14px;
-            background: var(--bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            flex-shrink: 0;
-            transition: all 0.3s;
-        }
-
-        .hero-action-card:hover .hac-icon {
-            background: var(--red-bg);
-            transform: scale(1.08);
-        }
-
-        .hac-content {
-            flex-grow: 1;
-            text-align: left;
-        }
-
-        .hac-title {
-            font-family: var(--font-display);
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--ink);
-            margin: 0 0 4px 0;
-        }
-
-        .hac-desc {
-            font-size: 13px;
-            color: var(--ink3);
-            line-height: 1.45;
-            margin: 0;
-        }
-
-        .hac-arrow {
-            font-size: 22px;
-            color: var(--ink3);
-            transition: all 0.3s;
-            opacity: 0.5;
-        }
-
-        .hero-action-card:hover .hac-arrow {
-            color: var(--accent);
-            transform: translateX(6px);
-            opacity: 1;
-        }
-
-        /* SLIDESHOW STYLING */
-        .hero-image-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            height: 480px;
-            width: 100%;
-        }
-
-        .hero-slideshow {
-            display: flex;
-            width: 400%;
-            height: 100%;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .hero-slide {
-            width: 25%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .slideshow-dots {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-            z-index: 10;
-        }
-
-        .slide-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(255, 255, 255, 0.4);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .slide-dot.active {
-            width: 20px;
-            background: var(--white);
-        }
-
-        @media (max-width: 768px) {
-            .hero-image-container {
-                height: 320px;
-            }
-        }
-
-        .login-cards {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            animation: slideIn 0.6s 0.2s ease both
-        }
-
-        .login-card {
-            background: var(--white);
-            border: 1.5px solid var(--border);
-            border-radius: var(--r);
-            padding: 24px;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-card::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            transition: all 0.3s;
-            opacity: 0
-        }
-
-        .login-card.owner::after {
-            background: var(--accent)
-        }
-
-        .login-card.manager::after {
-            background: var(--blue)
-        }
-
-        .login-card.tenant::after {
-            background: var(--green)
-        }
-
-        .login-card:hover {
-            border-color: rgba(26, 24, 20, 0.2);
-            transform: translateX(6px);
-            box-shadow: var(--shadow)
-        }
-
-        .login-card:hover::after {
-            opacity: 1
-        }
-
-        .lc-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-bottom: 12px
-        }
-
-        .lc-icon.owner {
-            background: var(--red-bg)
-        }
-
-        .lc-icon.manager {
-            background: var(--blue-bg)
-        }
-
-        .lc-icon.tenant {
-            background: var(--green-bg)
-        }
-
-        .lc-title {
-            font-family: var(--font-display);
-            font-size: 17px;
-            font-weight: 700;
-            margin-bottom: 4px
-        }
-
-        .lc-desc {
-            font-size: 13px;
-            color: var(--ink3);
-            line-height: 1.5
-        }
-
-        .lc-arrow {
-            margin-left: auto;
-            color: var(--ink3);
-            font-size: 18px;
-            transition: transform 0.2s
-        }
-
-        .login-card:hover .lc-arrow {
-            transform: translateX(4px);
-            color: var(--ink)
-        }
-
-        /* STATS STRIP */
-        .stats-strip {
-            position: relative;
-            z-index: 2;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-            background: var(--white);
-        }
-
-        .ss-item {
-            padding: 28px 40px;
-            border-right: 1px solid var(--border)
-        }
-
-        .ss-item:last-child {
-            border-right: none
-        }
-
-        .ss-num {
-            font-family: var(--font-display);
-            font-size: 42px;
-            font-weight: 800;
-            color: var(--ink);
-            line-height: 1
-        }
-
-        .ss-label {
-            font-size: 12px;
-            color: var(--ink3);
-            margin-top: 6px;
-            letter-spacing: 1px;
-            text-transform: uppercase
-        }
-
-        /* PUBLIC HOSTEL INFO SECTION */
-        .hostel-info-section {
-            padding: 80px 52px;
-            background: var(--bg)
-        }
-
-        .sec-eyebrow {
-            font-size: 11px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--accent);
-            font-weight: 700;
-            margin-bottom: 10px
-        }
-
-        .sec-title {
-            font-size: clamp(28px, 4vw, 44px);
-            font-weight: 800;
-            color: var(--ink);
-            margin-bottom: 12px;
-            letter-spacing: -0.5px
-        }
-
-        .sec-desc {
-            font-size: 16px;
-            color: var(--ink3);
-            line-height: 1.7;
-            max-width: 560px;
-            margin-bottom: 48px
-        }
-
-        .amenity-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 12px;
-            margin-bottom: 40px
-        }
-
-        .amenity-item {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--rs);
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px
-        }
-
-        .amenity-icon {
-            font-size: 22px
-        }
-
-        .amenity-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--ink)
-        }
-
-        .hostel-branches {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            max-width: 900px;
-        }
-
-        .branch-card {
-            background: var(--white);
-            border: 1.5px solid var(--border);
-            border-radius: var(--r);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .branch-card:hover {
-            transform: translateX(6px);
-            border-color: rgba(26, 24, 20, 0.2);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .branch-img {
-            height: 160px;
-            background: linear-gradient(135deg, var(--bg3), var(--bg2));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            position: relative
-        }
-
-        .branch-num-badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: var(--ink);
-            color: var(--white);
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 13px;
-            padding: 4px 10px;
-            border-radius: 20px
-        }
-
-        .branch-body {
-            padding: 20px
-        }
-
-        .branch-name {
-            font-family: var(--font-display);
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 4px
-        }
-
-        .branch-loc {
-            font-size: 13px;
-            color: var(--ink3);
-            margin-bottom: 12px
-        }
-
-        .branch-stats {
-            display: flex;
-            gap: 16px
-        }
-
-        .bs-item {
-            font-size: 12px;
-            color: var(--ink3)
-        }
-
-        .bs-item strong {
-            color: var(--ink);
-            font-size: 15px;
-            font-weight: 700;
-            display: block
-        }
-
-        /* ===== SHARED DASHBOARD LAYOUT ===== */
-        .dash-layout {
-            display: grid;
-            grid-template-columns: 240px 1fr;
-            min-height: 100vh
-        }
-
-        .sidebar {
-            background: var(--ink);
-            color: var(--white);
-            padding: 28px 0;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        .sb-brand {
-            padding: 0 20px 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            margin-bottom: 16px
-        }
-
-        .sb-brand-name {
-            font-family: var(--font-display);
-            font-size: 18px;
-            font-weight: 800
-        }
-
-        .sb-brand-name span {
-            color: var(--accent2)
-        }
-
-        .sb-role {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-top: 2px
-        }
-
-        .sb-user {
-            padding: 12px 20px;
-            margin-bottom: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 0 var(--rs) var(--rs) 0;
-            margin-right: 12px
-        }
-
-        .sb-user-name {
-            font-size: 14px;
-            font-weight: 600
-        }
-
-        .sb-user-sub {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.4);
-            margin-top: 2px
-        }
-
-        .sb-section {
-            font-size: 10px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.3);
-            padding: 16px 20px 8px;
-            font-weight: 600
-        }
-
-        .sb-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.55);
-            cursor: pointer;
-            transition: all 0.2s;
-            border-radius: 0 var(--rs) var(--rs) 0;
-            margin-right: 12px;
-            margin-bottom: 2px;
-        }
-
-        .sb-link:hover {
-            color: var(--white);
-            background: rgba(255, 255, 255, 0.06)
-        }
-
-        .sb-link.act {
-            color: var(--white);
-            background: rgba(255, 255, 255, 0.1);
-            font-weight: 600
-        }
-
-        .sb-link .sb-icon {
-            font-size: 16px;
-            width: 20px;
-            text-align: center
-        }
-
-        .sb-logout {
-            margin-top: auto;
-            padding: 16px 20px 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.08)
-        }
-
-        .sb-logout button {
-            width: 100%;
-            background: rgba(200, 75, 49, 0.2);
-            border: 1px solid rgba(200, 75, 49, 0.3);
-            color: rgba(255, 100, 80, 0.9);
-            padding: 10px;
-            border-radius: var(--rs);
-            font-family: var(--font);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s
-        }
-
-        .sb-logout button:hover {
-            background: var(--accent);
-            color: white
-        }
-
-        .dash-main {
-            padding: 32px;
-            background: var(--bg);
-            overflow-y: auto
-        }
-
-        .dash-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 28px
-        }
-
-        .dash-title {
-            font-size: 26px;
-            font-weight: 800;
-            color: var(--ink)
-        }
-
-        .dash-subtitle {
-            font-size: 14px;
-            color: var(--ink3);
-            margin-top: 2px
-        }
-
-        .dash-section {
-            display: none
-        }
-
-        .dash-section.on {
-            display: block;
-            animation: fadeIn 0.3s ease
-        }
-
-        /* TABLE SEARCH */
-        .table-search {
-            position: relative;
-            width: 240px;
-        }
-
-        .table-search input {
-            width: 100%;
-            padding: 9px 36px 9px 12px;
-            border-radius: 8px;
-            border: 1.5px solid var(--border);
-            background: var(--white);
-            font-size: 13px;
-            font-family: var(--font);
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .table-search input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(200, 75, 49, 0.1);
-        }
-
-        .table-search .search-icon {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 14px;
-            color: var(--ink3);
-            pointer-events: none;
-        }
-
-        /* STATS GRID */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-            width: 100%;
-        }
-
-        .stats-grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-            width: 100%;
-        }
-
-        .stats-grid-2 {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-            width: 100%;
-        }
-
-        /* ===== ROOM OCCUPANCY GRID ===== */
-        .occupancy-slide {
-            margin-bottom: 24px
-        }
-
-        .occ-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px
-        }
-
-        .occ-title {
-            font-family: var(--font-display);
-            font-size: 18px;
-            font-weight: 700
-        }
-
-        .occ-legend {
-            display: flex;
-            gap: 16px
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: var(--ink3)
-        }
-
-        .legend-box {
-            width: 14px;
-            height: 14px;
-            border-radius: 4px
-        }
-
-        .legend-green {
-            background: var(--green)
-        }
-
-        .legend-red {
-            background: rgba(200, 75, 49, 0.25);
-            border: 1.5px dashed var(--accent)
-        }
-
-        .legend-yellow {
-            background: var(--yellow)
-        }
-
-        .legend-grey {
-            background: var(--bg3)
-        }
-
-        .hostel-occ-block {
-            background: var(--white);
-            border-radius: var(--r);
-            border: 1px solid var(--border);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            margin-bottom: 28px
-        }
-
-        .hostel-occ-block:last-child {
-            margin-bottom: 0
-        }
-
-        .hob-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border)
-        }
-
-        .hob-name {
-            font-family: var(--font-display);
-            font-size: 15px;
-            font-weight: 700
-        }
-
-        .hob-stats {
-            display: flex;
-            gap: 12px
-        }
-
-        .hob-stat {
-            font-size: 12px;
-            color: var(--ink3);
-            display: flex;
-            align-items: center;
-            gap: 4px
-        }
-
-        .hob-stat strong {
-            color: var(--ink);
-            font-size: 14px
-        }
-
-        .floor-block {
-            margin-bottom: 12px
-        }
-
-        .floor-label {
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--ink3);
-            margin-bottom: 8px
-        }
-
-        .room-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px
-        }
-
-        .room-box {
-            width: 100px;
-            padding: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-            border: 1.5px solid transparent;
-        }
-
-        .room-box:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)
-        }
-
-        .room-box.occupied {
-            background: var(--green-bg);
-            border-color: rgba(45, 125, 90, 0.25)
-        }
-
-        .room-box.vacant {
-            background: var(--red-bg);
-            border-color: rgba(200, 75, 49, 0.2);
-            border-style: dashed
-        }
-
-        .room-box.warning {
-            background: var(--yellow-bg);
-            border-color: rgba(184, 134, 11, 0.3)
-        }
-
-        .room-box.notice-period {
-            background: #fff3e0;
-            border-color: #ffb74d;
-        }
-
-        .room-box.advance-booking {
-            background: var(--white);
-            border: 2px solid #111 !important;
-            box-shadow: 0 0 0 1px #111;
-        }
-
-        .room-box.maintenance {
-            background: var(--bg3);
-            border-color: var(--border)
-        }
-
-        .rb-num {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--ink);
-            margin-bottom: 4px
-        }
-
-        .rb-name {
-            font-size: 11px;
-            color: var(--ink2);
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis
-        }
-
-        .rb-status {
-            font-size: 10px;
-            margin-top: 3px;
-            font-weight: 600
-        }
-
-        .rb-indicators {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            display: flex;
-            gap: 3px
-        }
-
-        .rb-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%
-        }
-
-        /* ROOM DETAIL POPUP */
-        .room-popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            box-sizing: border-box;
-        }
-
-        .room-popup.on {
-            display: flex !important;
-        }
-
-        .room-popup-card {
-            background: var(--white);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            padding: 24px;
-            width: 100%;
-            max-width: 440px;
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            animation: modalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .rp-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px
-        }
-
-        .rp-room {
-            font-family: var(--font-display);
-            font-size: 16px;
-            font-weight: 700
-        }
-
-        .rp-close {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            color: var(--ink3)
-        }
-
-        .rp-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            border-bottom: 1px solid var(--bg2);
-            font-size: 13px
-        }
-
-        .rp-row:last-of-type {
-            border-bottom: none
-        }
-
-        .rp-key {
-            color: var(--ink3)
-        }
-
-        .rp-val {
-            font-weight: 600;
-            color: var(--ink)
-        }
-
-        .rp-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            flex-wrap: wrap
-        }
-
-        /* RENT TABLE */
-        .rent-table-wrap {
-            background: var(--white);
-            border-radius: var(--r);
-            border: 1px solid var(--border);
-            overflow: hidden;
-            box-shadow: var(--shadow)
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse
-        }
-
-        thead {
-            background: var(--bg2)
-        }
-
-        th {
-            padding: 12px 16px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: var(--ink3)
-        }
-
-        td {
-            padding: 12px 16px;
-            font-size: 14px;
-            border-top: 1px solid var(--border);
-            vertical-align: middle
-        }
-
-        tr:hover td {
-            background: var(--bg)
-        }
-
-        .ava {
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--ink), var(--ink2));
-            color: var(--white);
-            font-size: 12px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-family: var(--font-display)
-        }
-
-        /* FILTER BAR */
-        .filter-bar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            flex-wrap: wrap
-        }
-
-        .fb {
-            padding: 7px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            border: 1.5px solid var(--border);
-            background: var(--white);
-            color: var(--ink3);
-            transition: all 0.2s;
-            font-family: var(--font)
-        }
-
-        .fb:hover {
-            border-color: var(--ink);
-            color: var(--ink)
-        }
-
-        .fb.on {
-            background: var(--ink);
-            color: var(--white);
-            border-color: var(--ink)
-        }
-
-        /* COMPLAINT CARDS */
-        .complaint-card {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--r);
-            padding: 20px;
-            margin-bottom: 12px;
-            transition: all 0.2s
-        }
-
-        .complaint-card:hover {
-            box-shadow: var(--shadow)
-        }
-
-        .cc-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            margin-bottom: 10px
-        }
-
-        .cc-title {
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--ink)
-        }
-
-        .cc-meta {
-            font-size: 12px;
-            color: var(--ink3);
-            margin-top: 2px
-        }
-
-        .cc-desc {
-            font-size: 13px;
-            color: var(--ink2);
-            line-height: 1.6;
-            margin-bottom: 12px;
-            padding: 10px;
-            background: var(--bg);
-            border-radius: var(--rs)
-        }
-
-        .cc-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between
-        }
-
-        .cc-info {
-            font-size: 12px;
-            color: var(--ink3)
-        }
-
-        .cc-actions {
-            display: flex;
-            gap: 8px
-        }
-
-        /* TIMELINE */
-        .timeline {
-            position: relative;
-            padding-left: 20px
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 6px;
-            top: 6px;
-            bottom: 6px;
-            width: 2px;
-            background: var(--border)
-        }
-
-        .tl-item {
-            position: relative;
-            margin-bottom: 16px
-        }
-
-        .tl-dot {
-            position: absolute;
-            left: -20px;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            border: 2px solid var(--white);
-            top: 2px
-        }
-
-        .tl-dot.green {
-            background: var(--green)
-        }
-
-        .tl-dot.yellow {
-            background: var(--yellow)
-        }
-
-        .tl-dot.red {
-            background: var(--red)
-        }
-
-        .tl-dot.grey {
-            background: var(--ink3)
-        }
-
-        .tl-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--ink)
-        }
-
-        .tl-time {
-            font-size: 11px;
-            color: var(--ink3);
-            margin-top: 2px
-        }
-
-        /* PROGRESS BAR */
-        .prog-bar {
-            height: 8px;
-            background: var(--bg3);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 6px
-        }
-
-        .prog-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.6s ease
-        }
-
-        .prog-green {
-            background: var(--green)
-        }
-
-        .prog-red {
-            background: var(--accent)
-        }
-
-        .prog-yellow {
-            background: var(--yellow)
-        }
-
-        /* NOTICE BOARD */
-        .notice-card {
-            background: var(--yellow-bg);
-            border: 1px solid rgba(184, 134, 11, 0.2);
-            border-radius: var(--rs);
-            padding: 16px;
-            margin-bottom: 10px;
-            border-left: 4px solid var(--yellow);
-            position: relative;
-        }
-
-        .notice-actions {
-            position: absolute;
-            top: 14px;
-            right: 14px;
-            display: inline-block;
-        }
-
-        .notice-dots-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            color: var(--ink3);
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            line-height: 1;
-        }
-
-        .notice-dots-btn:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--ink1);
-        }
-
-        .notice-dropdown {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 28px;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--rs);
-            box-shadow: var(--shadow);
-            z-index: 100;
-            min-width: 100px;
-            overflow: hidden;
-        }
-
-        .notice-dropdown.show {
-            display: block;
-        }
-
-        .notice-dropdown-item {
-            padding: 8px 14px;
-            font-size: 13px;
-            color: var(--ink1);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            text-align: left;
-            width: 100%;
-            background: none;
-            border: none;
-            font-family: inherit;
-        }
-
-        .notice-dropdown-item:hover {
-            background: var(--bg);
-        }
-
-        .notice-dropdown-item.delete {
-            color: var(--red);
-        }
-
-        .notice-dropdown-item.delete:hover {
-            background: var(--red-bg);
-        }
-
-        .nc-title {
-            font-weight: 700;
-            font-size: 14px;
-            color: var(--ink);
-            margin-bottom: 4px
-        }
-
-        .nc-body {
-            font-size: 13px;
-            color: var(--ink2);
-            line-height: 1.6
-        }
-
-        .nc-meta {
-            font-size: 11px;
-            color: var(--ink3);
-            margin-top: 6px
-        }
-
-        /* MONTHLY SUMMARY TABLE */
-        .monthly-table {
-            background: var(--white);
-            border-radius: var(--r);
-            border: 1px solid var(--border);
-            overflow: hidden;
-            margin-bottom: 24px
-        }
-
-        .mt-header {
-            padding: 16px 20px;
-            background: var(--ink);
-            color: var(--white);
-            display: flex;
-            justify-content: space-between;
-            align-items: center
-        }
-
-        .mt-title {
-            font-family: var(--font-display);
-            font-size: 16px;
-            font-weight: 700
-        }
-
-        /* AUDIT LOG */
-        .audit-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border)
-        }
-
-        .audit-item:last-child {
-            border-bottom: none
-        }
-
-        .audit-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            flex-shrink: 0
-        }
-
-        .audit-body {
-            flex: 1
-        }
-
-        .audit-text {
-            font-size: 13px;
-            color: var(--ink);
-            line-height: 1.5
-        }
-
-        .audit-time {
-            font-size: 11px;
-            color: var(--ink3);
-            margin-top: 2px
-        }
-
-        /* TENANT PAY PAGE */
-        .pay-hero {
-            background: var(--ink);
-            color: var(--white);
-            border-radius: var(--r);
-            padding: 28px;
-            margin-bottom: 24px;
-            position: relative;
-            overflow: hidden
-        }
-
-        .pay-hero::before {
-            content: '🏠';
-            position: absolute;
-            right: -10px;
-            bottom: -10px;
-            font-size: 100px;
-            opacity: 0.06
-        }
-
-        .pay-amount {
-            font-family: var(--font-display);
-            font-size: 52px;
-            font-weight: 800;
-            line-height: 1;
-            margin: 8px 0
-        }
-
-        .pay-status {
-            font-size: 13px;
-            opacity: 0.6;
-            letter-spacing: 0.5px
-        }
-
-        .pay-due {
-            font-size: 14px;
-            opacity: 0.7;
-            margin-top: 8px
-        }
-
-        .payment-method {
-            border: 2px solid var(--border);
-            border-radius: var(--r);
-            padding: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 14px
-        }
-
-        .payment-method:hover {
-            border-color: var(--ink)
-        }
-
-        .payment-method.selected {
-            border-color: var(--ink);
-            background: var(--bg)
-        }
-
-        .pm-icon {
-            font-size: 24px
-        }
-
-        .pm-name {
-            font-weight: 700;
-            font-size: 14px
-        }
-
-        .pm-desc {
-            font-size: 12px;
-            color: var(--ink3)
-        }
-
-        /* ===== MOBILE SIDEBAR OVERLAY ===== */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(26, 24, 20, 0.55);
-            z-index: 340;
-            backdrop-filter: blur(2px);
-        }
-
-        .sidebar-overlay.on {
-            display: block;
-        }
-
-        /* ===== MOBILE TOP BAR ===== */
-        .mobile-topbar {
-            display: none;
-            position: sticky;
-            top: 0;
-            z-index: 200;
-            background: var(--ink);
-            color: var(--white);
-            padding: 0 16px;
-            height: 54px;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .mob-brand {
-            font-family: var(--font-display);
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--white);
-        }
-
-        .mob-brand span {
-            color: var(--accent2);
-        }
-
-        .mob-menu-btn {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--white);
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-
-        .mob-menu-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* ===== RESPONSIVE — 768px ===== */
-        @media(max-width:768px) {
-
-            /* LANDING NAV */
-            .landing-nav {
-                padding: 0 16px;
-            }
-
-            .landing-nav .btn-outline {
-                display: none;
-            }
-
-            /* HERO */
-            .hero {
-                grid-template-columns: 1fr;
-                padding: 80px 20px 40px;
-                gap: 28px;
-            }
-
-            .hero h1 {
-                font-size: 38px;
-                letter-spacing: -1px;
-            }
-
-            .hero-desc {
-                font-size: 14px;
-                margin-bottom: 24px;
-            }
-
-            .hero-btns {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .hero-btns .btn {
-                width: 100%;
-                text-align: center;
-                padding: 14px 20px;
-            }
-
-            .login-cards {
-                gap: 12px;
-            }
-
-            .login-card {
-                padding: 18px 16px;
-            }
-
-
-
-            /* STATS STRIP */
-            .stats-strip {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .ss-item {
-                padding: 20px 20px;
-            }
-
-            .ss-num {
-                font-size: 34px;
-            }
-
-            /* HOSTEL INFO */
-            .hostel-info-section {
-                padding: 48px 20px;
-            }
-
-            .sec-title {
-                font-size: 26px;
-            }
-
-            .hostel-branches {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-
-            .branch-stats {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-
-            /* MODAL */
-            .modal {
-                padding: 24px 20px;
-                margin: 0 12px;
-                border-radius: 16px;
-                max-height: 95vh;
-            }
-
-            /* DASHBOARD LAYOUT */
-            .dash-layout {
-                grid-template-columns: 1fr;
-            }
-
-            /* SIDEBAR — full screen slide-in overlay on mobile */
-            .sidebar {
-                position: fixed;
-                left: -100vw;
-                top: 0;
-                height: 100vh;
-                height: 100dvh;
-                width: 100vw;
-                max-width: 100%;
-                z-index: 99999;
-                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                box-sizing: border-box;
-                overflow-y: auto;
-            }
-
-            .sidebar.mob-open {
-                left: 0;
-            }
-
-            .mob-sidebar-close-btn {
-                display: block !important;
-            }
-
-            /* MOBILE TOPBAR */
-            .mobile-topbar {
-                display: flex;
-            }
-
-            /* DASH MAIN */
-            .dash-main {
-                padding: 16px;
-            }
-
-            /* DASH HEADER */
-            .dash-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-                margin-bottom: 20px;
-            }
-
-            .dash-header>.flex {
-                width: 100%;
-                flex-wrap: wrap;
-            }
-
-            .dash-title {
-                font-size: 22px;
-            }
-
-            /* STATS GRIDS */
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-                margin-bottom: 16px;
-            }
-
-            .stats-grid-3 {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-                margin-bottom: 16px;
-            }
-
-            .stats-grid-2 {
-                grid-template-columns: 1fr;
-                gap: 12px;
-                margin-bottom: 16px;
-            }
-
-            .stat-num {
-                font-size: 28px;
-            }
-
-            .stat-card {
-                padding: 16px 18px;
-            }
-
-            .card {
-                padding: 16px;
-            }
-
-            /* TABLES — horizontal scroll */
-            .rent-table-wrap {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .monthly-table {
-                overflow-x: auto;
-            }
-
-            .monthly-table table {
-                min-width: 560px;
-            }
-
-            table {
-                min-width: 520px;
-            }
-
-            th,
-            td {
-                padding: 10px 12px;
-                font-size: 13px;
-                white-space: nowrap;
-            }
-
-            /* ROOM GRID */
-            .room-box {
-                width: 76px;
-                padding: 8px;
-            }
-
-            .rb-num {
-                font-size: 11px;
-            }
-
-            .rb-name {
-                font-size: 10px;
-            }
-
-            .occ-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-
-            .occ-legend {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-
-            .hob-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 6px;
-            }
-
-            .hob-stats {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            /* ROOM POPUP */
-            .room-popup-card {
-                max-width: 94vw;
-                padding: 18px;
-            }
-
-            /* FILTER BAR */
-            .filter-bar {
-                overflow-x: auto;
-                flex-wrap: nowrap;
-                padding-bottom: 6px;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .filter-bar::-webkit-scrollbar {
-                display: none;
-            }
-
-            /* COMPLAINT CARD */
-            .cc-footer {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-
-            .cc-actions {
-                flex-wrap: wrap;
-            }
-
-            /* MANAGER CARD */
-            .mgr-card {
-                flex-wrap: wrap;
-                gap: 12px;
-            }
-
-            .mgr-stats {
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-
-            /* VACANT BANNER */
-            .vacant-banner {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-
-            /* PAY HERO */
-            .pay-hero {
-                padding: 20px;
-            }
-
-            .pay-amount {
-                font-size: 42px;
-            }
-
-            /* NOTICE BOARD 3-col → 1-col */
-            [style*="grid-template-columns: repeat(3"] {
-                grid-template-columns: 1fr !important;
-            }
-
-            /* INFO ROW */
-            .info-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
-            }
-
-            /* TOAST */
-            #toast {
-                left: 12px;
-                right: 12px;
-                bottom: 14px;
-                max-width: none;
-                width: auto;
-            }
-
-            /* AMENITY GRID */
-            .amenity-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            /* FLEX LAYOUT PANELS */
-            .flex.gap16[style*="margin-top"] {
-                flex-direction: column;
-            }
-
-            [style*="width:280px"] {
-                width: 100% !important;
-            }
-        }
-
-        /* ===== RESPONSIVE — 480px (small phones) ===== */
-        @media(max-width:480px) {
-            .hero h1 {
-                font-size: 30px;
-            }
-
-            .hero-eyebrow {
-                font-size: 10px;
-            }
-
-            .stats-strip {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .ss-num {
-                font-size: 28px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid-3 {
-                grid-template-columns: 1fr;
-            }
-
-            .login-card {
-                padding: 14px 12px;
-            }
-
-            .lc-title {
-                font-size: 15px;
-            }
-
-            .lc-desc {
-                font-size: 12px;
-            }
-
-            .pay-amount {
-                font-size: 34px;
-            }
-
-            .dash-title {
-                font-size: 19px;
-            }
-
-            .room-box {
-                width: 64px;
-            }
-
-            .amenity-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .modal {
-                margin: 0 8px;
-                padding: 20px 16px;
-            }
-
-            .btn {
-                font-size: 13px;
-            }
-        }
-
-        /* MANAGER REPORT CARD */
-        .mgr-card {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--r);
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px
-        }
-
-        .mgr-ava {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            background: var(--blue-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px
-        }
-
-        .mgr-info {
-            flex: 1
-        }
-
-        .mgr-name {
-            font-weight: 700;
-            font-size: 15px
-        }
-
-        .mgr-hostel {
-            font-size: 12px;
-            color: var(--ink3);
-            margin-top: 2px
-        }
-
-        .mgr-stats {
-            display: flex;
-            gap: 16px;
-            margin-top: 8px
-        }
-
-        .mgr-stat {
-            font-size: 12px;
-            color: var(--ink3)
-        }
-
-        .mgr-stat strong {
-            display: block;
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--ink);
-            font-family: var(--font-display)
-        }
-
-        /* VACANT ROOM HIGHLIGHT */
-        .vacant-banner {
-            background: var(--red-bg);
-            border: 1px solid rgba(200, 75, 49, 0.2);
-            border-radius: var(--rs);
-            padding: 12px 16px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between
-        }
-
-        .vb-text {
-            font-size: 13px;
-            color: var(--red);
-            font-weight: 600
-        }
-
-        .vb-sub {
-            font-size: 12px;
-            color: var(--ink3);
-            margin-top: 2px
-        }
-
-        /* PROFILE */
-        .profile-hero {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--r);
-            padding: 28px;
-            text-align: center;
-            margin-bottom: 20px
-        }
-
-        .profile-ava {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--ink), var(--ink2));
-            color: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 26px;
-            margin: 0 auto 14px
-        }
-
-        .profile-name {
-            font-family: var(--font-display);
-            font-size: 22px;
-            font-weight: 800
-        }
-
-        .profile-sub {
-            font-size: 13px;
-            color: var(--ink3);
-            margin-top: 4px
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border)
-        }
-
-        .info-row:last-child {
-            border-bottom: none
-        }
-
-        .ir-key {
-            font-size: 13px;
-            color: var(--ink3)
-        }
-
-        .ir-val {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--ink)
-        }
-        .daily-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
-        @media (min-width: 768px) { .daily-grid { grid-template-columns: 1fr 1fr; } }
-        .digest-group { margin-bottom: 24px; }
-        .digest-group h4 { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-        
-        /* Safety limits to prevent long names (e.g. containing base64) from breaking table columns */
-        .rent-table-wrap td div.flex.gap8 span {
-            max-width: 180px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        
-        /* Edit Dashboard Styles */
-        .hostels-edit-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 24px;
-            margin-top: 20px;
-        }
-        .hostel-edit-card {
-            background: var(--white);
-            border-radius: var(--r);
-            border: 1px solid var(--border);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .edit-section-title {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--ink);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 4px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-        .edit-photos-list {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        .edit-photo-item {
-            position: relative;
-            aspect-ratio: 16/10;
-            border-radius: var(--rs);
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-        .edit-photo-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .edit-photo-item .btn-remove-photo {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            background: rgba(239, 68, 68, 0.9);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            cursor: pointer;
-            padding: 0;
-            line-height: 1;
-        }
-        .edit-rooms-list {
-            max-height: 250px;
-            overflow-y: auto;
-            border: 1px solid var(--border);
-            border-radius: var(--rs);
-            padding: 8px;
-            background: var(--bg);
-            margin-bottom: 8px;
-        }
-        .edit-room-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 6px 4px;
-            border-bottom: 1px solid var(--border);
-            gap: 8px;
-            font-size: 13px;
-        }
-        .edit-room-item:last-child {
-            border-bottom: none;
-        }
-        .edit-room-info {
-            flex: 1;
-            font-weight: 500;
-        }
-        .edit-room-actions {
-            display: flex;
-            gap: 4px;
-        }
-
-        /* NEW SECTIONS STYLING */
-        .landing-section {
-            padding: 80px 52px;
-            background: var(--bg);
-            border-top: 1px solid var(--border);
-        }
-        
-        .landing-section.alternate {
-            background: var(--white);
-        }
-
-        /* 1. Testimonials */
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            margin-top: 32px;
-        }
-
-        .testimonial-card {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--r);
-            padding: 28px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-        }
-
-        .testimonial-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .testimonial-rating {
-            color: #FFB800;
-            font-size: 18px;
-            margin-bottom: 16px;
-        }
-
-        .testimonial-text {
-            font-size: 15px;
-            line-height: 1.6;
-            color: var(--ink2);
-            font-style: italic;
-            margin-bottom: 20px;
-        }
-
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .testimonial-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--bg2);
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 16px;
-            border: 1.5px solid var(--border);
-        }
-
-        .testimonial-name {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--ink);
-        }
-
-        .testimonial-role {
-            font-size: 12px;
-            color: var(--ink3);
-        }
-
-        /* 2. Comparison Table */
-        .comparison-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            margin-top: 32px;
-            border-radius: var(--r);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            background: var(--white);
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            min-width: 600px;
-        }
-
-        .comparison-table th, .comparison-table td {
-            padding: 18px 24px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .comparison-table th {
-            background: var(--ink);
-            color: var(--white);
-            font-family: var(--font-display);
-            font-weight: 600;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .comparison-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .comparison-table td:first-child {
-            font-weight: 600;
-            color: var(--ink);
-        }
-
-        .comp-check {
-            color: var(--green);
-            background: var(--green-bg);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .comp-cross {
-            color: var(--red);
-            background: var(--red-bg);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* 3. Floating WhatsApp */
-        .whatsapp-float {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #25D366;
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
-            z-index: 9999;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            animation: pulse-wa 2s infinite;
-        }
-
-        .whatsapp-float svg {
-            width: 32px;
-            height: 32px;
-            fill: white;
-        }
-
-        .whatsapp-float:hover {
-            background: #128C7E;
-            transform: scale(1.1);
-        }
-
-        .whatsapp-tooltip {
-            position: absolute;
-            right: 75px;
-            background: var(--ink);
-            color: var(--white);
-            padding: 8px 16px;
-            border-radius: var(--rs);
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .whatsapp-float:hover .whatsapp-tooltip {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-5px);
-        }
-
-        @keyframes pulse-wa {
-            0% {
-                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
-            }
-        }
-
-        /* 4. FAQ Accordion */
-        .faq-list {
-            margin-top: 32px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .faq-item {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--r);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-        }
-
-        .faq-item.active {
-            border-color: var(--accent);
-        }
-
-        .faq-trigger {
-            width: 100%;
-            padding: 22px 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: none;
-            border: none;
-            cursor: pointer;
-            text-align: left;
-            font-family: var(--font-display);
-            font-size: clamp(16px, 2vw, 18px);
-            font-weight: 600;
-            color: var(--ink);
-            gap: 16px;
-        }
-
-        .faq-icon {
-            font-size: 20px;
-            color: var(--ink3);
-            transition: transform 0.3s ease;
-        }
-
-        .faq-item.active .faq-icon {
-            transform: rotate(45deg);
-            color: var(--accent);
-        }
-
-        .faq-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            padding: 0 28px;
-        }
-
-        .faq-item.active .faq-content {
-            padding-bottom: 22px;
-        }
-
-        .faq-inner {
-            font-size: 15px;
-            line-height: 1.7;
-            color: var(--ink2);
-            border-top: 1px solid var(--border);
-            padding-top: 16px;
-        }
-
-        /* 6. Video Tour */
-        .video-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            aspect-ratio: 16/9;
-            margin: 32px auto 0 auto;
-            border-radius: var(--r);
-            overflow: hidden;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .video-placeholder {
-            width: 100%;
-            height: 100%;
-            background: var(--ink2);
-            color: var(--white);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 24px;
-            gap: 16px;
-        }
-
-        .video-placeholder-icon {
-            font-size: 48px;
-        }
-
-        .video-placeholder-title {
-            font-family: var(--font-display);
-            font-size: clamp(18px, 3vw, 24px);
-            font-weight: 700;
-        }
-
-        /* Responsive section padding for mobile */
-        @media (max-width: 768px) {
-            .landing-section {
-                padding: 60px 24px;
-            }
-            .whatsapp-float {
-                bottom: 20px;
-                right: 20px;
-                width: 50px;
-                height: 50px;
-            }
-            .whatsapp-float svg {
-                width: 26px;
-                height: 26px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- TOAST -->
-    <div id="toast">
-        <div id="toast-title"></div>
-        <div id="toast-body"></div>
-    </div>
-
-    <!-- HOSTEL DETAIL MODAL -->
-    <div class="modal-overlay" id="hostel-detail-modal">
-        <div class="modal detail-modal">
-            <div class="detail-header-fixed">
-                <div>
-                    <div id="hd-name" class="modal-title">Hostel Name</div>
-                    <div id="hd-loc-sub" style="font-size: 13px; color: var(--ink3);">Location Details</div>
-                </div>
-                <div class="flex gap12">
-                    <button class="btn btn-accent btn-sm"
-                        onclick="closeModal('hostel-detail-modal'); selectHostelForBooking(currentDetailId);">Book
-                        Room</button>
-                    <button class="modal-close" onclick="closeModal('hostel-detail-modal')">×</button>
-                </div>
-            </div>
-            <div class="detail-split">
-                <div class="detail-gallery">
-                    <img id="hd-img" src="" alt="Hostel View">
-                    <div class="gallery-nav" id="hd-gal-nav">
-                        <!-- Dots added via JS -->
-                    </div>
-                </div>
-                <div class="detail-info">
-                    <div class="detail-section-title">Sharing Options & Availability</div>
-                    <div class="sharing-grid">
-                        <div class="sharing-card">
-                            <div class="sc-icon">👤</div>
-                            <div class="sc-label">Single</div>
-                            <div class="sc-val" id="hd-stat-1">--</div>
-                        </div>
-                        <div class="sharing-card">
-                            <div class="sc-icon">👥</div>
-                            <div class="sc-label">2-Sharing</div>
-                            <div class="sc-val" id="hd-stat-2">--</div>
-                        </div>
-                        <div class="sharing-card">
-                            <div class="sc-icon">👨‍👨‍👦</div>
-                            <div class="sc-label">3-Sharing</div>
-                            <div class="sc-val" id="hd-stat-3">--</div>
-                        </div>
-                    </div>
-
-                    <div class="detail-section-title">About this Property</div>
-                    <p id="hd-desc" style="font-size: 14px; color: var(--ink2); line-height: 1.6; margin-bottom: 24px;">
-                        Loading description...
-                    </p>
-
-                    <div class="location-box">
-                        <div class="loc-tag">📍 <span id="hd-loc-full">Location Name</span></div>
-                        <p style="font-size: 13px; color: var(--ink2); opacity: 0.8; margin-bottom: 12px;">Premium location with easy access
-                            to transport, IT parks, and major city hubs. High security and peaceful environment.</p>
-                        <a id="hd-map-btn" href="#" target="_blank" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none; margin-bottom: 16px;">
-                            🗺️ View on Google Maps
-                        </a>
-                        <div class="map-wrapper" style="width: 100%; height: 250px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow);">
-                            <iframe id="hd-map-iframe" src="" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ROOM POPUP -->
-    <div class="room-popup" id="room-popup" onclick="if(event.target===this) closeRoomPopup()">
-        <div class="room-popup-card">
-            <div class="rp-header">
-                <div class="rp-room" id="rp-room-num" style="font-size: 18px; font-weight: 700; color: var(--ink);">Room 101</div>
-                <button class="rp-close" onclick="closeRoomPopup()" style="background: none; border: none; font-size: 24px; font-weight: 600; color: var(--ink3); cursor: pointer; padding: 0 4px;">×</button>
-            </div>
-            <div id="rp-content"></div>
-            <div class="rp-actions" id="rp-actions"></div>
-        </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- LANDING PAGE -->
-    <!-- ============================================================ -->
-    <div class="pg on" id="pg-landing">
-        <nav class="landing-nav">
-            <div class="brand" onclick="goTo('pg-landing')">
-                <div class="brand-mark">V</div>
-                <div class="brand-name" style="display:flex; flex-direction:column; align-items:flex-start; line-height:1.1;">
-                    <span style="font-family:var(--font-display); font-size:20px; font-weight:900; letter-spacing:1px; color:var(--ink);">VUSTELA</span>
-                    <span style="font-size:9px; font-weight:800; letter-spacing:2px; color:var(--accent); text-transform:uppercase; margin-top:-1px;">PG MANAGEMENT</span>
-                </div>
-            </div>
-            <div class="flex gap12">
-                <button class="btn btn-outline" onclick="scrollToInfo()">About Hostel</button>
-                <button class="btn btn-primary" style="background:var(--ink2)"
-                    onclick="openModal('login-modal')">Login</button>
-            </div>
-        </nav>
-
-        <section class="hero" style="position:relative;z-index:2">
-            <!-- Left Side: Room Photo Slideshow -->
-            <div class="hero-image-container" style="animation: fadeUp 0.7s ease both;">
-                <div class="hero-slideshow">
-                    <div class="hero-slide" style="background-image: url('hero_hostel_1.png');"></div>
-                    <div class="hero-slide" style="background-image: url('hero_hostel_2.png');"></div>
-                    <div class="hero-slide" style="background-image: url('hero_hostel_3.png');"></div>
-                    <div class="hero-slide" style="background-image: url('hero_hostel_4.png');"></div>
-                </div>
-                <div class="slideshow-dots">
-                    <span class="slide-dot active"></span>
-                    <span class="slide-dot"></span>
-                    <span class="slide-dot"></span>
-                    <span class="slide-dot"></span>
-                </div>
-            </div>
-
-            <!-- Right Side: Three Large Rectangular Action Cards -->
-            <div class="login-cards" style="animation: fadeUp 0.7s ease both 0.15s; display: flex; flex-direction: column; gap: 20px; justify-content: center; height: 100%;">
-                
-                <!-- 1. LOGIN -->
-                <div class="hero-action-card" onclick="openModal('login-modal')">
-                    <div class="hac-icon">🔑</div>
-                    <div class="hac-content">
-                        <div class="hac-title">Login to Dashboard</div>
-                    </div>
-                    <div class="hac-arrow">→</div>
-                </div>
-
-                <!-- 2. BOOK A ROOM -->
-                <div class="hero-action-card" onclick="openModal('book-room-modal')">
-                    <div class="hac-icon">🛏️</div>
-                    <div class="hac-content">
-                        <div class="hac-title">Book a Room</div>
-                        <div class="hac-desc">Find available beds and rooms at our ISHTAA PRIME BOYS or ISHTAA PRIME GIRLS branches instantly.</div>
-                    </div>
-                    <div class="hac-arrow">→</div>
-                </div>
-
-                <!-- 3. CALL NOW -->
-                <a href="tel:+916300642776" class="hero-action-card" style="text-decoration: none;">
-                    <div class="hac-icon">📞</div>
-                    <div class="hac-content">
-                        <div class="hac-title">Call for Inquiry</div>
-                        <div class="hac-desc">Have questions? Talk directly to our managers for pricing, amenities, and room visits.</div>
-                    </div>
-                    <div class="hac-arrow">→</div>
-                </a>
-
-            </div>
-        </section>
-
-
-        <!-- PUBLIC HOSTEL INFO -->
-        <section class="hostel-info-section" id="hostel-info">
-            <div class="sec-eyebrow">Our Hostels</div>
-            <h2 class="sec-title">Premium PG Accommodation<br>Across Hyderabad</h2>
-            <p class="sec-desc">Fully furnished rooms with all amenities. Flexible monthly plans. Professional
-                management you can trust.</p>
-
-            <div class="hostel-branches">
-                <div class="branch-card" onclick="openHostelDetail(1)">
-                    <div class="branch-img" style="background-image: url('hostel1.png'); background-size: cover; background-position: center;"><span class="branch-num-badge">Hostel 1</span></div>
-                    <div class="branch-body">
-                        <div class="branch-name">ISHTAA PRIME BOYS</div>
-                        <div class="branch-loc">📍 NARSINGI</div>
-                        <div class="branch-stats">
-                            <div class="bs-item"><strong>80</strong>Rooms</div>
-                            <div class="bs-item"><strong>Vacant</strong>Available</div>
-                            <div class="bs-item"><strong>₹8,000+</strong>/ month</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="branch-card" onclick="openHostelDetail(2)">
-                    <div class="branch-img" style="background-image: url('hostel2.png'); background-size: cover; background-position: center;"><span class="branch-num-badge">Hostel 2</span></div>
-                    <div class="branch-body">
-                        <div class="branch-name">ISHTAA PRIME GIRLS</div>
-                        <div class="branch-loc">📍 NARSINGI</div>
-                        <div class="branch-stats">
-                            <div class="bs-item"><strong>18</strong>Rooms</div>
-                            <div class="bs-item"><strong>3</strong>Vacant</div>
-                            <div class="bs-item"><strong>₹6,000+</strong>/ month</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-            <div style="margin-top:40px">
-                <div class="sec-eyebrow" style="margin-bottom:16px">Amenities</div>
-                <div class="amenity-grid">
-                    <div class="amenity-item">
-                        <div class="amenity-icon">📶</div>
-                        <div class="amenity-name">High-Speed WiFi</div>
-                    </div>
-                    <div class="amenity-item">
-                        <div class="amenity-icon">🍽️</div>
-                        <div class="amenity-name">Meals Included</div>
-                    </div>
-                    <div class="amenity-item">
-                        <div class="amenity-icon">🧺</div>
-                        <div class="amenity-name">Laundry Service</div>
-                    </div>
-                    <div class="amenity-item">
-                        <div class="amenity-icon">❄️</div>
-                        <div class="amenity-name">AC Rooms</div>
-                    </div>
-                    <div class="amenity-item">
-                        <div class="amenity-icon">🔒</div>
-                        <div class="amenity-name">24/7 Security</div>
-                    </div>
-                    <div class="amenity-item">
-                        <div class="amenity-icon">🏋️</div>
-                        <div class="amenity-name">Gym Access</div>
-                    </div>
-                    <div class="amenity-item">
-                        <div class="amenity-icon">🅿️</div>
-                        <div class="amenity-name">Parking</div>
-                    </div>
-                    <div class="amenity-item">
-                        <div class="amenity-icon">🔌</div>
-                        <div class="amenity-name">Power Backup</div>
-                    </div>
-                </div>
-            </div>
-
-            <div style="text-align:center;margin-top:40px">
-                <button class="btn btn-primary" onclick="openModal('book-room-modal')">Book a Room Today</button>
-            </div>
-        </section>
-
-        <!-- VIDEO TOUR SECTION -->
-        <section class="landing-section alternate" id="virtual-tour">
-            <div class="sec-eyebrow">Virtual Tour</div>
-            <h2 class="sec-title">Take a Virtual Tour</h2>
-            <p class="sec-desc">Get a detailed walkthrough of VUSTELA's premium rooms and common spaces from the comfort of your home.</p>
-            <div class="video-container">
-                <!-- If you have a video URL, uncomment the iframe below and remove the placeholder div -->
-                <!-- <iframe width="100%" height="100%" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
-                <div class="video-placeholder">
-                    <div class="video-placeholder-icon">🎥</div>
-                    <div class="video-placeholder-title">Video Coming Soon</div>
-                    <p style="opacity: 0.8; font-size: 14px; max-width: 320px;">We are filming a premium walkthrough of VUSTELA PG Hostels. Stay tuned!</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- WHY CHOOSE US SECTION -->
-        <section class="landing-section" id="why-choose-us">
-            <div class="sec-eyebrow">Comparison</div>
-            <h2 class="sec-title">Why Choose VUSTELA?</h2>
-            <p class="sec-desc">We offer a premium, modern co-living experience with maximum comfort, transparency, and top-tier amenities.</p>
-            
-            <div class="comparison-wrapper">
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Features & Amenities</th>
-                            <th style="background:var(--accent); color:var(--white);">VUSTELA ✅</th>
-                            <th>Traditional PGs ❌</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>24/7 Security</td>
-                            <td><span class="comp-check">✔ Active Guard & CCTV</span></td>
-                            <td><span class="comp-cross">✖ None / Basic lock only</span></td>
-                        </tr>
-                        <tr>
-                            <td>WiFi Included</td>
-                            <td><span class="comp-check">✔ High-Speed Fiber</span></td>
-                            <td><span class="comp-cross">✖ Paid extra or Slow</span></td>
-                        </tr>
-                        <tr>
-                            <td>Clean Rooms</td>
-                            <td><span class="comp-check">✔ Professional Daily Cleaning</span></td>
-                            <td><span class="comp-cross">✖ Occasional / Self-clean</span></td>
-                        </tr>
-                        <tr>
-                            <td>Flexible Notice Period</td>
-                            <td><span class="comp-check">✔ 1-Month Notice Only</span></td>
-                            <td><span class="comp-cross">✖ 2-3 Months / Non-negotiable</span></td>
-                        </tr>
-                        <tr>
-                            <td>Online Payments</td>
-                            <td><span class="comp-check">✔ Integrated UPI / Cards / App</span></td>
-                            <td><span class="comp-cross">✖ Cash only or Offline bank transfer</span></td>
-                        </tr>
-                        <tr>
-                            <td>Food Included</td>
-                            <td><span class="comp-check">✔ 3 Meals (Hygiene Certified)</span></td>
-                            <td><span class="comp-cross">✖ Not included or low quality</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- TESTIMONIALS SECTION -->
-        <section class="landing-section alternate" id="testimonials">
-            <div class="sec-eyebrow">Reviews</div>
-            <h2 class="sec-title">What Our Tenants Say</h2>
-            <p class="sec-desc">Join hundreds of happy professionals and students living their best life at VUSTELA PG Hostels.</p>
-            
-            <div class="testimonials-grid">
-                <!-- Testimonial 1 -->
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">★★★★★</div>
-                    <p class="testimonial-text">"Best PG in Gachibowli, very clean and safe"</p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">R</div>
-                        <div>
-                            <div class="testimonial-name">Rahul</div>
-                            <div class="testimonial-role">Tenant</div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Testimonial 2 -->
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">★★★★★</div>
-                    <p class="testimonial-text">"Food is amazing and staff is very helpful"</p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">P</div>
-                        <div>
-                            <div class="testimonial-name">Priya</div>
-                            <div class="testimonial-role">Tenant</div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Testimonial 3 -->
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">★★★★★</div>
-                    <p class="testimonial-text">"Great value for money, highly recommended"</p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar">A</div>
-                        <div>
-                            <div class="testimonial-name">Arun</div>
-                            <div class="testimonial-role">Tenant</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- FAQ SECTION -->
-        <section class="landing-section" id="faq">
-            <div class="sec-eyebrow">FAQ</div>
-            <h2 class="sec-title">Frequently Asked Questions</h2>
-            <p class="sec-desc">Got questions? We've got answers. Explore our frequently asked questions below.</p>
-            
-            <div class="faq-list">
-                <!-- FAQ Item 1 -->
-                <div class="faq-item">
-                    <button class="faq-trigger" onclick="toggleFaq(this)">
-                        <span>Is food included in the rent?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-content">
-                        <div class="faq-inner">
-                            Yes, delicious and hygienic 3-time meals are included in your monthly rent. We serve a variety of North and South Indian dishes prepared in highly hygienic kitchens.
-                        </div>
-                    </div>
-                </div>
-                <!-- FAQ Item 2 -->
-                <div class="faq-item">
-                    <button class="faq-trigger" onclick="toggleFaq(this)">
-                        <span>What is the notice period?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-content">
-                        <div class="faq-inner">
-                            We have a very flexible policy. You only need to provide a 1-month notice period before vacating the room.
-                        </div>
-                    </div>
-                </div>
-                <!-- FAQ Item 3 -->
-                <div class="faq-item">
-                    <button class="faq-trigger" onclick="toggleFaq(this)">
-                        <span>Is the security deposit refundable?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-content">
-                        <div class="faq-inner">
-                            Yes! The security deposit is fully refundable at the time of check-out after adjusting for any notice period discrepancy or structural room damage.
-                        </div>
-                    </div>
-                </div>
-                <!-- FAQ Item 4 -->
-                <div class="faq-item">
-                    <button class="faq-trigger" onclick="toggleFaq(this)">
-                        <span>Is WiFi available?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-content">
-                        <div class="faq-inner">
-                            Yes, high-speed fiber WiFi is available throughout the hostel, including all rooms and common dining/lobby spaces, and is completely free of charge.
-                        </div>
-                    </div>
-                </div>
-                <!-- FAQ Item 5 -->
-                <div class="faq-item">
-                    <button class="faq-trigger" onclick="toggleFaq(this)">
-                        <span>What are the visiting hours?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-content">
-                        <div class="faq-inner">
-                            Visitors are allowed in the common lounge/lobby areas between 9:00 AM and 8:00 PM. For safety and security reasons, overnight visitor stays in tenant rooms are not permitted.
-                        </div>
-                    </div>
-                </div>
-                <!-- FAQ Item 6 -->
-                <div class="faq-item">
-                    <button class="faq-trigger" onclick="toggleFaq(this)">
-                        <span>Are there any additional charges?</span>
-                        <span class="faq-icon">+</span>
-                    </button>
-                    <div class="faq-content">
-                        <div class="faq-inner">
-                            No hidden charges! The rent covers accommodation, food, WiFi, housekeeping, security, and access to all amenities. Only minimal sub-metered electricity charges may apply based on room AC usage.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- FOOTER -->
-        <div style="background:var(--ink);color:rgba(255,255,255,0.5);text-align:center;padding:24px;font-size:13px">
-            © 2026 VUSTELA PG Hostels — NARSINGI, Hyderabad &nbsp;|&nbsp; +91 63006 42776 &nbsp;|&nbsp;
-            vustela.hostels@gmail.com
-        </div>
-        <!-- FLOATING WHATSAPP BUTTON -->
-        <a href="https://wa.me/916300642776" target="_blank" class="whatsapp-float" aria-label="Chat with us on WhatsApp">
-            <svg viewBox="0 0 24 24">
-                <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 001.37 5.054L2 22l5.077-1.331a9.9 9.9 0 004.93 1.313h.005c5.505 0 9.989-4.478 9.99-9.985A9.97 9.97 0 0012.012 2zm5.727 14.153c-.249.702-1.455 1.282-2.007 1.37-.502.08-1.155.143-3.359-.767-2.818-1.164-4.639-4.024-4.78-4.21-.14-.188-1.134-1.506-1.134-2.873s.715-2.036.969-2.298c.254-.262.553-.328.738-.328.183 0 .367.002.528.009.166.008.388-.063.606.467.222.539.757 1.846.823 1.98.066.134.11.29.02.468-.09.178-.135.29-.268.444-.132.155-.278.347-.396.466-.131.132-.269.277-.116.539.153.262.68 1.121 1.455 1.812.997.89 1.836 1.166 2.097 1.297.261.13.412.11.564-.066.152-.177.653-.757.828-1.016.175-.258.35-.218.59-.13.24.088 1.522.717 1.787.848.265.132.441.197.506.31.066.111.066.646-.183 1.348z"/>
-            </svg>
-            <div class="whatsapp-tooltip">Chat with us</div>
-        </a>
-    </div>
-
-    <!-- DAILY DIGEST MODAL -->
-    <div class="modal-overlay" id="daily-digest-modal">
-        <div class="modal" style="max-width: 800px; width: 90vw;">
-            <div class="modal-header">
-                <div>
-                    <div class="modal-title">24-Hour Activity Report</div>
-                    <div style="font-size: 12px; color: var(--ink3); margin-top: 4px;">Summary of activities from the last 24 hours</div>
-                </div>
-                <button class="modal-close" onclick="closeModal('daily-digest-modal')">×</button>
-            </div>
-            
-            <div style="background: var(--green-bg); border: 1px solid rgba(46,160,67,0.2); padding: 16px; border-radius: 12px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 600; color: var(--green);">Total Rent Collected (24h)</span>
-                <span style="font-size: 20px; font-weight: 800; color: var(--green);" id="dd-total-rent">₹0</span>
-            </div>
-
-            <div class="daily-grid">
-                <!-- Left Col: Rent -->
-                <div>
-                    <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 16px; color: var(--ink);">💰 Rent Collected</h3>
-                    <div id="dd-rent-list">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-
-                <!-- Right Col: Complaints -->
-                <div>
-                    <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 16px; color: var(--ink);">🛠️ Maintenance & Complaints</h3>
-                    <div id="dd-complaints-list">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- EXPORT OPTIONS MODAL -->
-    <div class="modal-overlay" id="export-options-modal">
-        <div class="modal" style="max-width: 450px; width: 90vw; text-align: center;">
-            <div class="modal-header">
-                <div>
-                    <div class="modal-title">Export Financial Report</div>
-                    <div style="font-size: 12px; color: var(--ink3); margin-top: 4px;">Download financial summaries and logs</div>
-                </div>
-                <button class="modal-close" onclick="closeModal('export-options-modal')">×</button>
-            </div>
-            
-            <div style="padding: 16px 0; text-align: left;">
-                <h4 style="font-size: 13px; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; font-weight: 700;">📊 PDF Report (Visual Summaries & Charts)</h4>
-                <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
-                    <button class="btn btn-primary btn-full" onclick="generateReport('daily')">📅 Export Daily PDF Report</button>
-                    <button class="btn btn-primary btn-full" style="background:var(--accent)" onclick="generateReport('monthly')">🗓️ Export Monthly PDF Report</button>
-                    <button class="btn btn-primary btn-full" style="background:var(--ink2)" onclick="generateReport('yearly')">🏫 Export Yearly PDF Report</button>
-                </div>
-
-                <h4 style="font-size: 13px; text-transform: uppercase; color: var(--ink3); margin-bottom: 12px; font-weight: 700;">📈 Excel Spreadsheet (Detailed Logs)</h4>
-                <button class="btn btn-outline btn-full" style="color:var(--green); border-color:var(--green); width: 100%;" onclick="downloadExcelReport()">🟢 Download Excel (CSV) Detailed Report</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- LOG EXPENSE MODAL -->
-    <div class="modal-overlay" id="log-expense-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Log New Expense</div>
-                <button class="modal-close" onclick="closeModal('log-expense-modal')">×</button>
-            </div>
-            <div id="log-exp-hostel-group" class="input-group" style="display:none">
-                <label>Hostel Branch</label>
-                <select id="exp-hostel" class="input">
-                    <option value="1">Hostel 1 — ISHTAA PRIME BOYS</option>
-                    <option value="2">Hostel 2 — ISHTAA PRIME GIRLS</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Category</label>
-                <select id="exp-category" class="input">
-                    <option value="Maintenance & Repairs">Maintenance & Repairs</option>
-                    <option value="Groceries & Provisions">Groceries & Provisions</option>
-                    <option value="Electricity">Electricity</option>
-                    <option value="Water Tanker">Water Tanker</option>
-                    <option value="Drinking Water">Drinking Water</option>
-                    <option value="Vegetables">Vegetables</option>
-                    <option value="Fuel">Fuel</option>
-                    <option value="Gas">Gas</option>
-                    <option value="Milk & Curd">Milk & Curd</option>
-                    <option value="Plastic Items">Plastic Items</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Amount (₹)</label>
-                <input type="number" id="exp-amount" placeholder="Enter amount spent" class="input">
-            </div>
-            <div class="input-group">
-                <label>Description</label>
-                <input type="text" id="exp-desc" placeholder="e.g. Bought vegetables for the week" class="input">
-            </div>
-            <div class="input-group">
-                <label>Upload Bill / Receipt</label>
-                <input type="file" id="exp-bill" accept="image/*" class="input" style="padding: 10px;">
-                <p style="font-size: 11px; color: var(--ink3); margin-top: 4px;">Upload a photo of the receipt.</p>
-            </div>
-            <button class="btn btn-primary" style="width:100%" onclick="logExpense()">Submit Expense</button>
-        </div>
-    </div>
-
-    <!-- EXPENSE FILTER MODAL -->
-    <div class="modal-overlay" id="expense-filter-modal">
-        <div class="modal" style="max-width: 450px; width: 90vw;">
-            <div class="modal-header">
-                <div>
-                    <div class="modal-title">Filter Expenses</div>
-                    <div style="font-size: 12px; color: var(--ink3); margin-top: 4px;">Search and filter logged expenses</div>
-                </div>
-                <button class="modal-close" onclick="closeModal('expense-filter-modal')">×</button>
-            </div>
-            
-            <div id="filter-hostel-group" class="input-group">
-                <label>Hostel Branch</label>
-                <select id="filter-hostel" class="input">
-                    <option value="all">All Hostels</option>
-                    <option value="1">Hostel 1 — ISHTAA PRIME BOYS</option>
-                    <option value="2">Hostel 2 — ISHTAA PRIME GIRLS</option>
-                </select>
-            </div>
-
-            <div class="input-group">
-                <label>Category</label>
-                <select id="filter-category" class="input">
-                    <option value="all">All Categories</option>
-                    <option value="Maintenance & Repairs">Maintenance & Repairs</option>
-                    <option value="Groceries & Provisions">Groceries & Provisions</option>
-                    <option value="Electricity">Electricity</option>
-                    <option value="Water Tanker">Water Tanker</option>
-                    <option value="Drinking Water">Drinking Water</option>
-                    <option value="Vegetables">Vegetables</option>
-                    <option value="Fuel">Fuel</option>
-                    <option value="Gas">Gas</option>
-                    <option value="Milk & Curd">Milk & Curd</option>
-                    <option value="Plastic Items">Plastic Items</option>
-                </select>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                <div class="input-group" style="margin-bottom: 0;">
-                    <label>Month</label>
-                    <select id="filter-month" class="input">
-                        <option value="all">All Months</option>
-                        <option value="0">January</option>
-                        <option value="1">February</option>
-                        <option value="2">March</option>
-                        <option value="3">April</option>
-                        <option value="4">May</option>
-                        <option value="5">June</option>
-                        <option value="6">July</option>
-                        <option value="7">August</option>
-                        <option value="8">September</option>
-                        <option value="9">October</option>
-                        <option value="10">November</option>
-                        <option value="11">December</option>
-                    </select>
-                </div>
-                <div class="input-group" style="margin-bottom: 0;">
-                    <label>Year</label>
-                    <select id="filter-year" class="input" onchange="updateMonthOptionsRestriction()">
-                        <option value="all">All Years</option>
-                    </select>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-                <button class="btn btn-outline" style="flex:1;" onclick="resetExpenseFilters()">Reset Filters</button>
-                <button class="btn btn-primary" style="flex:1;" onclick="applyExpenseFilters()">Apply Filters</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- VIEW BILL MODAL -->
-    <div class="modal-overlay" id="view-bill-modal">
-        <div class="modal" style="max-width: 600px;">
-            <div class="modal-header">
-                <div class="modal-title">Bill / Receipt</div>
-                <button class="modal-close" onclick="closeModal('view-bill-modal')">×</button>
-            </div>
-            <div style="text-align: center; padding: 20px 0;">
-                <img id="bill-img-preview" src="" style="max-width: 100%; max-height: 70vh; border-radius: 8px; box-shadow: var(--shadow);">
-                <div id="bill-no-img" style="display: none; color: var(--ink3); padding: 40px; font-style: italic;">No bill image attached.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TENANT PROFILE MODAL -->
-    <div class="modal-overlay" id="tenant-profile-modal">
-        <div class="modal" style="max-width: 480px; width: 92vw; padding: 16px 12px; box-sizing: border-box; border-radius: 16px; max-height: 90vh; overflow-y: auto;">
-            <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
-                <div class="modal-title" style="font-size: 16px; font-weight: 800;">Tenant Profile</div>
-                <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
-                    <button class="btn btn-primary btn-sm" id="tp-checkout-btn" style="padding: 4px 8px; font-size: 11px; white-space: nowrap; min-height: 26px;" onclick="generateCheckoutReceipt()">Checkout Receipt</button>
-                    <button class="modal-close" onclick="closeModal('tenant-profile-modal')">×</button>
-                </div>
-            </div>
-            <div style="padding: 12px 0;">
-                <div style="text-align: center; margin-bottom: 16px;">
-                    <!-- Avatar: shows passport photo if available, else initials -->
-                    <div id="tp-avatar" style="width: 72px; height: 72px; margin: 0 auto 8px auto; border-radius: 50%; overflow: hidden; border: 3px solid var(--border); background: var(--accent); display: flex; align-items: center; justify-content: center; position: relative;">
-                        <img id="tp-photo" src="" alt="Tenant Photo" style="display:none; width:100%; height:100%; object-fit:cover; object-position:center top;">
-                        <span id="tp-initials" style="font-size: 24px; font-weight: 700; color: white; letter-spacing:1px;"></span>
-                    </div>
-                    <h3 id="tp-name" style="margin: 0; font-size: 18px; font-weight: 700; color: var(--ink);"></h3>
-                    <div style="display: flex; justify-content: center; gap: 8px; margin-top: 6px; align-items: center;">
-                        <span id="tp-hostel-badge" class="badge badge-blue" style="display: inline-block; margin-top: 0;"></span>
-                        <button class="btn btn-outline btn-sm" id="tp-history-btn" style="padding: 2px 8px; font-size: 11px; min-height: 22px;" onclick="openTenantHistory()">📜 History</button>
-                    </div>
-                </div>
-                
-                <div style="border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg1); margin-top: 12px;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; table-layout: fixed;">
-                        <tbody>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); width: 38%; background: var(--bg2); vertical-align: middle;">Room Number</td>
-                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-room" style="word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="openChangeRoomGrid()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Rent Amount</td>
-                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-rent-amount" style="word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantRent()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Rent Status</td>
-                                <td style="padding: 8px 10px; font-weight: 600; border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-rent-status" style="word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px; color: #10b981; border-color: #10b981; font-weight:700;" onclick="editTenantRentStatus()">✅ Make Paid</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Late Fee / Fine</td>
-                                <td style="padding: 8px 10px; font-weight: 600; border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-late-fee" style="color:var(--danger); word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantLateFee()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Bus Fee</td>
-                                <td style="padding: 8px 10px; font-weight: 600; border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-bus-fee" style="color:var(--ink); word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantBusFee()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Phone Number</td>
-                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-phone" style="word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantPhone()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Parent Phone</td>
-                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-parent-phone" style="word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantParentPhone()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Father Email</td>
-                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-father-email" style="word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantFatherEmail()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Email Address</td>
-                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-email" style="word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantEmail()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Date of Joining</td>
-                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-joining-date" style="word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantDOJ()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Advance Deposit</td>
-                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-advance-deposit" style="word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantDepositAmount()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Deposit Status</td>
-                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-deposit-status" style="word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editDepositStatus()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid var(--border);">
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">Payment Style</td>
-                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle; text-transform: capitalize;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-payment-style" style="word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantPaymentStyle()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px 10px; font-weight: 700; color: var(--ink3); background: var(--bg2); vertical-align: middle;">ID Proof Type</td>
-                                <td style="padding: 8px 10px; font-weight: 600; color: var(--ink); border: none; vertical-align: middle;">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; width: 100%;">
-                                        <span id="tp-id-type" style="word-break: break-all; min-width: 0; flex: 1;"></span>
-                                        <button class="btn btn-outline btn-sm" style="flex-shrink: 0; padding: 2px 6px; font-size: 11px; white-space: nowrap; min-height: 24px;" onclick="editTenantIDProofType()">✏️ Edit</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div style="display: flex; gap: 12px; margin-top: 20px;">
-                    <button class="btn btn-outline" style="flex: 1; min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="resetTenantPwdFromProfile()">
-                        🔄 Reset Password
-                    </button>
-                    <button class="btn btn-red" style="flex: 1; min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--red); color: white; border: none; border-radius: 40px; font-weight: 600; cursor: pointer;" onclick="removeTenantFromProfile()">
-                        🗑️ Remove Tenant
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TENANT HISTORY MODAL -->
-    <div class="modal-overlay" id="tenant-history-modal">
-        <div class="modal" style="max-width: 450px; width: 90vw;">
-            <div class="modal-header">
-                <div class="modal-title" id="th-title">Payment History</div>
-                <button class="modal-close" onclick="closeModal('tenant-history-modal')">×</button>
-            </div>
-            <div style="padding: 16px 0; max-height: 70vh; overflow-y: auto;" id="th-history-list">
-                <!-- Rectangular boxes dynamically rendered by JS -->
-            </div>
-        </div>
-    </div>
-
-    <!-- CHANGE ROOM MODAL -->
-    <div class="modal-overlay" id="change-room-modal">
-        <div class="modal" style="max-width: 500px; width: 90vw;">
-            <div class="modal-header">
-                <div class="modal-title" id="cr-title">Change Room</div>
-                <button class="modal-close" onclick="closeModal('change-room-modal')">×</button>
-            </div>
-            <div style="padding: 16px 0; max-height: 70vh; overflow-y: auto;">
-                <div style="margin-bottom: 12px; font-size: 13px; color: var(--ink3); text-align: left;">Select an empty bed (dashed box) to transfer the tenant to that room. Your current room is highlighted in orange.</div>
-                <div id="cr-live-grid">
-                    <!-- Dynamic room cards populated by JS -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- DEPOSIT STATUS EDIT MODAL -->
-    <div class="modal-overlay" id="edit-deposit-status-modal" style="z-index: 10000;">
-        <div class="modal" style="max-width: 320px; text-align: center;">
-            <div class="modal-header">
-                <div class="modal-title">Select Deposit Status</div>
-                <button class="modal-close" onclick="closeModal('edit-deposit-status-modal')">×</button>
-            </div>
-            <div style="padding: 16px 0; display: flex; flex-direction: column; gap: 10px;">
-                <button class="btn btn-outline" style="width: 100%; min-height: 40px; border-color: var(--green); color: var(--green); font-weight: 700;" onclick="selectDepositStatus('Paid')">Paid</button>
-                <button class="btn btn-outline" style="width: 100%; min-height: 40px; border-color: var(--yellow); color: var(--yellow); font-weight: 700;" onclick="selectDepositStatus('Pending')">Pending</button>
-                <button class="btn btn-outline" style="width: 100%; min-height: 40px; border-color: var(--red); color: var(--red); font-weight: 700;" onclick="selectDepositStatus('Refunded')">Refunded</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- OLD STUDENT DATA MODALS -->
-    <div class="modal-overlay" id="old-student-modal">
-        <div class="modal" style="max-width: 800px; width: 95vw;">
-            <div class="modal-header">
-                <div class="modal-title">Old Student Data</div>
-                <button class="modal-close" onclick="closeModal('old-student-modal')">×</button>
-            </div>
-            <div style="padding: 16px 0; display: flex; flex-direction: column; gap: 12px;">
-                <input type="text" id="os-search" placeholder="🔍 Search old students by name, phone, or email..." 
-                       style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; box-sizing: border-box;" 
-                       oninput="filterOldStudents()">
-                <div style="max-height: 60vh; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
-                        <thead>
-                            <tr style="background: var(--bg2); border-bottom: 1px solid var(--border); font-weight: 700;">
-                                <th style="padding: 12px 14px;">Student</th>
-                                <th style="padding: 12px 14px;">Hostel/Room</th>
-                                <th style="padding: 12px 14px;">Joined</th>
-                                <th style="padding: 12px 14px;">Left On</th>
-                                <th style="padding: 12px 14px;">Phone</th>
-                                <th style="padding: 12px 14px; text-align: center;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="old-students-table-body">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="old-student-detail-modal">
-        <div class="modal" style="max-width: 500px; width: 90vw;">
-            <div class="modal-header">
-                <div class="modal-title">Old Student Details</div>
-                <button class="modal-close" onclick="closeModal('old-student-detail-modal')">×</button>
-            </div>
-            <div style="padding: 16px 0;" id="old-student-detail-content">
-                <!-- Dynamically populated key-value table -->
-            </div>
-        </div>
-    </div>
-
-    <!-- MOBILE SIDEBAR OVERLAY -->
-    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
-
-    <!-- LOGIN MODAL -->
-    <div class="modal-overlay" id="login-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Login to VUSTELA</div>
-                <button class="modal-close" onclick="closeModal('login-modal')">×</button>
-            </div>
-            <div id="login-form-area">
-                <div class="input-group"><label>Email</label><input type="email" placeholder="your@email.com"
-                        id="l-email" onkeypress="if(event.key==='Enter') doLogin()">
-                </div>
-                <div class="input-group"><label>Password</label>
-                    <div style="position:relative; display:flex; align-items:center;">
-                        <input type="password" placeholder="Your Password" id="l-pass" style="padding-right:40px; width:100%;" onkeypress="if(event.key==='Enter') doLogin()">
-                        <button type="button" onclick="togglePasswordVisibility('l-pass', this)" style="position:absolute; right:10px; background:none; border:none; cursor:pointer; font-size:16px; color:var(--ink3); padding:4px;" title="Show/Hide Password">👁️</button>
-                    </div>
-                </div>
-            </div>
-            <button class="btn-full" id="l-btn" onclick="doLogin()">Login</button>
-            <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--ink3)">Enter your credentials to access your portal</div>
-        </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- OWNER DASHBOARD -->
-    <!-- ============================================================ -->
-    <div class="pg" id="pg-owner">
-        <div class="dash-layout">
-            <!-- MOBILE TOPBAR (Owner) -->
-            <div class="mobile-topbar" style="grid-column:1/-1">
-                <button class="mob-menu-btn" onclick="openMobileSidebar()">☰</button>
-                <div class="mob-brand">VU<span>STELA</span></div>
-                <span style="font-size:11px;opacity:0.5;letter-spacing:1px;text-transform:uppercase">Owner</span>
-            </div>
-            <aside class="sidebar">
-                <div class="sb-brand" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                    <div>
-                        <div class="sb-brand-name">VUSTELA</div>
-                        <div class="sb-role">Owner Portal</div>
-                    </div>
-                    <button class="mob-sidebar-close-btn" onclick="closeMobileSidebar()" style="display:none; background:none; border:none; font-size:24px; color:var(--white); cursor:pointer; padding:4px 8px;" title="Close Menu">✕</button>
-                </div>
-                <div class="sb-user">
-                    <div class="sb-user-name">Ramesh Sharma</div>
-                    <div class="sb-user-sub">Owner — All Hostels</div>
-                </div>
-                <div class="sb-section">Overview</div>
-                <div class="sb-link act" onclick="ownerTab(this,'o-overview')"><span class="sb-icon">📊</span> Dashboard
-                </div>
-                <div class="sb-link" onclick="ownerTab(this,'o-occupancy')"><span class="sb-icon">🏠</span> Room
-                    Occupancy</div>
-                <div class="sb-section">Finance</div>
-                <div class="sb-link" onclick="ownerTab(this,'o-rent')"><span class="sb-icon">💰</span> Rent Tracker
-                </div>
-                <div class="sb-link" onclick="ownerTab(this,'o-expenses')"><span class="sb-icon">🧾</span>
-                    Expense Log</div>
-                <div class="sb-link" onclick="ownerTab(this,'o-salaries')"><span class="sb-icon">💵</span>
-                    Salaries</div>
-                <div class="sb-section">Operations</div>
-                <div class="sb-link" onclick="ownerTab(this,'o-complaints')"><span class="sb-icon">📋</span> Complaints
-                </div>
-                <div class="sb-link" onclick="ownerTab(this,'o-notices')"><span class="sb-icon">📢</span> Notices</div>
-                <div class="sb-link" onclick="ownerTab(this,'o-managers')"><span class="sb-icon">👔</span> Managers
-                </div>
-                <div class="sb-link" onclick="ownerTab(this,'o-tenants')"><span class="sb-icon">👥</span> All Tenants
-                </div>
-                <div class="sb-link" onclick="ownerTab(this,'o-notice-requests')"><span class="sb-icon">⏰</span> Notice Requests <span id="owner-notice-badge" class="badge badge-orange" style="display:none; padding: 2px 6px; font-size: 10px; margin-left: 4px;">0</span>
-                </div>
-                <div class="sb-link" onclick="ownerTab(this,'o-edit-dashboard')"><span class="sb-icon">🎨</span> Edit Dashboard
-                </div>
-                <div class="sb-section" style="margin-top:auto"></div>
-                <div class="sb-logout"><button onclick="logout()">← Logout</button></div>
-            </aside>
-
-            <main class="dash-main">
-
-                <!-- O: OVERVIEW -->
-                <div class="dash-section on" id="o-overview">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title">Good Morning, Ramesh 👋</div>
-                            <div class="dash-subtitle" id="owner-overview-subtitle">Here's your hostel overview for June 2025</div>
-                        </div>
-                        <div class="flex gap8" style="align-items:flex-start;">
-                            <button class="btn btn-outline" onclick="openUltraMsgConfigModal()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px; color:var(--green); border-color:#bbf7d0;">
-                                💬 Auto WhatsApp API
-                            </button>
-                            <div style="display:flex; flex-direction:column; align-items:center;">
-                                <button class="btn btn-outline" onclick="openOwnerMonthPicker()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
-                                    📅 Change Month
-                                </button>
-                                <span id="owner-active-month-badge" style="font-size:12px; font-weight:700; color:var(--yellow); background:var(--bg2); border:1px solid var(--border); padding:2px 10px; border-radius:12px; margin-top:5px;">July 2026</span>
-                            </div>
-                            <button id="btn-export-report" class="btn btn-outline" onclick="openModal('export-options-modal')" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
-                                ⬇ Export Report
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- ALERT BANNER -->
-                    <div
-                        style="background:var(--red-bg);border:1px solid rgba(200,75,49,0.25);border-radius:var(--rs);padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
-                        <div class="flex gap8"><span>⚠️</span><span
-                                style="font-size:13px;font-weight:600;color:var(--red)">3 tenants are overdue by more
-                                than 30 days — action required</span></div>
-                        <button class="btn-sm btn-red"
-                            onclick="ownerTab(document.querySelector('[onclick*=o-rent]'),'o-rent')">View →</button>
-                    </div>
-
-                    <!-- MONTHLY SUMMARY TABLE - MOST IMPORTANT -->
-                    <div class="monthly-table">
-                        <div class="mt-header">
-                            <div class="mt-title" id="owner-financial-title">June 2025 — Financial Summary</div>
-                            <div class="badge badge-green">Live</div>
-                        </div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Hostel</th>
-                                    <th>Expected Rent</th>
-                                    <th>Collected</th>
-                                    <th>Bus Fee</th>
-                                    <th>
-                                        <button onclick="openLateFeeDetailsModal('all')" style="background:none; border:none; color:inherit; font:inherit; font-weight:700; cursor:pointer; padding:0; text-decoration:underline; text-decoration-style:dashed;" title="Click to view tenant late fee breakdown">
-                                            Late Fee Collected
-                                        </button>
-                                    </th>
-                                    <th>Pending</th>
-                                    <th>Maintenance</th>
-                                    <th>
-                                        <button onclick="openSecurityDepositDetailsModal('all')" style="background:none; border:none; color:inherit; font:inherit; font-weight:700; cursor:pointer; padding:0; text-decoration:underline; text-decoration-style:dashed;" title="Click to view tenant security deposit breakdown">
-                                            Security Deposits
-                                        </button>
-                                    </th>
-                                    <th>Net Income</th>
-                                </tr>
-                            </thead>
-                            <tbody id="owner-financial-tbody">
-                                <tr>
-                                    <td><strong>Hostel 1 — ISHTAA PRIME BOYS</strong></td>
-                                    <td>₹1,10,000</td>
-                                    <td style="color:var(--green);font-weight:700">₹98,000</td>
-                                    <td style="color:var(--red);font-weight:700">₹12,000</td>
-                                    <td style="color:var(--yellow)">₹8,500</td>
-                                    <td style="font-weight:800;font-family:var(--font-display)">₹89,500</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Hostel 2 — ISHTAA PRIME GIRLS</strong></td>
-                                    <td>₹1,08,000</td>
-                                    <td style="color:var(--green);font-weight:700">₹1,02,000</td>
-                                    <td style="color:var(--red);font-weight:700">₹6,000</td>
-                                    <td style="color:var(--yellow)">₹3,200</td>
-                                    <td style="font-weight:800;font-family:var(--font-display)">₹98,800</td>
-                                </tr>
-                                <tr style="background:var(--bg);font-weight:700">
-                                    <td><strong>TOTAL</strong></td>
-                                    <td><strong>₹2,18,000</strong></td>
-                                    <td style="color:var(--green);font-weight:800;font-size:16px">₹2,00,000</td>
-                                    <td style="color:var(--red);font-weight:800">₹18,000</td>
-                                    <td style="color:var(--yellow);font-weight:800">₹11,700</td>
-                                    <td style="font-weight:800;font-size:17px;font-family:var(--font-display)">₹1,88,300
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- QUICK STATS -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--green)" id="owner-stat-collected">₹2,88,000</div>
-                            <div class="stat-label">Collected This Month</div>
-                            <div class="prog-bar">
-                                <div class="prog-fill prog-green" style="width:92%" id="owner-stat-collected-fill"></div>
-                            </div>
-                            <div class="stat-sub" style="font-size:12px;color:var(--ink3)" id="owner-stat-collected-sub">92% of expected</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--red)" id="owner-stat-pending">₹25,000</div>
-                            <div class="stat-label">Pending Rent</div>
-                            <div class="prog-bar">
-                                <div class="prog-fill prog-red" style="width:8%" id="owner-stat-pending-fill"></div>
-                            </div>
-                            <div class="stat-sub" style="font-size:12px;color:var(--ink3)" id="owner-stat-pending-sub">5 tenants unpaid</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)" id="owner-stat-maintenance">₹17,500</div>
-                            <div class="stat-label">Maintenance Spent</div>
-                            <div class="stat-sub" id="owner-stat-maintenance-sub">8 complaints resolved</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" id="owner-stat-net">₹2,70,500</div>
-                            <div class="stat-label">Net Income</div>
-                            <div class="stat-sub" style="color:var(--green)" id="owner-stat-net-sub">↑ ₹12,000 vs last month</div>
-                        </div>
-                    </div>
-
-                    <!-- RECENT ACTIVITY -->
-                    <div class="flex gap16" style="margin-top:4px">
-                        <div style="flex:1">
-                            <div class="card" onclick="openDailyDigestModal()" style="cursor:pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='none'; this.style.boxShadow='var(--shadow)';">
-                                <div class="flex between" style="margin-bottom:16px">
-                                    <h3 style="font-size:15px">Recent Activity <span style="font-size:11px; color:var(--accent); margin-left:8px; font-weight:500;">View Full Report ↗</span></h3><span class="badge badge-grey">Last
-                                        48 hrs</span>
-                                </div>
-                                <div class="timeline">
-                                    <div class="tl-item">
-                                        <div class="tl-dot green"></div>
-                                        <div class="tl-title">Priya S. paid ₹5,500 — Hostel 1, Room 105</div>
-                                        <div class="tl-time">2 hours ago · Manager: Anil Kumar</div>
-                                    </div>
-                                    <div class="tl-item">
-                                        <div class="tl-dot yellow"></div>
-                                        <div class="tl-title">Complaint resolved: AC not working — Room 302</div>
-                                        <div class="tl-time">5 hours ago · Cost: ₹1,200 · Bill uploaded ✓</div>
-                                    </div>
-                                    <div class="tl-item">
-                                        <div class="tl-dot green"></div>
-                                        <div class="tl-title">New tenant added: Vikram R. — Hostel 2, Room 208</div>
-                                        <div class="tl-time">Yesterday · Manager: Suresh Babu</div>
-                                    </div>
-                                    <div class="tl-item">
-                                        <div class="tl-dot red"></div>
-                                        <div class="tl-title">Arjun M. rent overdue — 32 days pending</div>
-                                        <div class="tl-time">Yesterday · Hostel 3, Room 305</div>
-                                    </div>
-                                    <div class="tl-item">
-                                        <div class="tl-dot green"></div>
-                                        <div class="tl-title">Ravi K. paid ₹6,000 — Hostel 2, Room 201</div>
-                                        <div class="tl-time">2 days ago · Online payment</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="width:280px">
-                            <div class="card" style="margin-bottom:16px">
-                                <h3 style="font-size:15px;margin-bottom:14px">Occupancy Rate</h3>
-                                <div style="margin-bottom:12px">
-                                    <div class="flex between" style="margin-bottom:4px"><span
-                                            style="font-size:13px">Hostel 1</span><span
-                                            style="font-size:13px;font-weight:700">80%</span></div>
-                                    <div class="prog-bar">
-                                        <div class="prog-fill prog-green" style="width:80%"></div>
-                                    </div>
-                                </div>
-                                <div style="margin-bottom:12px">
-                                    <div class="flex between" style="margin-bottom:4px"><span
-                                            style="font-size:13px">Hostel 2</span><span
-                                            style="font-size:13px;font-weight:700">83%</span></div>
-                                    <div class="prog-bar">
-                                        <div class="prog-fill prog-green" style="width:83%"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex between" style="margin-bottom:4px"><span
-                                            style="font-size:13px">Hostel 3</span><span
-                                            style="font-size:13px;font-weight:700">86%</span></div>
-                                    <div class="prog-bar">
-                                        <div class="prog-fill prog-green" style="width:86%"></div>
-                                    </div>
-                                </div>
-                                <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-                                    <div class="flex between"><span style="font-size:13px;color:var(--ink3)">10 rooms
-                                            vacant</span><button class="btn-ghost"
-                                            onclick="ownerTab(document.querySelector('[onclick*=o-occupancy]'),'o-occupancy')">View
-                                            grid →</button></div>
-                                </div>
-                            </div>
-                            <div class="card">
-                                <h3 style="font-size:15px;margin-bottom:14px">Open Complaints</h3>
-                                <div class="flex between" style="margin-bottom:8px"><span style="font-size:13px">Hostel
-                                        1</span><span class="badge badge-red">2 open</span></div>
-                                <div class="flex between" style="margin-bottom:8px"><span style="font-size:13px">Hostel
-                                        2</span><span class="badge badge-green">0 open</span></div>
-                                <div class="flex between"><span style="font-size:13px">Hostel 3</span><span
-                                        class="badge badge-yellow">1 open</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- O: ROOM OCCUPANCY -->
-                <div class="dash-section" id="o-occupancy">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title">Room Occupancy</div>
-                            <div class="dash-subtitle">Visual overview of all rooms across 3 hostels</div>
-                        </div>
-                        <div class="flex gap8">
-                            <div class="occ-legend">
-                                <div class="legend-item">
-                                    <div class="legend-box legend-green"></div>Occupied
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-box legend-red"></div>Vacant
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-box legend-yellow"></div>Issue / Overdue
-                                </div>
-                                <div class="legend-item">
-                                    <div class="legend-box legend-grey"></div>Maintenance
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SUMMARY BAR -->
-                    <div class="stats-grid" style="margin-bottom:20px">
-                        <div class="stat-card">
-                            <div class="stat-num" id="owner-occ-total-rooms">60</div>
-                            <div class="stat-label">Total Rooms</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--green)" id="owner-occ-occupied">50</div>
-                            <div class="stat-label">Occupied Beds</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--red)" id="owner-occ-vacant">10</div>
-                            <div class="stat-label">Vacant Beds</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)" id="owner-occ-complaints">3</div>
-                            <div class="stat-label">Complaints Open</div>
-                        </div>
-                    </div>
-
-                    <div class="occupancy-slide" id="owner-occ-grid"><!-- rendered by JS --></div>
-                </div>
-
-                <!-- O: RENT TRACKER -->
-                <div class="dash-section" id="o-rent">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title">Rent Tracker</div>
-                            <div class="dash-subtitle">Full tenant-wise payment status — June 2025</div>
-                        </div>
-                        <div class="flex gap16" style="align-items:center">
-                            <div class="table-search">
-                                <input type="text" placeholder="Search tenant name..."
-                                    onkeyup="filterTable(this, 'owner-rent-table')">
-                                <span class="search-icon">🔍</span>
-                            </div>
-                            <button class="btn btn-outline btn-sm"
-                                onclick="remindAllUnpaid(this)">📣 Remind All Unpaid</button>
-                        </div>
-                    </div>
-
-                    <!-- QUICK COUNTS -->
-                    <div class="stats-grid" style="margin-bottom:20px">
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--green)" id="owner-rent-paid-count">47</div>
-                            <div class="stat-label">✅ Paid</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)" id="owner-rent-pending-count">5</div>
-                            <div class="stat-label">⏳ Pending</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--red)" id="owner-rent-overdue-count">3</div>
-                            <div class="stat-label">🔴 Overdue 30+ days</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" id="owner-rent-total-count">55</div>
-                            <div class="stat-label">Total Tenants</div>
-                        </div>
-                    </div>
-
-                    <div class="filter-bar">
-                        <button class="fb on"
-                            onclick="setActive(this,'.filter-bar');ownerFilterRent('all')">All</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar');ownerFilterRent('paid')">✅
-                            Paid</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar');ownerFilterRent('pending')">⏳
-                            Pending</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar');ownerFilterRent('overdue')">🔴
-                            Overdue</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar');ownerFilterRent('h1')">Hostel
-                            1</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar');ownerFilterRent('h2')">Hostel
-                            2</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar');ownerFilterRent('h3')">Hostel
-                            3</button>
-                    </div>
-
-                    <div class="rent-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Tenant</th>
-                                    <th>Hostel</th>
-                                    <th>Room</th>
-                                    <th>Amount</th>
-                                    <th>Due Date</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="owner-rent-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- O: EXPENSES LOG -->
-                <div class="dash-section" id="o-expenses">
-                    <div class="dash-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-                        <div>
-                            <div class="dash-title">Expense Log</div>
-                            <div class="dash-subtitle" id="o-exp-subtitle">All logged expenses and maintenance costs with bill evidence</div>
-                        </div>
-                        <div class="flex align-center gap8" style="flex-wrap:wrap;">
-                            <button class="btn btn-outline" onclick="openOwnerMonthPicker()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
-                                📅 Change Month
-                            </button>
-                            <button class="btn btn-outline btn-sm" onclick="openExpenseFilterModal('owner')">🔍 Filter</button>
-                            <button class="btn btn-primary btn-sm" onclick="openLogExpenseModal()">+ Log New Expense</button>
-                            <div class="badge badge-yellow" id="o-exp-total-spent">₹0 spent</div>
-                        </div>
-                    </div>
-
-                    <div class="stats-grid-3" style="margin-bottom:20px">
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)" id="o-exp-h1-cost">₹0</div>
-                            <div class="stat-label">Hostel 1 Expenses</div>
-                            <div class="stat-sub" id="o-exp-h1-jobs">0 jobs</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)" id="o-exp-h2-cost">₹0</div>
-                            <div class="stat-label">Hostel 2 Expenses</div>
-                            <div class="stat-sub" id="o-exp-h2-jobs">0 jobs</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)" id="o-exp-h3-cost">₹0</div>
-                            <div class="stat-label">Hostel 3 Expenses</div>
-                            <div class="stat-sub" id="o-exp-h3-jobs">0 jobs</div>
-                        </div>
-                    </div>
-
-                    <div class="rent-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Description</th>
-                                    <th>Hostel</th>
-                                    <th>Category</th>
-                                    <th>Cost</th>
-                                    <th>Logged By</th>
-                                    <th>Date</th>
-                                    <th>Bill</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="owner-expenses-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- O: SALARIES -->
-                <div class="dash-section" id="o-salaries">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title">Salaries & Staff Management</div>
-                            <div class="dash-subtitle">Manage employee and staff salaries, record payments, and view payment history</div>
-                        </div>
-                        <button class="btn btn-primary" onclick="openAddWorkerModal()" style="font-weight:700;">+ Add Worker</button>
-                    </div>
-
-                    <!-- Salary Stats -->
-                    <div class="dash-stats" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px;">
-                        <div class="stat-card">
-                            <div class="stat-label">Total Staff</div>
-                            <div class="stat-value" id="salary-total-staff">0</div>
-                            <div class="stat-sub">Active Employees</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Paid This Month</div>
-                            <div class="stat-value" style="color:var(--green);" id="salary-paid-amount">₹0</div>
-                            <div class="stat-sub" id="salary-paid-count">0 Payments This Month</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Total All-Time Paid</div>
-                            <div class="stat-value" style="color:var(--accent);" id="salary-alltime-amount">₹0</div>
-                            <div class="stat-sub">Cumulative Payroll</div>
-                        </div>
-                    </div>
-
-                    <!-- Filter Bar -->
-                    <div class="filter-bar" style="margin-bottom: 16px;">
-                        <button class="fb on" onclick="filterSalaries('all', this)">All Staff</button>
-                        <button class="fb" onclick="filterSalaries('h1', this)">Hostel 1</button>
-                        <button class="fb" onclick="filterSalaries('h2', this)">Hostel 2</button>
-                    </div>
-
-                    <div class="card" style="padding:0; overflow:hidden;">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Worker Name</th>
-                                    <th>Role / Designation</th>
-                                    <th>Assigned Hostel</th>
-                                    <th>Phone</th>
-                                    <th>Payment Made</th>
-                                    <th>View History</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="salaries-table-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- O: COMPLAINTS -->
-                <div class="dash-section" id="o-complaints">
-                    <div class="dash-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-                        <div>
-                            <div class="dash-title">Complaints</div>
-                            <div class="dash-subtitle" id="o-complaints-subtitle">All active and resolved complaints across hostels</div>
-                        </div>
-                        <button class="btn btn-outline" onclick="openOwnerMonthPicker()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
-                            📅 Change Month
-                        </button>
-                    </div>
-                    <div class="filter-bar">
-                        <button class="fb on" onclick="setActive(this,'.filter-bar'); filterOwnerComplaintsByStatus('all')">All</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar'); filterOwnerComplaintsByStatus('open')">🔴 Open</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar'); filterOwnerComplaintsByStatus('progress')">🟡 In Progress</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar'); filterOwnerComplaintsByStatus('resolved')">✅ Resolved</button>
-                    </div>
-                    <div id="o-complaints-list"></div>
-                </div>
-
-                <!-- O: NOTICES -->
-                <div class="dash-section" id="o-notices">
-                    <div class="dash-header">
-                        <div class="dash-title">Master Notice Board</div>
-                        <div class="dash-subtitle">Send announcements globally or view hostel-specific notices</div>
-                    </div>
-
-                    <div class="card" style="padding: 24px; margin-bottom: 24px;">
-                        <h3 style="font-size: 16px; margin-bottom: 16px;">Post an Announcement</h3>
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
-                            <div class="input-group">
-                                <label>Target</label>
-                                <select id="owner-notice-target">
-                                    <option value="0">All Hostels (Global Announcement)</option>
-                                    <option value="1">Hostel 1 (ISHTAA PRIME BOYS)</option>
-                                    <option value="2">Hostel 2 (ISHTAA PRIME GIRLS)</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label>Notice Title</label>
-                                <input type="text" id="owner-notice-title"
-                                    placeholder="e.g. Important Maintenance Update">
-                            </div>
-                            <div class="input-group">
-                                <label>Message</label>
-                                <textarea id="owner-notice-body" placeholder="Write your announcement here..."
-                                    rows="4"></textarea>
-                            </div>
-                            <div style="text-align: right;">
-                                <button class="btn btn-primary" onclick="postOwnerNotice()">Post Notice 📢</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="owner-global-notices" style="margin-bottom: 24px;"></div>
-
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;"
-                        id="owner-hostel-notices-grid">
-                        <div
-                            style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
-                            <h3
-                                style="font-size: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 16px; color: var(--ink1);">
-                                Hostel 1 (ISHTAA PRIME BOYS)</h3>
-                            <div id="o-notices-h1" style="display:flex; flex-direction:column; gap:12px;"></div>
-                        </div>
-                        <div
-                            style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
-                            <h3
-                                style="font-size: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 16px; color: var(--ink1);">
-                                Hostel 2 (ISHTAA PRIME GIRLS)</h3>
-                            <div id="o-notices-h2" style="display:flex; flex-direction:column; gap:12px;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- O: MANAGERS -->
-                <div class="dash-section" id="o-managers">
-                    <div class="dash-header">
-                        <div class="dash-title">Manager Report Cards</div>
-                        <div class="dash-subtitle">Activity and performance of each manager</div>
-                    </div>
-                    <div class="stats-grid-2" style="gap:16px">
-                        <div class="mgr-card">
-                            <div class="mgr-ava">👔</div>
-                            <div class="mgr-info">
-                                <div class="mgr-name">Anil Kumar</div>
-                                <div class="mgr-hostel">Hostel 1 — ISHTAA PRIME BOYS</div>
-                                <div class="mgr-stats">
-                                    <div class="mgr-stat"><strong>16</strong>Rents Marked</div>
-                                    <div class="mgr-stat"><strong>4</strong>Complaints Resolved</div>
-                                    <div class="mgr-stat"><strong>1.2 days</strong>Avg Resolution</div>
-                                </div>
-                                <div style="margin-top:8px;font-size:12px;color:var(--ink3)">Last login: Today 9:32 AM
-                                </div>
-                            </div>
-                            <span class="badge badge-green">Active</span>
-                        </div>
-                        <div class="mgr-card">
-                            <div class="mgr-ava">👔</div>
-                            <div class="mgr-info">
-                                <div class="mgr-name">Suresh Varma</div>
-                                <div class="mgr-hostel">Hostel 2 — ISHTAA PRIME GIRLS</div>
-                                <div class="mgr-stats">
-                                    <div class="mgr-stat"><strong>15</strong>Rents Marked</div>
-                                    <div class="mgr-stat"><strong>2</strong>Complaints Resolved</div>
-                                    <div class="mgr-stat"><strong>0.8 days</strong>Avg Resolution</div>
-                                </div>
-                                <div style="margin-top:8px;font-size:12px;color:var(--ink3)">Last login: Today 8:15 AM
-                                </div>
-                            </div>
-                            <span class="badge badge-green">Active</span>
-                        </div>
-                    </div>
-
-                    <div class="dash-header" style="margin-top: 40px; margin-bottom: 16px; display:flex; justify-content:space-between; align-items:flex-start;">
-                        <div>
-                            <div class="dash-title">Manager Access & Logins</div>
-                            <div class="dash-subtitle">Manage login credentials for your hostel managers</div>
-                        </div>
-                        <button class="btn btn-primary" onclick="openModal('add-manager-modal')">+ Add Manager</button>
-                    </div>
-                    <div class="rent-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Manager Name</th>
-                                    <th>Hostel</th>
-                                    <th>Login Email</th>
-                                    <th>Password</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="owner-managers-table">
-                                <!-- Populated dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- O: ALL TENANTS -->
-                <div class="dash-section" id="o-tenants">
-                    <div class="dash-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        <div>
-                            <div class="dash-title">All Tenants</div>
-                            <div class="dash-subtitle">Complete tenant list across all hostels</div>
-                        </div>
-                        <button class="btn btn-outline" style="min-height: 40px; display: flex; align-items: center; gap: 6px; padding: 0 16px; border-radius: 20px; font-weight: 600;" onclick="openOldStudentDataModal()">
-                            📂 Old Student Data
-                        </button>
-                    </div>
-                    <div class="rent-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Tenant</th>
-                                    <th>Hostel</th>
-                                    <th>Room</th>
-                                    <th>Plan</th>
-                                    <th>Stay Since</th>
-                                    <th>Rent Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="o-all-tenants-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- O: NOTICE REQUESTS -->
-                <div class="dash-section" id="o-notice-requests">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title">Notice Period Requests</div>
-                            <div class="dash-subtitle">Review all notice period requests submitted by students across all branches</div>
-                        </div>
-                    </div>
-                    <div class="rent-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Tenant</th>
-                                    <th>Hostel / Room</th>
-                                    <th>Gmail</th>
-                                    <th>Phone</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="owner-notice-requests-table"></tbody>
-                        </table>
-                    </div>
-                    <div id="owner-no-notice-msg" style="display:none; text-align:center; padding: 40px; color: var(--ink3);">
-                        <div style="font-size: 40px; margin-bottom: 12px;">⏰</div>
-                        <p>No pending notice period requests.</p>
-                    </div>
-                </div>
-
-                <!-- O: EDIT DASHBOARD -->
-                <div class="dash-section" id="o-edit-dashboard">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title">Edit Dashboard Layouts</div>
-                            <div class="dash-subtitle">Manage details, photos, and room grids for Hostels</div>
-                        </div>
-                    </div>
-                    <div class="hostels-edit-grid" id="hostels-edit-container">
-                        <!-- Populated by JS: renderEditDashboard() -->
-                    </div>
-                </div>
-
-            </main>
-        </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- MANAGER DASHBOARD -->
-    <!-- ============================================================ -->
-    <div class="pg" id="pg-manager">
-        <div class="dash-layout">
-            <!-- MOBILE TOPBAR (Manager) -->
-            <div class="mobile-topbar" style="grid-column:1/-1">
-                <button class="mob-menu-btn" onclick="openMobileSidebar()">☰</button>
-                <div class="mob-brand">VU<span>STELA</span></div>
-                <span style="font-size:11px;opacity:0.5;letter-spacing:1px;text-transform:uppercase">Manager</span>
-            </div>
-            <aside class="sidebar">
-                <div class="sb-brand" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                    <div>
-                        <div class="sb-brand-name">VUSTELA</div>
-                        <div class="sb-role">Manager Portal</div>
-                    </div>
-                    <button class="mob-sidebar-close-btn" onclick="closeMobileSidebar()" style="display:none; background:none; border:none; font-size:24px; color:var(--white); cursor:pointer; padding:4px 8px;" title="Close Menu">✕</button>
-                </div>
-                <div class="sb-user">
-                    <div class="sb-user-name" id="mgr-name-sb">Anil Kumar</div>
-                    <div class="sb-user-sub" id="mgr-hostel-sb">Hostel 1 — ISHTAA PRIME BOYS</div>
-                </div>
-                <div class="sb-section">My Hostel</div>
-                <div class="sb-link act" onclick="mgrTab(this,'m-overview')"><span class="sb-icon">📊</span> Dashboard
-                </div>
-                <div class="sb-link" onclick="mgrTab(this,'m-occupancy')"><span class="sb-icon">🏠</span> Room Grid
-                </div>
-                <div class="sb-section">Management</div>
-                <div class="sb-link" onclick="mgrTab(this,'m-bookings')"><span class="sb-icon">📅</span> Bookings <span
-                        id="mgr-booking-badge" class="badge badge-red"
-                        style="display:none; padding: 2px 6px; font-size: 10px; margin-left: 4px;">0</span></div>
-                <div class="sb-link" onclick="mgrTab(this,'m-notice-requests')"><span class="sb-icon">⏰</span> Notice Requests <span
-                        id="mgr-notice-badge" class="badge badge-orange"
-                        style="display:none; padding: 2px 6px; font-size: 10px; margin-left: 4px;">0</span></div>
-                <div class="sb-link" onclick="mgrTab(this,'m-payments')"><span class="sb-icon">💳</span> Verify UPI Payments <span
-                        id="mgr-upi-badge" class="badge badge-orange"
-                        style="display:none; padding: 2px 6px; font-size: 10px; margin-left: 4px;">0</span></div>
-                <div class="sb-link" onclick="mgrTab(this,'m-rent')"><span class="sb-icon">💰</span> Rent</div>
-                <div class="sb-link" onclick="mgrTab(this,'m-tenants')"><span class="sb-icon">👥</span> Tenants</div>
-                <div class="sb-link" onclick="mgrTab(this,'m-complaints')"><span class="sb-icon">📋</span> Complaints
-                </div>
-                <div class="sb-link" onclick="mgrTab(this,'m-food')"><span class="sb-icon">🍽️</span> Food Menu</div>
-                <div class="sb-link" onclick="mgrTab(this,'m-expenses')"><span class="sb-icon">🧾</span> Expenses</div>
-                <div class="sb-section">Communication</div>
-                <div class="sb-link" onclick="mgrTab(this,'m-notices')"><span class="sb-icon">📢</span> Notices</div>
-                <div class="sb-section" style="margin-top:auto"></div>
-                <div class="sb-logout"><button onclick="logout()">← Logout</button></div>
-            </aside>
-            <main class="dash-main">
-
-                <!-- M: OVERVIEW -->
-                <div class="dash-section on" id="m-overview">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title" id="m-dash-title"
-                                style="display:flex; align-items:center; gap:12px;">
-                                Hostel 1 — ISHTAA PRIME BOYS
-                                <button class="btn-sm btn-ghost" style="padding:4px; font-size:16px;"
-                                    onclick="loadData([currentHostel]).then(() => { renderManagerOccupancy(); renderMgrTenants(); updateDashboardStats(); })"
-                                    title="Sync Data">🔄</button>
-                            </div>
-                            <div class="dash-subtitle">Manager Dashboard · June 2025</div>
-                        </div>
-                        <div class="flex gap12">
-                            <button class="btn btn-outline" onclick="loadData([currentHostel])">Refresh</button>
-                            <button class="btn btn-accent" onclick="openAddTenantModal()">+ Add Tenant</button>
-                        </div>
-                    </div>
-
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-num" id="mgr-occ-total-rooms">20</div>
-                            <div class="stat-label">Total Rooms</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--green)" id="mgr-occ-occupied">16</div>
-                            <div class="stat-label">Occupied Beds</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--red)" id="mgr-occ-vacant">4</div>
-                            <div class="stat-label">Vacant Beds</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-num" style="color:var(--yellow)" id="mgr-occ-complaints">2</div>
-                            <div class="stat-label">Open Complaints</div>
-                        </div>
-                    </div>
-
-                    <div class="vacant-banner" id="mgr-vacant-banner">
-                        <div>
-                            <div class="vb-text" id="mgr-vacant-banner-title">4 rooms have been vacant for 15+ days</div>
-                            <div class="vb-sub" id="mgr-vacant-banner-sub">Rooms 103, 107, 116, 120 — consider following up with leads</div>
-                        </div>
-                        <button class="btn-sm btn-red"
-                            onclick="mgrTab(document.querySelector('[onclick*=m-occupancy]'),'m-occupancy')">View
-                            Rooms</button>
-                    </div>
-
-                    <div class="flex gap16">
-                        <div style="flex:1">
-                            <div class="card">
-                                <div class="flex between" style="margin-bottom:14px">
-                                    <h3 style="font-size:15px">Today's Tasks</h3>
-                                </div>
-                                <div id="mgr-tasks-container">
-                                    <div class="audit-item">
-                                        <div class="audit-icon" style="background:var(--red-bg)">💰</div>
-                                        <div class="audit-body">
-                                            <div class="audit-text">Collect rent from Arjun M. — Room 108 (overdue 5 days)
-                                            </div>
-                                            <div class="audit-time">Rent · ₹6,000 pending</div>
-                                        </div><button class="btn-sm btn-red"
-                                            onclick="showToast('Reminder Sent','SMS reminder sent to Arjun M.')">Remind</button>
-                                    </div>
-                                    <div class="audit-item">
-                                        <div class="audit-icon" style="background:var(--yellow-bg)">🔧</div>
-                                        <div class="audit-body">
-                                            <div class="audit-text">Follow up on complaint — Room 110, Water heater issue
-                                            </div>
-                                            <div class="audit-time">Complaint · Open 2 days</div>
-                                        </div><button class="btn-sm btn-ghost"
-                                            onclick="mgrTab(document.querySelector('[onclick*=m-complaints]'),'m-complaints')">View</button>
-                                    </div>
-                                    <div class="audit-item">
-                                        <div class="audit-icon" style="background:var(--green-bg)">✅</div>
-                                        <div class="audit-body">
-                                            <div class="audit-text">Room 116 is vacant — inspection before new tenant</div>
-                                            <div class="audit-time">Checklist · Pending</div>
-                                        </div><button class="btn-sm btn-green"
-                                            onclick="showToast('Inspection Marked','Room 116 marked as inspected and ready.')">Mark
-                                            Done</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="width:280px">
-                            <div class="card">
-                                <h3 style="font-size:15px;margin-bottom:14px">Rent This Month</h3>
-                                <div style="margin-bottom:8px">
-                                    <div class="flex between" style="margin-bottom:4px"><span
-                                            style="font-size:13px;color:var(--green)">✅ Paid</span><span
-                                            style="font-weight:700" id="mgr-rent-paid-count">14 tenants</span></div>
-                                    <div class="prog-bar">
-                                        <div class="prog-fill prog-green" style="width:88%" id="mgr-rent-paid-fill"></div>
-                                    </div>
-                                </div>
-                                <div style="margin-bottom:16px">
-                                    <div class="flex between" style="margin-bottom:4px"><span
-                                            style="font-size:13px;color:var(--red)">❌ Unpaid</span><span
-                                            style="font-weight:700" id="mgr-rent-unpaid-count">2 tenants</span></div>
-                                    <div class="prog-bar">
-                                        <div class="prog-fill prog-red" style="width:12%" id="mgr-rent-unpaid-fill"></div>
-                                    </div>
-                                </div>
-                                <button class="btn-full" style="font-size:13px"
-                                    onclick="mgrTab(document.querySelector('[onclick*=m-rent]'),'m-rent')">View All
-                                    Rents</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- M: ROOM GRID -->
-                <div class="dash-section" id="m-occupancy">
-                    <div class="dash-header">
-                        <div class="dash-title">Room Grid</div>
-                        <div class="dash-subtitle">Visual layout of all rooms in your hostel</div>
-                    </div>
-                    <div class="occupancy-slide" id="manager-occ-grid"><!-- rendered by JS --></div>
-                </div>
-
-                <!-- M: BOOKINGS -->
-                <div class="dash-section" id="m-bookings">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title">New Booking Requests</div>
-                            <div class="dash-subtitle">Review and accept room booking requests from potential tenants
-                            </div>
-                        </div>
-                    </div>
-                    <div class="rent-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Tenant Name</th>
-                                    <th>Contact Info</th>
-                                    <th>Room & Bed</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="mgr-bookings-table">
-                                <!-- Requests will be loaded here -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="no-bookings-msg"
-                        style="display:none; text-align:center; padding: 40px; color: var(--ink3);">
-                        <div style="font-size: 40px; margin-bottom: 12px;">📭</div>
-                        <p>No pending booking requests at the moment.</p>
-                    </div>
-                </div>
-
-                <!-- M: NOTICE REQUESTS -->
-                <div class="dash-section" id="m-notice-requests">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title">Notice Period Requests</div>
-                            <div class="dash-subtitle">Accept notice period requests for students in your hostel branch</div>
-                        </div>
-                    </div>
-                    <div class="rent-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Tenant</th>
-                                    <th>Room</th>
-                                    <th>Gmail</th>
-                                    <th>Phone</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="mgr-notice-requests-table"></tbody>
-                        </table>
-                    </div>
-                    <div id="mgr-no-notice-msg" style="display:none; text-align:center; padding: 40px; color: var(--ink3);">
-                        <div style="font-size: 40px; margin-bottom: 12px;">⏰</div>
-                        <p>No pending notice period requests.</p>
-                    </div>
-                </div>
-
-                <!-- M: VERIFY UPI PAYMENTS -->
-                <div class="dash-section" id="m-payments">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title">Verify UPI Payments</div>
-                            <div class="dash-subtitle">Review pending tenant UPI submissions or batch paste bank statements</div>
-                        </div>
-                        <div class="flex" style="gap:8px; align-items:center;">
-                            <button class="btn btn-outline btn-sm" onclick="openPaidUpiModal()" style="border-color:var(--accent); color:var(--accent);">📜 Approved Paid List</button>
-                            <button class="btn btn-outline btn-sm" onclick="openBatchReconcileModal()">📋 Paste Bank Statement</button>
-                        </div>
-                    </div>
-
-                    <!-- Pending Queue Container -->
-                    <div id="m-upi-pending-container" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:16px;">
-                        <div style="grid-column:1/-1; padding:32px; text-align:center; background:var(--bg); border-radius:12px; color:var(--ink3);">
-                            <div style="font-size:24px; margin-bottom:8px;">⏳</div>
-                            <div style="font-size:14px; font-weight:600; color:var(--ink);">Loading UPI Submissions...</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- M: RENT -->
-                <div class="dash-section" id="m-rent">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title">Rent Management</div>
-                            <div class="dash-subtitle">Mark payments and track status</div>
-                        </div>
-                        <button class="btn btn-outline btn-sm"
-                            onclick="remindAllUnpaid(this)">📣 Remind Unpaid</button>
-                    </div>
-                    <div class="filter-bar">
-                        <button class="fb on" onclick="setActive(this,'.filter-bar');mgrFilterRent('all')">All</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar');mgrFilterRent('paid')">✅ Paid</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar');mgrFilterRent('pending')">⏳
-                            Pending</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar');mgrFilterRent('overdue')">🔴
-                            Overdue</button>
-                    </div>
-                    <div class="rent-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Tenant</th>
-                                    <th>Room</th>
-                                    <th>Amount</th>
-                                    <th>Due Date</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="mgr-rent-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- M: TENANTS -->
-                <div class="dash-section" id="m-tenants">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title">Tenants</div>
-                            <div class="dash-subtitle">All residents in your hostel</div>
-                        </div>
-                        <div class="flex gap16" style="align-items:center">
-                            <div class="table-search">
-                                <input type="text" placeholder="Search tenant name..."
-                                    onkeyup="filterTable(this, 'mgr-tenants-table')">
-                                <span class="search-icon">🔍</span>
-                            </div>
-                            <button class="btn btn-accent" onclick="openAddTenantModal()">+ Add Tenant</button>
-                        </div>
-                    </div>
-                    <div class="rent-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Tenant</th>
-                                    <th>Room</th>
-                                    <th>Login Email</th>
-                                    <th>Password</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="mgr-tenants-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- M: COMPLAINTS -->
-                <div class="dash-section" id="m-complaints">
-                    <div class="dash-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-                        <div>
-                            <div class="dash-title">Complaints</div>
-                            <div class="dash-subtitle" id="m-complaints-subtitle">Manage and resolve tenant complaints</div>
-                        </div>
-                        <button class="btn btn-outline" onclick="openOwnerMonthPicker()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
-                            📅 Change Month
-                        </button>
-                    </div>
-                    <div class="filter-bar">
-                        <button class="fb on"
-                            onclick="setActive(this,'.filter-bar');renderMgrComplaints('all')">All</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar');renderMgrComplaints('open')">🔴
-                            Open</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar');renderMgrComplaints('progress')">🟡 In
-                            Progress</button>
-                        <button class="fb" onclick="setActive(this,'.filter-bar');renderMgrComplaints('resolved')">✅
-                            Resolved</button>
-                    </div>
-                    <div id="mgr-complaints-list"></div>
-                </div>
-
-                <!-- M: FOOD MENU -->
-                <div class="dash-section" id="m-food">
-                    <div class="dash-header">
-                        <div class="dash-title">Food Menu Management</div>
-                        <div class="dash-subtitle">Update the weekly food menu for your hostel</div>
-                    </div>
-                    <div class="card" style="padding: 24px; overflow-x: auto;">
-                        <table class="table" style="min-width: 800px;">
-                            <thead>
-                                <tr>
-                                    <th>Day</th>
-                                    <th>Tiffin (8-9 AM)</th>
-                                    <th>Lunch (1-2 PM)</th>
-                                    <th>Snacks (5-6 PM)</th>
-                                    <th>Dinner (8-9 PM)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="mgr-food-table">
-                                <!-- Rendered by JS -->
-                            </tbody>
-                        </table>
-                        <div style="margin-top: 24px; text-align: right;">
-                            <button class="btn btn-primary" onclick="saveMgrFoodMenu()">Save Menu Changes</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- M: EXPENSES -->
-                <div class="dash-section" id="m-expenses">
-                    <div class="dash-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-                        <div>
-                            <div class="dash-title">Hostel Expenses</div>
-                            <div class="dash-subtitle" id="m-exp-subtitle">Log new expenses and view past records</div>
-                        </div>
-                        <div class="flex gap8" style="flex-wrap:wrap;">
-                            <button class="btn btn-outline" onclick="openOwnerMonthPicker()" style="display:flex; align-items:center; gap:6px; font-weight:600; font-size:13px; padding:8px 16px; height:38px;">
-                                📅 Change Month
-                            </button>
-                            <button class="btn btn-outline btn-sm" onclick="openExpenseFilterModal('manager')">🔍 Filter</button>
-                            <button class="btn btn-primary btn-sm" onclick="openLogExpenseModal()">+ Log New Expense</button>
-                        </div>
-                    </div>
-
-                    <div class="rent-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Description</th>
-                                    <th>Category</th>
-                                    <th>Cost</th>
-                                    <th>Date</th>
-                                    <th>Bill</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="mgr-expenses-table">
-                                <!-- Populated by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- M: NOTICES -->
-                <div class="dash-section" id="m-notices">
-                    <div class="dash-header">
-                        <div class="dash-title">Notices</div>
-                        <div class="dash-subtitle">Post announcements to your hostel tenants</div>
-                    </div>
-                    <div class="card" style="margin-bottom:20px">
-                        <h3 style="font-size:15px;margin-bottom:16px">Post New Notice</h3>
-                        <div class="input-group"><label>Title</label><input type="text" id="notice-title"
-                                placeholder="e.g. Water shutdown Sunday"></div>
-                        <div class="input-group"><label>Message</label><textarea id="notice-body"
-                                placeholder="Write your announcement here..."></textarea></div>
-                        <button class="btn btn-primary" onclick="postNotice()">Post to All Tenants</button>
-                    </div>
-                    <h3 style="font-size:15px;margin-bottom:12px;font-family:var(--font-display)">Posted Notices</h3>
-                    <div id="notices-list">
-                    </div>
-                </div>
-
-            </main>
-        </div>
-    </div>
-
-    <!-- ADD WORKER MODAL -->
-    <div class="modal-overlay" id="add-worker-modal">
-        <div class="modal" style="max-width: 500px; width:92vw;">
-            <div class="modal-header">
-                <div class="modal-title">👷 Add New Worker / Staff Member</div>
-                <button class="modal-close" onclick="closeModal('add-worker-modal')">×</button>
-            </div>
-            <form onsubmit="submitAddWorker(event)">
-                <div class="input-group">
-                    <label>Worker Name *</label>
-                    <input type="text" id="aw-name" placeholder="e.g. Ramesh Kumar" required>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="input-group">
-                        <label>Role / Designation *</label>
-                        <select id="aw-role" required>
-                            <option value="Cook">🍳 Cook / Kitchen Staff</option>
-                            <option value="Housekeeping">🧹 Housekeeping / Cleaning</option>
-                            <option value="Security">🛡️ Security / Watchman</option>
-                            <option value="Maintenance">⚡ Electrician / Plumber</option>
-                            <option value="Manager">👔 Hostel Manager</option>
-                            <option value="Other">👤 Other Staff</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Assigned Hostel *</label>
-                        <select id="aw-hostel" required>
-                            <option value="1">ISHTAA PRIME BOYS (H1)</option>
-                            <option value="2">ISHTAA PRIME GIRLS (H2)</option>
-                            <option value="0">All Hostels (Global Staff)</option>
-                        </select>
-                    </div>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="input-group">
-                        <label>Phone Number *</label>
-                        <input type="tel" id="aw-phone" placeholder="e.g. 9876543210" maxlength="10" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Joining Date</label>
-                        <input type="date" id="aw-doj">
-                    </div>
-                </div>
-                <div class="flex gap12" style="margin-top: 20px; justify-content: flex-end;">
-                    <button type="button" class="btn btn-outline" onclick="closeModal('add-worker-modal')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Worker</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- RECORD WORKER PAYMENT MODAL -->
-    <div class="modal-overlay" id="record-worker-payment-modal">
-        <div class="modal" style="max-width: 480px; width:92vw;">
-            <div class="modal-header">
-                <div class="modal-title">💸 Record Worker Payment</div>
-                <button class="modal-close" onclick="closeModal('record-worker-payment-modal')">×</button>
-            </div>
-            <form onsubmit="submitWorkerPayment(event)">
-                <input type="hidden" id="rwp-worker-id">
-                <div style="background:var(--bg2); padding:12px 16px; border-radius:8px; margin-bottom:16px;">
-                    <div style="font-weight:700; color:var(--ink); font-size:15px;" id="rwp-worker-name">Worker Name</div>
-                    <div style="font-size:12px; color:var(--ink3);" id="rwp-worker-sub">Role · Hostel</div>
-                </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                    <div class="input-group">
-                        <label>Payment Date *</label>
-                        <input type="date" id="rwp-date" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Amount Paid (Rs.) *</label>
-                        <input type="number" id="rwp-amount" placeholder="e.g. 5000" min="1" required>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label>Payment Mode / Note</label>
-                    <input type="text" id="rwp-note" placeholder="e.g. UPI - July Salary Part 1 / Advance">
-                </div>
-                <div class="input-group">
-                    <label>Payment Proof / Receipt (Optional)</label>
-                    <input type="file" id="rwp-proof-file" accept="image/*" onchange="previewWorkerPaymentProof(this)">
-                    <div id="rwp-proof-preview-container" style="display:none; margin-top:8px; text-align:center;">
-                        <img id="rwp-proof-preview" style="max-height:120px; border-radius:6px; border:1px solid var(--border); object-fit:contain;">
-                    </div>
-                </div>
-                <div class="flex gap12" style="margin-top: 20px; justify-content: flex-end;">
-                    <button type="button" class="btn btn-outline" onclick="closeModal('record-worker-payment-modal')">Cancel</button>
-                    <button type="submit" class="btn btn-green" style="font-weight:700;">Save Payment ✅</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- VIEW WORKER HISTORY MODAL -->
-    <div class="modal-overlay" id="view-worker-history-modal">
-        <div class="modal" style="max-width: 600px; width:92vw;">
-            <div class="modal-header">
-                <div class="modal-title">📊 Staff Payment History</div>
-                <button class="modal-close" onclick="closeModal('view-worker-history-modal')">×</button>
-            </div>
-            <div style="padding:16px 0;">
-                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg2); padding:16px; border-radius:10px; margin-bottom:16px;">
-                    <div>
-                        <div style="font-size:18px; font-weight:700; color:var(--ink);" id="vwh-worker-name">Worker Name</div>
-                        <div style="font-size:12px; color:var(--ink3);" id="vwh-worker-sub">Role · Hostel</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="font-size:11px; font-weight:700; color:var(--ink3); text-transform:uppercase;">Paid So Far This Month</div>
-                        <div style="font-size:22px; font-weight:800; color:var(--green);" id="vwh-month-total">₹0</div>
-                    </div>
-                </div>
-
-                <div style="font-size:13px; font-weight:700; color:var(--ink); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                    <span>Past Payments Log</span>
-                    <span style="font-size:11px; color:var(--ink3); font-weight:600;" id="vwh-all-total">Total All-Time: ₹0</span>
-                </div>
-
-                <div style="max-height:45vh; overflow-y:auto; border:1px solid var(--border); border-radius:8px;">
-                    <table class="table" style="margin:0;">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Amount</th>
-                                <th>Note / Mode</th>
-                                <th>Proof</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="vwh-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ULTRAMSG AUTOMATED WHATSAPP CONFIG MODAL -->
-    <div class="modal-overlay" id="ultramsg-config-modal">
-        <div class="modal" style="max-width: 500px; width:92vw;">
-            <div class="modal-header">
-                <div class="modal-title">💬 100% Automated WhatsApp Settings (UltraMsg)</div>
-                <button class="modal-close" onclick="closeModal('ultramsg-config-modal')">×</button>
-            </div>
-            <form onsubmit="saveUltraMsgSettings(event)">
-                <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:12px; margin-bottom:16px; font-size:12px; color:#166534;">
-                    <strong>🚀 Fully Automated WhatsApp Messaging!</strong><br>
-                    Enter your UltraMsg Instance ID & Token below. Every time rent is paid, a tenant joins, or a notice is posted, messages will be sent automatically to tenants' WhatsApp numbers in the background!
-                </div>
-                <div class="input-group">
-                    <label>UltraMsg Instance ID *</label>
-                    <input type="text" id="um-instance-id" placeholder="e.g. instance12345" required>
-                </div>
-                <div class="input-group">
-                    <label>UltraMsg Token *</label>
-                    <input type="text" id="um-token" placeholder="e.g. xyz123abc456" required>
-                </div>
-                <div class="flex gap12" style="margin-top: 20px; justify-content: space-between; align-items:center;">
-                    <button type="button" class="btn btn-outline" onclick="testUltraMsgSend()">📲 Send Test Message</button>
-                    <div class="flex gap8">
-                        <button type="button" class="btn btn-outline" onclick="closeModal('ultramsg-config-modal')">Cancel</button>
-                        <button type="submit" class="btn btn-primary" style="font-weight:700;">Save API Settings</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ADD TENANT MODAL -->
-    <div class="modal-overlay" id="add-tenant-modal">
-        <div class="modal" style="max-width:560px; width:92vw;">
-            <div class="modal-header">
-                <div class="modal-title">Add New Tenant</div>
-                <button class="modal-close" onclick="closeModal('add-tenant-modal')">×</button>
-            </div>
-            <div style="max-height:75vh; overflow-y:auto; padding-bottom:8px;">
-
-                <!-- SECTION: Student Details -->
-                <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;margin:4px 0 10px;">Student Details</div>
-                <div class="input-group"><label>Full Name *</label><input type="text" id="at-name" placeholder="Full name of student"></div>
-                <div class="input-group"><label>Phone Number *</label><input type="tel" id="at-phone" placeholder="+91 00000 00000" maxlength="10"></div>
-                <div class="input-group"><label>Gmail Address *</label><input type="email" id="at-email" placeholder="student@gmail.com"></div>
-                <div class="input-group"><label>Date of Joining *</label><input type="date" id="at-doj"></div>
-
-                <!-- SECTION: Father Details -->
-                <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;">Father / Guardian Details</div>
-                <div class="input-group"><label>Father Phone Number *</label><input type="tel" id="at-father-phone" placeholder="+91 00000 00000" maxlength="10"></div>
-                <div class="input-group"><label>Father Gmail (optional)</label><input type="email" id="at-father-email" placeholder="father@gmail.com"></div>
-
-                <!-- SECTION: Room & Payment -->
-                <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;">Room & Payment</div>
-                <div class="input-group"><label>Room Number *</label>
-                    <select id="at-room" onchange="updateDojDateRestriction()"><!-- Populated by JS --></select>
-                </div>
-                <div class="input-group"><label>Rent Amount (Rs.) *</label><input type="number" id="at-rent" placeholder="5500" value="5500"></div>
-                <div class="input-group"><label>Advance Deposit (Rs.) *</label><input type="number" id="at-deposit" placeholder="11000" value="11000"></div>
-                <div class="input-group">
-                    <label>Advance Deposit Status *</label>
-                    <select id="at-deposit-status">
-                        <option value="Paid">Paid</option>
-                        <option value="Pending">Pending</option>
-                    </select>
-                </div>
-
-                <!-- Payment Style -->
-                <div class="input-group">
-                    <label>Payment Style *</label>
-                    <select id="at-pay-style" onchange="showPayStyleHint()">
-                        <option value="">-- Select payment style --</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="daily">Day Wise</option>
-                        <option value="yearly">Yearly</option>
-                    </select>
-                </div>
-                <!-- Payment hint shown based on selection -->
-                <div id="at-pay-hint" style="display:none; margin-top:-8px; margin-bottom:12px; padding:10px 14px; background:#eef6ff; border:1px solid #b8d4f8; border-radius:8px; font-size:13px; color:#1a56a4;">
-                    ⏰ <span id="at-pay-hint-text"></span>
-                </div>
-
-                <!-- SECTION: Documents -->
-                <div style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;margin:16px 0 10px;">Documents</div>
-                <div class="input-group">
-                    <label>ID Proof Type *</label>
-                    <select id="at-id-type">
-                        <option value="">-- Select ID type --</option>
-                        <option value="Aadhaar Card">Aadhaar Card</option>
-                        <option value="College ID">College ID</option>
-                        <option value="Driving Licence">Driving Licence</option>
-                        <option value="Passport">Passport</option>
-                        <option value="Voter ID">Voter ID</option>
-                        <option value="PAN Card">PAN Card</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="input-group"><label>Upload ID Proof</label><input type="file" id="at-id" accept="image/*,.pdf"></div>
-
-                <!-- Photo Upload -->
-                <div class="input-group">
-                    <label>Passport Photo *</label>
-                    <div style="border:2px dashed var(--border);border-radius:8px;padding:16px;text-align:center;cursor:pointer;" onclick="document.getElementById('at-photo').click()">
-                        <img id="at-photo-preview" src="" alt="" style="display:none;width:100px;height:120px;object-fit:cover;border-radius:6px;margin:0 auto 8px auto;border:1px solid var(--border);">
-                        <div id="at-photo-placeholder" style="color:var(--ink3);font-size:13px;">
-                            <div style="font-size:28px;margin-bottom:4px;">📷</div>
-                            Click to upload passport photo
-                        </div>
-                        <input type="file" id="at-photo" accept="image/*" style="display:none;" onchange="previewTenantPhoto(this)">
-                    </div>
-                </div>
-
-            </div>
-            <button class="btn-full" style="margin-top:16px;" onclick="addTenant()">Add Tenant</button>
-        </div>
-    </div>
-
-    <!-- OWNER MONTH PICKER MODAL -->
-    <div class="modal-overlay" id="owner-month-picker-modal" style="z-index: 10000;">
-        <div class="modal" style="max-width:320px; width:90vw;">
-            <div class="modal-header">
-                <div class="modal-title">Select Month & Year</div>
-                <button class="modal-close" onclick="closeModal('owner-month-picker-modal')">×</button>
-            </div>
-            <div style="padding:8px 0;">
-                <div class="input-group">
-                    <label>Select Month</label>
-                    <select id="omp-month" style="width:100%;">
-                        <option value="1">January</option>
-                        <option value="2">February</option>
-                        <option value="3">March</option>
-                        <option value="4">April</option>
-                        <option value="5">May</option>
-                        <option value="6">June</option>
-                        <option value="7">July</option>
-                        <option value="8">August</option>
-                        <option value="9">September</option>
-                        <option value="10">October</option>
-                        <option value="11">November</option>
-                        <option value="12">December</option>
-                    </select>
-                </div>
-                <div class="input-group" style="margin-top:12px;">
-                    <label>Select Year</label>
-                    <select id="omp-year" style="width:100%;">
-                        <option value="2024">2024</option>
-                        <option value="2025">2025</option>
-                        <option value="2026">2026</option>
-                        <option value="2027">2027</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn-full" onclick="applyOwnerMonthPicker()" style="margin-top:16px;">Apply Filter</button>
-        </div>
-    </div>
-
-    <!-- LATE FEE DETAILS BREAKDOWN MODAL -->
-    <div class="modal-overlay" id="late-fee-details-modal" style="z-index: 10000;">
-        <div class="modal" style="max-width: 680px; width: 92vw;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <div>
-                    <h3 id="late-fee-modal-title" style="margin:0; font-size:18px; font-weight:700;">Late Fee Collected Breakdown</h3>
-                    <p id="late-fee-modal-subtitle" style="margin:4px 0 0 0; font-size:13px; color:var(--ink3);">Showing all tenants who paid late fees</p>
-                </div>
-                <button class="btn-ghost" onclick="closeModal('late-fee-details-modal')" style="font-size:20px; padding:4px 8px;">✕</button>
-            </div>
-
-            <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
-                <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
-                    <thead style="background:var(--bg2); position:sticky; top:0; z-index:2;">
-                        <tr>
-                            <th style="padding:10px 12px; border-bottom:1px solid var(--border);">Tenant Name</th>
-                            <th style="padding:10px 12px; border-bottom:1px solid var(--border);">Hostel & Room</th>
-                            <th style="padding:10px 12px; border-bottom:1px solid var(--border);">Payment Date</th>
-                            <th style="padding:10px 12px; border-bottom:1px solid var(--border); text-align:right;">Late Fee Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody id="late-fee-details-tbody">
-                        <!-- Dynamic rows -->
-                    </tbody>
-                </table>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:12px; border-top:1px solid var(--border);">
-                <div style="font-weight:700; font-size:14px;">Total Late Fee Collected: <span id="late-fee-modal-total" style="color:var(--green); font-size:16px;">₹0</span></div>
-                <button class="btn btn-primary" onclick="closeModal('late-fee-details-modal')">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SECURITY DEPOSITS DETAILS BREAKDOWN MODAL -->
-    <div class="modal-overlay" id="security-deposit-details-modal" style="z-index: 10000;">
-        <div class="modal" style="max-width: 680px; width: 92vw;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <div>
-                    <h3 id="security-deposit-modal-title" style="margin:0; font-size:18px; font-weight:700;">Security Deposits Breakdown</h3>
-                    <p id="security-deposit-modal-subtitle" style="margin:4px 0 0 0; font-size:13px; color:var(--ink3);">Showing all tenants with paid security deposits</p>
-                </div>
-                <button class="btn-ghost" onclick="closeModal('security-deposit-details-modal')" style="font-size:20px; padding:4px 8px;">✕</button>
-            </div>
-
-            <div style="max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px;">
-                <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
-                    <thead style="background:var(--bg2); position:sticky; top:0; z-index:2;">
-                        <tr>
-                            <th style="padding:10px 12px; border-bottom:1px solid var(--border);">Tenant Name</th>
-                            <th style="padding:10px 12px; border-bottom:1px solid var(--border);">Hostel & Room</th>
-                            <th style="padding:10px 12px; border-bottom:1px solid var(--border);">Deposit Date</th>
-                            <th style="padding:10px 12px; border-bottom:1px solid var(--border); text-align:right;">Deposit Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody id="security-deposit-details-tbody">
-                        <!-- Dynamic rows -->
-                    </tbody>
-                </table>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:12px; border-top:1px solid var(--border);">
-                <div style="font-weight:700; font-size:14px;">Total Security Deposits: <span id="security-deposit-modal-total" style="color:#1565c0; font-size:16px;">₹0</span></div>
-                <button class="btn btn-primary" onclick="closeModal('security-deposit-details-modal')">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- RENT PAYMENT CONFIRMATION MODAL -->
-    <div class="modal-overlay" id="confirm-payment-modal" style="z-index: 10000;">
-        <div class="modal" style="max-width:400px; width:90vw;">
-            <div class="modal-header">
-                <div class="modal-title">Confirm Rent Payment</div>
-                <button class="modal-close" onclick="closeModal('confirm-payment-modal')">×</button>
-            </div>
-            <div style="padding:8px 0;">
-                <div style="font-size:14px; margin-bottom:16px; color:var(--ink2);">
-                    Confirming rent payment for <strong id="cpay-tenant-name" style="color:var(--ink1);">...</strong> (Room <span id="cpay-room-num">...</span>)
-                </div>
-                <div class="card" style="padding:16px; background:var(--bg); border:1px solid var(--border); border-radius:8px; margin-bottom:16px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px;">
-                        <span style="color:var(--ink3);">Rent Amount:</span>
-                        <strong style="color:var(--ink1);" id="cpay-rent-val">₹0</strong>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px;">
-                        <span style="color:var(--ink3);">Late Fee (Fine):</span>
-                        <strong style="color:var(--ink1);" id="cpay-latefee-val">₹0</strong>
-                    </div>
-                    <hr style="border:none; border-top:1px solid var(--border); margin:8px 0;">
-                    <div style="display:flex; justify-content:space-between; font-size:16px;">
-                        <span style="font-weight:700; color:var(--ink1);">Total Amount:</span>
-                        <strong style="font-weight:700; color:var(--accent);" id="cpay-total-val">₹0</strong>
-                    </div>
-                </div>
-
-                <div class="input-group" style="flex-direction:row; align-items:center; gap:8px; margin-bottom:16px;">
-                    <input type="checkbox" id="cpay-include-latefee" style="width:18px; height:18px; cursor:pointer;" onchange="updatePaymentConfirmTotal()">
-                    <label for="cpay-include-latefee" style="cursor:pointer; font-weight:600; font-size:13px; margin:0;">Include Late Fee in payment record</label>
-                </div>
-            </div>
-            <button class="btn-full" id="cpay-submit-btn" style="margin-top:8px;">Confirm Payment</button>
-        </div>
-    </div>
-
-    <!-- ACCEPT BOOKING MODAL -->
-    <div class="modal-overlay" id="accept-booking-modal" style="z-index: 10000;">
-        <div class="modal" style="max-width:440px; width:90vw;">
-            <div class="modal-header">
-                <div class="modal-title">🎉 Accept Booking Request</div>
-                <button class="modal-close" onclick="closeModal('accept-booking-modal')">×</button>
-            </div>
-            <div style="padding:12px 0;">
-                <div style="font-size:14px; margin-bottom:16px; color:var(--ink2);">
-                    Set Monthly Rent & Security Deposit for <strong id="ab-modal-tenant-name" style="color:var(--ink1);">...</strong> (Room <span id="ab-modal-room-num">...</span>)
-                </div>
-                
-                <div class="input-group" style="margin-bottom:14px;">
-                    <label style="font-weight:700; font-size:13px; color:var(--ink1);">Monthly Rent Amount (₹) *</label>
-                    <input type="number" id="ab-rent-input" placeholder="e.g. 5500" value="5500" style="padding:10px; border-radius:8px; border:1px solid var(--border); font-size:15px; font-weight:600;">
-                </div>
-
-                <div class="input-group" style="margin-bottom:18px;">
-                    <label style="font-weight:700; font-size:13px; color:var(--ink1);">Security Deposit Amount (₹) *</label>
-                    <input type="number" id="ab-deposit-input" placeholder="e.g. 11000" value="11000" style="padding:10px; border-radius:8px; border:1px solid var(--border); font-size:15px; font-weight:600;">
-                    <div style="font-size:11px; color:var(--ink3); margin-top:4px;">This deposit will be collected from the tenant along with the first month rent.</div>
-                </div>
-
-                <div class="flex gap8" style="margin-top:12px;">
-                    <button class="btn-full btn-ghost" onclick="closeModal('accept-booking-modal')" style="background:var(--bg); color:var(--ink1);">Cancel</button>
-                    <button class="btn-full btn-green" id="ab-submit-btn" onclick="submitAcceptBookingFromModal()">Save & Accept Booking</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- RESOLVE COMPLAINT MODAL -->
-    <div class="modal-overlay" id="resolve-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Resolve Complaint</div><button class="modal-close"
-                    onclick="closeModal('resolve-modal')">×</button>
-            </div>
-            <div class="input-group"><label>Resolution Note</label><textarea id="res-note"
-                    placeholder="What was done to fix the issue?"></textarea></div>
-            <div class="input-group"><label>Maintenance Cost (₹) — optional</label><input type="number" id="res-cost"
-                    placeholder="0"></div>
-            <div class="input-group"><label>Bill Photo — optional</label><input type="file" id="res-bill"
-                    accept="image/*" onchange="handleResolveBillChange(this)"></div>
-            <input type="hidden" id="res-complaint-id">
-            <button class="btn-full" onclick="resolveComplaint()">Mark as Resolved</button>
-        </div>
-    </div>
-
-    <!-- VIEW BILL MODAL -->
-    <div class="modal-overlay" id="view-bill-modal" style="z-index: 10000;">
-        <div class="modal" style="max-width: 580px; width: 92vw;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <div>
-                    <h3 id="view-bill-modal-title" style="margin:0; font-size:18px; font-weight:700;">Complaint Bill & Details</h3>
-                    <p id="view-bill-modal-subtitle" style="margin:4px 0 0 0; font-size:13px; color:var(--ink3);">Maintenance expense details</p>
-                </div>
-                <button class="btn-ghost" onclick="closeModal('view-bill-modal')" style="font-size:20px; padding:4px 8px;">✕</button>
-            </div>
-
-            <div id="view-bill-modal-content" style="background:var(--bg2); padding:16px; border-radius:8px; border:1px solid var(--border); font-size:13px;">
-                <!-- Dynamic Content -->
-            </div>
-
-            <div style="display:flex; justify-content:flex-end; margin-top:16px; padding-top:12px; border-top:1px solid var(--border);">
-                <button class="btn btn-primary" onclick="closeModal('view-bill-modal')">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- EDIT COMPLAINT RESOLUTION MODAL -->
-    <div class="modal-overlay" id="edit-complaint-modal" style="z-index: 10000;">
-        <div class="modal" style="max-width: 500px; width: 90vw;">
-            <div class="modal-header">
-                <div class="modal-title">Edit Complaint Resolution & Bill</div>
-                <button class="modal-close" onclick="closeModal('edit-complaint-modal')">×</button>
-            </div>
-            <div style="padding: 12px 0;">
-                <div class="input-group">
-                    <label>Resolution Note</label>
-                    <textarea id="edit-res-note" placeholder="Update resolution details..."></textarea>
-                </div>
-                <div class="input-group" style="margin-top:12px;">
-                    <label>Maintenance Cost (₹)</label>
-                    <input type="number" id="edit-res-cost" placeholder="0">
-                </div>
-                <div class="input-group" style="margin-top:12px;">
-                    <label>Update Bill Photo (optional)</label>
-                    <input type="file" id="edit-res-bill" accept="image/*" onchange="handleEditResolveBillChange(this)">
-                    <div id="edit-res-bill-preview" style="font-size:12px; color:var(--ink3); margin-top:4px;"></div>
-                </div>
-            </div>
-            <input type="hidden" id="edit-res-complaint-id">
-            <button class="btn-full" onclick="saveComplaintResolutionEdit()" style="margin-top:16px;">Save Changes</button>
-        </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- TENANT DASHBOARD -->
-    <!-- ============================================================ -->
-    <div class="pg" id="pg-tenant">
-        <div class="dash-layout">
-            <!-- MOBILE TOPBAR (Tenant) -->
-            <div class="mobile-topbar" style="grid-column:1/-1">
-                <button class="mob-menu-btn" onclick="openMobileSidebar()">☰</button>
-                <div class="mob-brand">VU<span>STELA</span></div>
-                <span style="font-size:11px;opacity:0.5;letter-spacing:1px;text-transform:uppercase">Tenant</span>
-            </div>
-            <aside class="sidebar">
-                <div class="sb-brand" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                    <div>
-                        <div class="sb-brand-name">VUSTELA</div>
-                        <div class="sb-role">My Portal</div>
-                    </div>
-                    <button class="mob-sidebar-close-btn" onclick="closeMobileSidebar()" style="display:none; background:none; border:none; font-size:24px; color:var(--white); cursor:pointer; padding:4px 8px;" title="Close Menu">✕</button>
-                </div>
-                <div class="sb-user">
-                    <div class="sb-user-name" id="tp-sb-name">Priya Sharma</div>
-                    <div class="sb-user-sub" id="tp-sb-room">Room 105 · Hostel 1</div>
-                </div>
-                <div class="sb-section">My Stay</div>
-                <div class="sb-link act" onclick="tenantTab(this,'t-home')"><span class="sb-icon">🏠</span> Home</div>
-                <div class="sb-link" onclick="tenantTab(this,'t-pay')"><span class="sb-icon">💳</span> Pay Rent</div>
-                <div class="sb-link" onclick="tenantTab(this,'t-history')"><span class="sb-icon">📑</span> Payment
-                    History</div>
-                <div class="sb-link" onclick="tenantTab(this,'t-food')"><span class="sb-icon">🍽️</span> Food Menu</div>
-                <div class="sb-section">Support</div>
-                <div class="sb-link" onclick="tenantTab(this,'t-complaints')"><span class="sb-icon">📋</span> My
-                    Complaints</div>
-                <div class="sb-link" onclick="tenantTab(this,'t-notices')"
-                    style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><span class="sb-icon">📢</span> Notices</div>
-                    <span id="tenant-notice-badge"
-                        style="display:none; background:var(--accent); color:white; font-size:11px; font-weight:600; padding:2px 6px; border-radius:10px;">0</span>
-                </div>
-                <div class="sb-section">Account</div>
-                <div class="sb-link" onclick="tenantTab(this,'t-profile')"><span class="sb-icon">👤</span> My Profile
-                </div>
-                <div class="sb-section" style="margin-top:auto"></div>
-                <div class="sb-logout"><button onclick="logout()">← Logout</button></div>
-            </aside>
-            <main class="dash-main">
-
-                <!-- T: HOME -->
-                <div class="dash-section on" id="t-home">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title" id="tp-title">Hi Priya! 👋</div>
-                            <div class="dash-subtitle" id="tp-subtitle">Room 105 · Hostel 1, NARSINGI</div>
-                        </div>
-                    </div>
-
-                    <!-- RENT HERO -->
-                    <div class="pay-hero" style="margin-bottom:20px">
-                        <div class="pay-status">JUNE 2025 · RENT DUE</div>
-                        <div class="pay-amount" id="tp-hero-rent">₹5,500</div>
-                        <div class="pay-due">Due by June 5, 2025 — <span
-                                style="color:rgba(200,75,49,0.9);font-weight:700">2 days remaining</span></div>
-                        <div style="margin-top:20px;display:flex;gap:10px">
-                            <button class="btn btn-accent"
-                                onclick="tenantTab(document.querySelector('[onclick*=t-pay]'),'t-pay')">Pay Now
-                                →</button>
-                            <button class="btn btn-outline"
-                                style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7)"
-                                onclick="showToast('Receipt','Last month receipt downloaded.')">⬇ Last Receipt</button>
-                            <button class="btn btn-outline" id="tenant-notice-btn"
-                                style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7); display:flex; align-items:center; gap:6px;"
-                                onclick="submitNoticePeriodRequest()">⏰ Notice Period</button>
-                        </div>
-                    </div>
-
-                    <div class="flex gap16">
-                        <div style="flex:1">
-                            <div class="card">
-                                <h3 style="font-size:15px;margin-bottom:14px">My Stay Summary</h3>
-                                <div class="info-row">
-                                    <div class="ir-key">Hostel</div>
-                                    <div class="ir-val" id="tp-stay-hostel">ISHTAA PRIME BOYS</div>
-                                </div>
-                                <div class="info-row">
-                                    <div class="ir-key">Room</div>
-                                    <div class="ir-val" id="tp-stay-room">105 — Ground Floor</div>
-                                </div>
-                                <div class="info-row">
-                                    <div class="ir-key">Staying Since</div>
-                                    <div class="ir-val">March 2025</div>
-                                </div>
-                                <div class="info-row">
-                                    <div class="ir-key">Total Paid</div>
-                                    <div class="ir-val" style="color:var(--green)">Up to date</div>
-                                </div>
-                                <div class="info-row">
-                                    <div class="ir-key">Security Deposit</div>
-                                    <div class="ir-val" id="tp-stay-deposit">₹11,000 (refundable)</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="width:280px">
-                            <div class="card" style="margin-bottom:16px">
-                                <h3 style="font-size:15px;margin-bottom:14px">Quick Actions</h3>
-                                <button class="btn btn-primary"
-                                    style="width:100%;margin-bottom:10px;border-radius:var(--rs)"
-                                    onclick="tenantTab(document.querySelector('[onclick*=t-pay]'),'t-pay')">💳 Pay
-                                    Rent</button>
-                                <button class="btn btn-outline"
-                                    style="width:100%;margin-bottom:10px;border-radius:var(--rs)"
-                                    onclick="openModal('new-complaint-modal')">📋 Raise Complaint</button>
-                                <button class="btn btn-outline" style="width:100%;border-radius:var(--rs)"
-                                    onclick="tenantTab(document.querySelector('[onclick*=t-notices]'),'t-notices')">📢
-                                    View Notices</button>
-                            </div>
-                            <div class="card">
-                                <h3 style="font-size:15px;margin-bottom:12px">Latest Notice</h3>
-                                <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px">Water off
-                                    Sunday 10am–2pm</div>
-                                <div style="font-size:12px;color:var(--ink3)">Due to plumbing work. Store water in
-                                    advance.</div>
-                                <div style="font-size:11px;color:var(--ink3);margin-top:8px">Jun 5, 2025</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- T: PAY RENT -->
-                <div class="dash-section" id="t-pay">
-                    <div class="dash-header">
-                        <div class="dash-title">Pay Rent</div>
-                        <div class="dash-subtitle">June 2025</div>
-                    </div>
-
-                    <div id="tp-page-pending-banner" style="display:none; background:#fef3c7; border:1px solid #f59e0b; padding:14px 18px; border-radius:12px; margin-bottom:20px;">
-                        <div style="font-size:15px; font-weight:700; color:#92400e; margin-bottom:4px;" class="flex align-center">
-                            <span style="font-size:18px; margin-right:8px;">⏳</span> Payment Verification Pending
-                        </div>
-                        <div style="font-size:13px; color:#78350f;" id="tp-page-pending-text">
-                            Your payment submission has been received and is currently under verification.
-                        </div>
-                    </div>
-
-                    <div class="pay-hero">
-                        <div class="pay-status">AMOUNT DUE · JUNE 2025</div>
-                        <div class="pay-amount" id="tp-pay-amt">₹5,500</div>
-                        <div class="pay-due" id="tp-pay-due">Room 105 · Hostel 1, NARSINGI · Due June 5, 2025</div>
-                    </div>
-
-                    <div class="card">
-                        <h3 style="font-size:16px;margin-bottom:16px;font-family:var(--font-display)">Choose Payment
-                            Method</h3>
-                        <div class="payment-method selected" onclick="selectPay(this)">
-                            <div class="pm-icon">📱</div>
-                            <div>
-                                <div class="pm-name">UPI</div>
-                                <div class="pm-desc">Google Pay, PhonePe, BHIM</div>
-                            </div><span class="badge badge-green" style="margin-left:auto">Recommended</span>
-                        </div>
-                        <div class="payment-method" onclick="selectPay(this)">
-                            <div class="pm-icon">💳</div>
-                            <div>
-                                <div class="pm-name">Debit / Credit Card</div>
-                                <div class="pm-desc">Visa, Mastercard, Rupay</div>
-                            </div>
-                        </div>
-                        <div class="payment-method" onclick="selectPay(this)">
-                            <div class="pm-icon">🏦</div>
-                            <div>
-                                <div class="pm-name">Net Banking</div>
-                                <div class="pm-desc">All major banks supported</div>
-                            </div>
-                        </div>
-                        <div class="payment-method" onclick="selectPay(this)">
-                            <div class="pm-icon">💵</div>
-                            <div>
-                                <div class="pm-name">Cash Payment</div>
-                                <div class="pm-desc">Pay to manager and confirm here</div>
-                            </div>
-                        </div>
-
-                        <div style="margin-top:20px;padding:16px;background:var(--bg);border-radius:var(--rs)">
-                            <div class="flex between" style="margin-bottom:8px"><span
-                                    style="font-size:13px;color:var(--ink3)">Monthly Rent</span><span
-                                    style="font-size:14px;font-weight:600" id="tp-pay-sub">₹5,500</span></div>
-                            <div class="flex between" style="margin-bottom:8px; display:none;" id="tp-deposit-row"><span
-                                    style="font-size:13px;color:var(--accent);font-weight:600;">Security Deposit (Advance 🛡️)</span><span
-                                    style="font-size:14px;font-weight:700;color:var(--accent)" id="tp-pay-deposit">+ ₹11,000</span></div>
-                            <div class="flex between" style="margin-bottom:8px; display:none;" id="tp-fine-row"><span
-                                    style="font-size:13px;color:var(--danger);font-weight:600;">Late Fee (Fine ⚠️)</span><span
-                                    style="font-size:14px;font-weight:700;color:var(--danger)" id="tp-pay-fine">₹0</span></div>
-                            <div class="flex between" style="margin-bottom:8px"><span
-                                    style="font-size:13px;color:var(--ink3)">Processing Fee</span><span
-                                    style="font-size:14px;font-weight:600">₹0</span></div>
-                            <div class="flex between" style="padding-top:10px;border-top:1px solid var(--border)"><span
-                                    style="font-size:14px;font-weight:700">Total</span><span
-                                    style="font-size:18px;font-weight:800;font-family:var(--font-display)"
-                                    id="tp-pay-total">₹5,500</span>
-                            </div>
-                        </div>
-                        <button class="btn-full" style="margin-top:16px" onclick="payRent()" id="tp-pay-btn">Pay ₹5,500
-                            →</button>
-                    </div>
-                </div>
-
-                <!-- T: PAYMENT HISTORY -->
-                <div class="dash-section" id="t-history">
-                    <div class="dash-header">
-                        <div class="dash-title">Payment History</div>
-                        <div class="dash-subtitle">All past payments and receipts</div>
-                    </div>
-                    <div class="rent-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Month</th>
-                                    <th>Amount</th>
-                                    <th>Method</th>
-                                    <th>Date Paid</th>
-                                    <th>Status</th>
-                                    <th>Receipt</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tp-history-tbody">
-                                <tr><td colspan="6" style="text-align:center; padding:32px; color:var(--ink3);">Loading payment history...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="card" style="margin-top:16px">
-                        <div class="flex between">
-                            <div>
-                                <div style="font-size:13px;color:var(--ink3)">Total paid since joining</div>
-                                <div id="tp-history-total-paid"
-                                    style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--green)">
-                                    ₹0</div>
-                            </div>
-                            <div style="text-align:right">
-                                <div style="font-size:13px;color:var(--ink3)">Security deposit</div>
-                                <div id="tp-history-deposit" style="font-family:var(--font-display);font-size:22px;font-weight:700">₹11,000
-                                </div>
-                                <div style="font-size:12px;color:var(--ink3)">Refundable on exit</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- T: COMPLAINTS -->
-                <div class="dash-section" id="t-complaints">
-                    <div class="dash-header">
-                        <div>
-                            <div class="dash-title">My Complaints</div>
-                            <div class="dash-subtitle">Track and manage your complaints</div>
-                        </div>
-                        <button class="btn btn-accent" onclick="openModal('new-complaint-modal')">+ Raise
-                            Complaint</button>
-                    </div>
-                    <div id="tenant-complaints-list"></div>
-                </div>
-
-                <!-- T: FOOD MENU -->
-                <div class="dash-section" id="t-food">
-                    <div class="dash-header">
-                        <div class="dash-title">Weekly Food Menu</div>
-                        <div class="dash-subtitle">Your hostel's meal schedule for the week</div>
-                    </div>
-
-                    <div class="card" style="padding: 24px; margin-bottom: 24px; overflow-x: auto;">
-                        <table class="table" style="min-width: 800px;">
-                            <thead>
-                                <tr>
-                                    <th>Day</th>
-                                    <th>Tiffin (8-9 AM)</th>
-                                    <th>Lunch (1-2 PM)</th>
-                                    <th>Snacks (5-6 PM)</th>
-                                    <th>Dinner (8-9 PM)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tenant-food-table">
-                                <!-- Rendered by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="card"
-                        style="padding: 24px; background: linear-gradient(145deg, #f8f9fa, #ffffff); border-left: 4px solid var(--accent); box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-                        <h3 style="font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                            <span style="font-size: 24px;">🍽️</span> Today's Menu (<span id="today-name"></span>)
-                        </h3>
-                        <div
-                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-                            <div
-                                style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-                                <div style="font-size: 12px; color: var(--ink3); margin-bottom: 4px;">🌅 Tiffin (8:00
-                                    AM)</div>
-                                <div style="font-weight: 600; font-size: 15px;" id="today-tiffin"></div>
-                            </div>
-                            <div
-                                style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-                                <div style="font-size: 12px; color: var(--ink3); margin-bottom: 4px;">🍛 Lunch (1:00 PM)
-                                </div>
-                                <div style="font-weight: 600; font-size: 15px;" id="today-lunch"></div>
-                            </div>
-                            <div
-                                style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-                                <div style="font-size: 12px; color: var(--ink3); margin-bottom: 4px;">☕ Snacks (5:00 PM)
-                                </div>
-                                <div style="font-weight: 600; font-size: 15px;" id="today-snacks"></div>
-                            </div>
-                            <div
-                                style="background: white; padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
-                                <div style="font-size: 12px; color: var(--ink3); margin-bottom: 4px;">🍲 Dinner (8:30
-                                    PM)</div>
-                                <div style="font-weight: 600; font-size: 15px;" id="today-dinner"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- T: NOTICES -->
-                <div class="dash-section" id="t-notices">
-                    <div class="dash-header">
-                        <div class="dash-title">Notices</div>
-                        <div class="dash-subtitle">Announcements from your hostel manager</div>
-                    </div>
-                    <div id="tenant-notices-list"></div>
-                </div>
-
-                <!-- T: PROFILE -->
-                <div class="dash-section" id="t-profile">
-                    <div class="dash-header">
-                        <div class="dash-title">My Profile</div>
-                    </div>
-                    <div class="profile-hero">
-                        <div class="profile-ava" id="tp-prof-ava">PS</div>
-                        <div class="profile-name" id="tp-prof-name">Priya Sharma</div>
-                        <div class="profile-sub" id="tp-prof-sub">Room 105 · ISHTAA PRIME BOYS · Since March 2025</div>
-                        <div style="margin-top:16px;display:flex;gap:10px;justify-content:center">
-                            <button class="btn btn-outline"
-                                onclick="showToast('Edit Mode','Profile editing enabled.')">Edit Profile</button>
-                            <button class="btn btn-outline" style="color:var(--red);border-color:rgba(200,75,49,0.3)"
-                                onclick="openModal('vacate-modal')">🚪 Submit Leave Notice</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="info-row">
-                            <div class="ir-key">Full Name</div>
-                            <div class="ir-val" id="tp-info-name">Loading...</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="ir-key">Phone</div>
-                            <div class="ir-val" id="tp-info-phone">Loading...</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="ir-key">Email</div>
-                            <div class="ir-val" id="tp-info-email">Loading...</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="ir-key">Hostel</div>
-                            <div class="ir-val" id="tp-info-hostel">Loading...</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="ir-key">Room</div>
-                            <div class="ir-val" id="tp-info-room">Loading...</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="ir-key">Check-in Date</div>
-                            <div class="ir-val" id="tp-info-checkin">Loading...</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="ir-key">Monthly Rent</div>
-                            <div class="ir-val" id="tp-info-rent">Loading...</div>
-                        </div>
-                        <div class="info-row">
-                            <div class="ir-key">ID Proof</div>
-                            <div class="ir-val" id="tp-info-idproof">Loading...</div>
-                        </div>
-                    </div>
-                </div>
-
-            </main>
-        </div>
-    </div>
-
-    <!-- NEW COMPLAINT MODAL -->
-    <div class="modal-overlay" id="new-complaint-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Raise a Complaint</div><button class="modal-close"
-                    onclick="closeModal('new-complaint-modal')">×</button>
-            </div>
-            <div class="input-group"><label>Category</label>
-                <select id="c-category">
-                    <option>Room Issue</option>
-                    <option>Water Problem</option>
-                    <option>Electrical</option>
-                    <option>WiFi</option>
-                    <option>AC / Fan</option>
-                    <option>Food</option>
-                    <option>Cleanliness</option>
-                    <option>Security</option>
-                    <option>Other</option>
-                </select>
-            </div>
-            <div class="input-group"><label>Subject</label><input type="text" id="c-subject"
-                    placeholder="Brief title of the issue"></div>
-            <div class="input-group"><label>Description</label><textarea id="c-desc"
-                    placeholder="Describe the problem in detail..."></textarea></div>
-            <div class="input-group"><label>Photo (optional)</label><input type="file" id="c-photo" accept="image/*">
-            </div>
-            <button class="btn-full" onclick="submitComplaint()">Submit Complaint</button>
-        </div>
-    </div>
-
-    <!-- VACATE NOTICE MODAL -->
-    <div class="modal-overlay" id="vacate-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Submit Leave Notice</div><button class="modal-close"
-                    onclick="closeModal('vacate-modal')">×</button>
-            </div>
-            <div class="input-group"><label>Planned Vacate Date</label><input type="date" id="vac-date"></div>
-            <div class="input-group"><label>Reason (optional)</label><textarea id="vac-reason"
-                    placeholder="Reason for leaving..."></textarea></div>
-            <div
-                style="background:var(--yellow-bg);border:1px solid rgba(184,134,11,0.2);border-radius:var(--rs);padding:12px;margin-bottom:16px;font-size:13px;color:var(--yellow)">
-                ⚠️ Please give at least 15 days notice. Security deposit will be refunded within 7 days of vacating.
-            </div>
-            <button class="btn-full" onclick="submitVacate()">Submit Notice</button>
-        </div>
-    </div>
-
-    <script>
         const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             ? 'http://localhost:3000'
             : 'https://hostel-managment-i9y5.onrender.com';
@@ -6774,27 +463,24 @@
                 const { role, email, password, hostel_id } = session;
 
                 if (role === 'owner') {
-                    const { data: user } = await db.from('users')
-                        .select('*')
-                        .eq('email', email)
-                        .eq('password', password)
-                        .eq('role', 'owner')
-                        .single();
-
-                    if (user) {
-                        currentRole = 'owner';
-                        await loadData([1, 2]);
-                        renderOwnerOccupancy();
-                        renderOwnerRentTable('all');
-                        renderOwnerExpenses();
-                        renderSalaries();
-                        renderOwnerComplaints();
-                        renderOwnerAllTenants();
-                        renderOwnerNotices();
-                        renderManagersTable();
-                        goTo('pg-owner');
-                        return;
+                    currentRole = 'owner';
+                    goTo('pg-owner');
+                    updateOwnerPortalUI(session);
+                    try {
+                        const targetIds = getOwnerHostelIds();
+                        await loadData(targetIds);
+                    } catch (e) {
+                        console.warn('[restoreSessionOnPageLoad] loadData warning:', e);
                     }
+                    renderOwnerOccupancy();
+                    renderOwnerRentTable('all');
+                    renderOwnerExpenses();
+                    renderSalaries();
+                    renderOwnerComplaints();
+                    renderOwnerAllTenants();
+                    renderOwnerNotices();
+                    renderManagersTable();
+                    return;
                 } else if (role === 'manager') {
                     const { data: user } = await db.from('users')
                         .select('*')
@@ -6855,8 +541,74 @@
             }
         }
 
-        // Auto-restore session when DOM is ready
-        document.addEventListener('DOMContentLoaded', restoreSessionOnPageLoad);
+        function renderDynamicPublicHostelPage() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const targetSlug = urlParams.get('hostel');
+                const targetId = urlParams.get('hostel_id');
+
+                const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+                const regRequests = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
+                
+                let activeHostel = null;
+
+                if (targetId) {
+                    activeHostel = savedHostels.find(h => h.id == targetId) || regRequests.find(r => r.id == targetId);
+                }
+                if (!activeHostel && targetSlug) {
+                    const cleanSlug = targetSlug.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    activeHostel = savedHostels.find(h => (h.slug || h.name.toLowerCase().replace(/[^a-z0-9]/g, '')) === cleanSlug) ||
+                                   regRequests.find(r => (r.slug || r.name.toLowerCase().replace(/[^a-z0-9]/g, '')) === cleanSlug);
+                }
+
+                if (activeHostel) {
+                    console.log("[Portal Router] Loading dynamic public hostel page for:", activeHostel.name);
+                    
+                    // Register dynamic hostel entry in internal hostels mapping
+                    if (typeof hostels === 'object') {
+                        hostels[activeHostel.id] = {
+                            name: activeHostel.name,
+                            mgr: activeHostel.mgr || activeHostel.manager_name || 'Hostel Manager',
+                            loc: activeHostel.loc || activeHostel.location || 'HYDERABAD'
+                        };
+                    }
+
+                    // Update Public Branch Grid UI
+                    const grid = document.getElementById('publicBranchGrid');
+                    if (grid) {
+                        grid.innerHTML = `
+                            <div class="branch-card" style="grid-column: 1 / -1; max-width: 560px;" onclick="openHostelDetail(${activeHostel.id})">
+                                <div class="branch-img" style="background-image: url('hostel1.png'); background-size: cover; background-position: center;">
+                                    <span class="branch-num-badge" style="background: var(--accent); color: #fff; font-weight: 700; font-size: 0.8rem;">Hostel Branch</span>
+                                </div>
+                                <div class="branch-body">
+                                    <div class="branch-name" style="font-size: 1.4rem; color: var(--ink); font-weight: 800;">${activeHostel.name}</div>
+                                    <div class="branch-loc" style="font-size: 0.95rem; color: var(--ink-light); margin: 0.3rem 0 0.8rem 0;">📍 ${activeHostel.loc || activeHostel.location || 'HYDERABAD'}</div>
+                                    <div class="branch-stats">
+                                        <div class="bs-item"><strong>25+</strong>Rooms</div>
+                                        <div class="bs-item"><strong>Vacant</strong>Available</div>
+                                        <div class="bs-item"><strong>₹7,500+</strong>/ month</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            } catch(e) {
+                console.warn("[Portal Router] Error rendering dynamic public page:", e);
+            }
+        }
+
+        // Auto-restore session and process subdomain/path routes when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            restoreSessionOnPageLoad();
+            renderDynamicPublicHostelPage();
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action') || (window.location.pathname.includes('/signin') ? 'signin' : '');
+            if (action === 'signin' || action === 'login') {
+                setTimeout(() => { if (typeof openModal === 'function') openModal('login-modal'); }, 300);
+            }
+        });
 
         // ============================================================
         // LOGIN
@@ -6874,6 +626,78 @@
             }
         }
 
+        function updateOwnerPortalUI(user) {
+            try {
+                if (!user) return;
+                const ownerName = user.name || (user.email === 'vustelasrinivasreddy456@gmail.com' ? 'Somi Reddy' : 'Owner');
+                const firstName = ownerName.split(' ')[0];
+                
+                const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+                const regReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
+
+                const ownerHostel = savedHostels.find(h => h.id == user.hostel_id) || regReqs.find(r => r.id == user.hostel_id);
+                const hostelName = ownerHostel ? ownerHostel.name : (user.hostel_name || 'VUSTELA HOSTELS');
+
+                const nameEl = document.getElementById('owner-name-sb');
+                const greetingEl = document.getElementById('owner-greeting-title');
+                const subEl = document.getElementById('owner-sub-sb');
+
+                if (nameEl) nameEl.textContent = ownerName;
+                if (greetingEl) greetingEl.textContent = `Good Morning, ${firstName} 👋`;
+                if (subEl) subEl.textContent = `Owner — ${hostelName}`;
+
+                // Dynamic Financial Table Update (Default ₹0 for new hostel with 0 tenants)
+                const tbody = document.getElementById('owner-financial-tbody');
+                if (tbody) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td><strong>${hostelName}</strong></td>
+                            <td>₹0</td>
+                            <td style="color:var(--green);font-weight:700">₹0</td>
+                            <td style="color:var(--ink3)">₹0</td>
+                            <td style="color:var(--yellow)">₹0</td>
+                            <td style="color:var(--ink3)">₹0</td>
+                            <td style="color:var(--ink3)">₹0</td>
+                            <td style="color:var(--blue)">₹0</td>
+                            <td style="font-weight:800;font-family:var(--font-display);color:var(--green)">₹0</td>
+                        </tr>
+                    `;
+                }
+
+                // Dynamic Overview Summary Cards for New Hostels
+                const collNumEl = document.getElementById('owner-stat-collected');
+                const collSubEl = document.getElementById('owner-stat-collected-sub');
+                const pendNumEl = document.getElementById('owner-stat-pending');
+                const pendSubEl = document.getElementById('owner-stat-pending-sub');
+                const maintNumEl = document.getElementById('owner-stat-maintenance');
+                const maintSubEl = document.getElementById('owner-stat-maintenance-sub');
+                const netNumEl = document.getElementById('owner-stat-net');
+                const netSubEl = document.getElementById('owner-stat-net-sub');
+
+                if (collNumEl) collNumEl.textContent = '₹0';
+                if (collSubEl) collSubEl.textContent = '0% of expected';
+                if (pendNumEl) pendNumEl.textContent = '₹0';
+                if (pendSubEl) pendSubEl.textContent = '0 tenants unpaid';
+                if (maintNumEl) maintNumEl.textContent = '₹0';
+                if (maintSubEl) maintSubEl.textContent = '0 complaints resolved';
+                if (netNumEl) netNumEl.textContent = '₹0';
+                if (netSubEl) netSubEl.textContent = 'Fresh New Hostel (₹0 Net)';
+
+                // Update Timeline to show clear state for new hostel
+                const timelineEl = document.getElementById('ownerRecentTimeline');
+                if (timelineEl) {
+                    timelineEl.innerHTML = `
+                        <div style="padding: 1.25rem; text-align: center; color: var(--ink3); font-size: 0.85rem;">
+                            🏢 <strong>Welcome to ${hostelName}!</strong><br>
+                            No recent activity logged yet. Onboard your first tenant to start tracking rent.
+                        </div>
+                    `;
+                }
+            } catch(e) {
+                console.warn("[updateOwnerPortalUI] Error updating Owner UI:", e);
+            }
+        }
+
         async function doLogin() {
             try {
                 const email = document.getElementById('l-email').value.trim();
@@ -6888,20 +712,59 @@
                 showToast('Authenticating...', 'Verifying credentials...');
 
                 // 1. Check Owner/Manager in users table
-                const { data: user, error: userError } = await db.from('users')
-                    .select('*')
-                    .eq('email', email)
-                    .eq('password', password)
-                    .single();
+                let user = null;
+                try {
+                    const { data: dbUser } = await db.from('users')
+                        .select('*')
+                        .eq('email', email)
+                        .eq('password', password)
+                        .single();
+                    if (dbUser) user = dbUser;
+                } catch (e) {
+                    console.warn('[doLogin] Supabase lookup error/fallback:', e);
+                }
+
+                // Fallback: Check local storage approved registration requests & owner emails
+                if (!user) {
+                    const localRegReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
+                    const matchedReq = localRegReqs.find(r => r.status === 'Approved' && r.email && r.email.toLowerCase() === email.toLowerCase());
+                    if (matchedReq) {
+                        user = {
+                            email: matchedReq.email,
+                            role: 'owner',
+                            name: matchedReq.mgr || 'Somi Reddy',
+                            hostel_id: matchedReq.id
+                        };
+                    } else if (email.toLowerCase() === 'vustelasrinivasreddy456@gmail.com' || email.toLowerCase() === 'vustela.hostels@gmail.com' || email.toLowerCase() === 'ishtaaprimeboyshostel@gmail.com') {
+                        user = {
+                            email: email,
+                            role: 'owner',
+                            name: 'Somi Reddy',
+                            hostel_id: 1
+                        };
+                    }
+                }
 
                 if (user) {
                     closeModal('login-modal');
                     if (user.role === 'owner') {
                         currentRole = 'owner';
-                        localStorage.setItem('vustela_session', JSON.stringify({ role: 'owner', email, password }));
+                        localStorage.setItem('vustela_session', JSON.stringify({ role: 'owner', email, password, name: user.name, hostel_id: user.hostel_id }));
                         goTo('pg-owner');
-                        showToast('Welcome back, Owner! 👑', 'Dashboard opening...');
-                        loadData([1, 2]).then(() => {
+                        updateOwnerPortalUI(user);
+                        showToast(`Welcome back, ${user.name || 'Owner'}! 👑`, 'Dashboard opening...');
+                        const targetIds = getOwnerHostelIds();
+                        loadData(targetIds).then(() => {
+                            renderOwnerOccupancy();
+                            renderOwnerRentTable('all');
+                            renderOwnerExpenses();
+                            renderSalaries();
+                            renderOwnerComplaints();
+                            renderOwnerAllTenants();
+                            renderOwnerNotices();
+                            renderManagersTable();
+                        }).catch(e => {
+                            console.warn('[doLogin] loadData error fallback:', e);
                             renderOwnerOccupancy();
                             renderOwnerRentTable('all');
                             renderOwnerExpenses();
@@ -7135,10 +998,370 @@
                     if (typeof renderOwnerComplaints === 'function') renderOwnerComplaints();
                 } else if (secId === 'o-expenses') {
                     if (typeof renderOwnerExpenses === 'function') renderOwnerExpenses();
+                } else if (secId === 'o-subscription') {
+                    if (typeof renderOwnerSubscription === 'function') renderOwnerSubscription();
                 }
             } catch (err) {
                 console.warn('[ownerTab] Tab switch notice:', err);
             }
+        }
+
+        let activeSelectedSub = null;
+
+        function getOwnerSubscriptionDetails(hostelId) {
+            const hId = hostelId || (getOwnerHostelIds()[0] || 1);
+            const overrideStatus = localStorage.getItem('vustela_sub_override_' + hId);
+            if (overrideStatus === 'expired') {
+                return {
+                    status: 'expired',
+                    planName: '15-Day Free Trial',
+                    isExpired: true,
+                    daysRemaining: 0,
+                    desc: 'Your 15-Day Free Trial / Subscription has expired. Access to tabs is restricted.'
+                };
+            }
+
+            // Check if there is an approved or active subscription in vustela_sub_requests
+            const allSubs = JSON.parse(localStorage.getItem('vustela_sub_requests')) || [];
+            const activeSub = allSubs.find(s => (s.hostel_id == hId || s.hostel_id == 1) && (s.status === 'Active' || s.status === 'Approved'));
+            if (activeSub) {
+                return {
+                    status: 'active',
+                    planName: activeSub.plan,
+                    isExpired: false,
+                    daysRemaining: 30,
+                    desc: `Active Subscription (${activeSub.plan}) granted by SuperAdmin.`
+                };
+            }
+
+            const pendingSub = allSubs.find(s => (s.hostel_id == hId || s.hostel_id == 1) && s.status === 'Pending');
+            if (pendingSub) {
+                return {
+                    status: 'pending',
+                    planName: pendingSub.plan,
+                    isExpired: false,
+                    daysRemaining: 15,
+                    desc: `Subscription request (${pendingSub.plan}) submitted to SuperAdmin — Pending Activation.`
+                };
+            }
+
+            const defaultKey = 'vustela_sub_info_' + hId;
+            let subData = JSON.parse(localStorage.getItem(defaultKey));
+            if (!subData) {
+                const now = new Date();
+                const expiry = new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000);
+                subData = {
+                    status: 'trial',
+                    planName: '15-Day Free Trial',
+                    startDate: now.toISOString(),
+                    expiryDate: expiry.toISOString()
+                };
+                localStorage.setItem(defaultKey, JSON.stringify(subData));
+            }
+
+            const expDate = new Date(subData.expiryDate);
+            const now = new Date();
+            const diffMs = expDate.getTime() - now.getTime();
+            const daysRemaining = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+            const isExpired = subData.status !== 'active' && daysRemaining <= 0;
+
+            return {
+                status: isExpired ? 'expired' : subData.status,
+                planName: subData.planName,
+                isExpired,
+                daysRemaining,
+                desc: isExpired ? 'Your 15-Day Free Trial has expired. Access to tabs is restricted.' : 'Includes full access to all features across rooms, tenants, managers, and rent tracking.'
+            };
+        }
+
+        function checkAndApplySubscriptionLock() {
+            const hids = getOwnerHostelIds();
+            const hostelId = hids[0] || 1;
+            const subInfo = getOwnerSubscriptionDetails(hostelId);
+
+            const titleEl = document.getElementById('sub-status-title');
+            const descEl = document.getElementById('sub-status-desc');
+            const daysEl = document.getElementById('sub-days-remaining');
+            const bannerEl = document.getElementById('sub-trial-banner');
+            const lockBannerEl = document.getElementById('sub-lock-banner');
+
+            if (subInfo.isExpired) {
+                if (titleEl) titleEl.textContent = '⚠️ Subscription Expired!';
+                if (descEl) descEl.textContent = 'Your 15-Day Free Trial / Subscription has ended. Access to other tabs is locked until a plan is selected.';
+                if (daysEl) {
+                    daysEl.textContent = '0 Days Left (Expired)';
+                    daysEl.style.color = '#f43f5e';
+                }
+                if (bannerEl) {
+                    bannerEl.style.background = 'linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%)';
+                    bannerEl.style.borderColor = '#ef4444';
+                }
+
+                if (lockBannerEl) lockBannerEl.style.display = 'block';
+
+                // Lock non-subscription sidebar links
+                document.querySelectorAll('#pg-owner .sb-link').forEach(link => {
+                    const onclickAttr = link.getAttribute('onclick') || '';
+                    if (!onclickAttr.includes('o-subscription')) {
+                        link.style.opacity = '0.35';
+                        link.style.pointerEvents = 'none';
+                        link.style.cursor = 'not-allowed';
+                    } else {
+                        link.style.opacity = '1';
+                        link.style.pointerEvents = 'auto';
+                    }
+                });
+
+                // Auto-switch to subscription tab if not on it
+                const currentActiveTab = document.querySelector('#pg-owner .dash-section.on');
+                if (currentActiveTab && currentActiveTab.id !== 'o-subscription') {
+                    ownerTab(document.querySelector('#pg-owner .sb-link[onclick*="o-subscription"]'), 'o-subscription');
+                }
+            } else {
+                if (titleEl) {
+                    if (subInfo.status === 'active') titleEl.textContent = `Active Plan: ${subInfo.planName}`;
+                    else if (subInfo.status === 'pending') titleEl.textContent = `Subscription Request Pending (${subInfo.planName})`;
+                    else titleEl.textContent = `Active Plan: 15-Day Free Trial`;
+                }
+                if (descEl) descEl.textContent = subInfo.desc;
+                if (daysEl) {
+                    if (subInfo.status === 'active') {
+                        daysEl.textContent = 'Active Subscription';
+                        daysEl.style.color = '#10b981';
+                    } else if (subInfo.status === 'pending') {
+                        daysEl.textContent = 'Pending SuperAdmin';
+                        daysEl.style.color = '#f59e0b';
+                    } else {
+                        daysEl.textContent = `${subInfo.daysRemaining} Days Left`;
+                        daysEl.style.color = '#38bdf8';
+                    }
+                }
+                if (bannerEl) {
+                    bannerEl.style.background = 'linear-gradient(135deg, #1e1b4b 0%, #311b92 100%)';
+                    bannerEl.style.borderColor = '#6366f1';
+                }
+
+                if (lockBannerEl) lockBannerEl.style.display = 'none';
+
+                // Unlock all sidebar links
+                document.querySelectorAll('#pg-owner .sb-link').forEach(link => {
+                    link.style.opacity = '1';
+                    link.style.pointerEvents = 'auto';
+                    link.style.cursor = 'pointer';
+                });
+            }
+        }
+
+        function toggleSimulateExpiredTrial() {
+            const hId = getOwnerHostelIds()[0] || 1;
+            const currentOverride = localStorage.getItem('vustela_sub_override_' + hId);
+            if (currentOverride === 'expired') {
+                localStorage.removeItem('vustela_sub_override_' + hId);
+                showToast('Trial Restored! 🎁', '15-Day Free Trial is now active.');
+            } else {
+                localStorage.setItem('vustela_sub_override_' + hId, 'expired');
+                showToast('Trial Expired Simulation 🔒', 'Subscription lock screen activated!');
+            }
+            checkAndApplySubscriptionLock();
+            renderOwnerSubscription();
+        }
+
+        function renderOwnerSubscription() {
+            checkAndApplySubscriptionLock();
+
+            const targetHids = getOwnerHostelIds();
+            let totalBedsCount = 0;
+            let hostelNameStr = 'VUSTELA HOSTELS';
+
+            targetHids.forEach(hid => {
+                let hObj = hostels[hid];
+                if (!hObj) {
+                    const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+                    const regReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
+                    hObj = savedHostels.find(h => h.id == hid) || regReqs.find(r => r.id == hid) || { name: 'VUSTELA HOSTELS' };
+                }
+                if (hObj) hostelNameStr = hObj.name;
+
+                if (rooms[hid]) {
+                    rooms[hid].forEach(r => totalBedsCount += (r.capacity || 0));
+                }
+            });
+
+            const primaryHid = targetHids[0] || 1;
+            const customRate = localStorage.getItem('vustela_hostel_bed_rate_' + primaryHid);
+            const effectiveRate = customRate ? parseFloat(customRate) : 25;
+
+            const displayBeds = totalBedsCount > 0 ? totalBedsCount : 5;
+            const baseMonthlyRate = Math.round(displayBeds * effectiveRate);
+
+            const countEl = document.getElementById('sub-capacity-count');
+            const rateEl = document.getElementById('sub-capacity-rate');
+            if (countEl) countEl.textContent = `${displayBeds} Beds`;
+            if (rateEl) {
+                if (customRate) rateEl.textContent = `₹${baseMonthlyRate.toLocaleString()}/mo (Custom Rate ₹${effectiveRate}/bed)`;
+                else rateEl.textContent = `₹${baseMonthlyRate.toLocaleString()}/mo`;
+            }
+
+            const card1Tot = document.getElementById('sub-card1-total');
+            const card2Tot = document.getElementById('sub-card2-total');
+            const card3Tot = document.getElementById('sub-card3-total');
+
+            if (card1Tot) card1Tot.textContent = `Total: ₹${Math.round(displayBeds * effectiveRate * 1).toLocaleString()} for 1 Month`;
+            if (card2Tot) card2Tot.textContent = `Total: ₹${Math.round(displayBeds * (effectiveRate * 0.9) * 4).toLocaleString()} for 4 Months`;
+            if (card3Tot) card3Tot.textContent = `Total: ₹${Math.round(displayBeds * (effectiveRate * 0.8) * 12).toLocaleString()} for 1 Year`;
+        }
+
+        let subModalScreenshotBase64 = '';
+
+        function previewSubModalScreenshot(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                subModalScreenshotBase64 = evt.target.result;
+                const img = document.getElementById('sub-m-screenshot-preview');
+                if (img) {
+                    img.src = subModalScreenshotBase64;
+                    img.style.display = 'block';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function openCheckoutInNewTab() {
+            if (!activeSelectedSub) return;
+            const query = `?hostel_name=${encodeURIComponent(activeSelectedSub.hostel_name)}&hostel_id=${activeSelectedSub.hostel_id}&plan=${encodeURIComponent(activeSelectedSub.plan)}&beds=${activeSelectedSub.beds}&amount=${activeSelectedSub.totalAmt}`;
+            window.open(`subscription_checkout.html${query}`, '_blank');
+            closeModal('subscribe-modal');
+        }
+
+        function openSubscribeModal(planName, ratePerBed, durationMonths, discountPct) {
+            const targetHids = getOwnerHostelIds();
+            let totalBedsCount = 0;
+            let hostelNameStr = 'VUSTELA HOSTELS';
+
+            targetHids.forEach(hid => {
+                let hObj = hostels[hid];
+                if (!hObj) {
+                    const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+                    const regReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
+                    hObj = savedHostels.find(h => h.id == hid) || regReqs.find(r => r.id == hid) || { name: 'VUSTELA HOSTELS' };
+                }
+                if (hObj) hostelNameStr = hObj.name;
+
+                if (rooms[hid]) {
+                    rooms[hid].forEach(r => totalBedsCount += (r.capacity || 0));
+                }
+            });
+
+            const primaryHid = targetHids[0] || 1;
+            const customBedRate = localStorage.getItem('vustela_hostel_bed_rate_' + primaryHid);
+            let finalRatePerBed = ratePerBed;
+            if (customBedRate) {
+                const base = parseFloat(customBedRate);
+                if (durationMonths === 1) finalRatePerBed = base;
+                else if (durationMonths === 4) finalRatePerBed = Math.round(base * 0.9 * 100) / 100;
+                else if (durationMonths === 12) finalRatePerBed = Math.round(base * 0.8 * 100) / 100;
+            }
+
+            const displayBeds = totalBedsCount > 0 ? totalBedsCount : 5;
+            const totalAmt = Math.round(displayBeds * finalRatePerBed * durationMonths);
+
+            activeSelectedSub = {
+                hostel_name: hostelNameStr,
+                hostel_id: primaryHid,
+                plan: planName,
+                beds: displayBeds,
+                ratePerBed: finalRatePerBed,
+                durationMonths,
+                totalAmt
+            };
+
+            const hEl = document.getElementById('sub-m-hostel');
+            const pEl = document.getElementById('sub-m-plan');
+            const bEl = document.getElementById('sub-m-beds');
+            const rEl = document.getElementById('sub-m-rate');
+            const tEl = document.getElementById('sub-m-total');
+
+            if (hEl) hEl.textContent = hostelNameStr;
+            if (pEl) pEl.textContent = `${planName} (${durationMonths} Mo)`;
+            if (bEl) bEl.textContent = `${displayBeds} Beds`;
+            if (rEl) rEl.textContent = `₹${ratePerBed} / bed / mo (${discountPct}% Off)`;
+            if (tEl) tEl.textContent = `₹${totalAmt.toLocaleString()}`;
+
+            // Update QR Code Image URL and UPI ID Text
+            const masterUpi = localStorage.getItem('vustela_saas_upi_id') || 'vustelahostels@upi';
+            const upiTxt = document.getElementById('sub-m-upi-text');
+            if (upiTxt) upiTxt.textContent = masterUpi;
+
+            const qrImg = document.getElementById('sub-m-qr-img');
+            if (qrImg) {
+                const upiString = `upi://pay?pa=${encodeURIComponent(masterUpi)}&pn=VUSTELA%20HOSTELS&am=${totalAmt}&cu=INR`;
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
+            }
+
+            openModal('subscribe-modal');
+        }
+
+        async function submitSubscriptionPurchase() {
+            if (!activeSelectedSub) return;
+            const phoneInput = document.getElementById('sub-m-phone')?.value.trim() || '+91 98765 43210';
+            const utrInput = document.getElementById('sub-m-utr')?.value.trim();
+
+            if (!utrInput || utrInput.length < 6) {
+                showToast('Error', 'Please enter a valid UTR / Transaction Reference Number.');
+                return;
+            }
+
+            const userStr = localStorage.getItem('vustela_session');
+            let userEmail = 'vustelasrinivasreddy456@gmail.com';
+            try { if (userStr) userEmail = JSON.parse(userStr).email || userEmail; } catch(e){}
+
+            const subRequest = {
+                id: Date.now(),
+                hostel_name: activeSelectedSub.hostel_name,
+                hostel_id: activeSelectedSub.hostel_id,
+                plan: `${activeSelectedSub.plan} (${activeSelectedSub.beds} Beds)`,
+                price: `₹${activeSelectedSub.totalAmt.toLocaleString()}`,
+                phone: phoneInput,
+                utr: utrInput,
+                screenshot: subModalScreenshotBase64,
+                email: userEmail,
+                date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+                status: 'Pending'
+            };
+
+            // Save locally in vustela_sub_requests for SuperAdmin sync
+            let existingSubs = JSON.parse(localStorage.getItem('vustela_sub_requests')) || [];
+            existingSubs.unshift(subRequest);
+            localStorage.setItem('vustela_sub_requests', JSON.stringify(existingSubs));
+
+            // Sync with Supabase if client active
+            try {
+                if (typeof db !== 'undefined' && db.from) {
+                    await db.from('subscription_requests').insert([{
+                        hostel_name: subRequest.hostel_name,
+                        plan: subRequest.plan,
+                        price: subRequest.price,
+                        phone: subRequest.phone,
+                        status: 'Pending'
+                    }]);
+                }
+            } catch(e) {
+                console.warn('[submitSubscriptionPurchase] Supabase sync warning:', e);
+            }
+
+            // Dispatch instant email notification to SuperAdmin Gmail
+            if (typeof sendSubscriptionEmailNotification === 'function') {
+                sendSubscriptionEmailNotification(subRequest);
+            }
+
+            // Clear any expired override simulation and update lock state
+            localStorage.removeItem('vustela_sub_override_' + activeSelectedSub.hostel_id);
+
+            closeModal('subscribe-modal');
+            showToast('Payment Submitted! 🚀', 'Recorded in SuperAdmin Control Center and sent to SuperAdmin Gmail.');
+            renderOwnerSubscription();
         }
 
         function mgrTab(el, secId) {
@@ -7268,21 +1491,6 @@
             if (!container) return;
             let html = '';
 
-            const currentFilter = window.currentOccBlockFilter || 'ALL';
-
-            // Block Filter Toolbar
-            html += `<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:18px; background:var(--bg2, #f8fafc); padding:12px 16px; border-radius:12px; border:1px solid var(--border, #e2e8f0);">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:16px;">🏢</span>
-                    <strong style="font-size:14px; color:var(--ink);">Filter Block:</strong>
-                </div>
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="btn btn-sm ${currentFilter === 'ALL' ? 'btn-primary' : 'btn-outline'}" onclick="setOccBlockFilter('ALL')">All Blocks (A & B)</button>
-                    <button class="btn btn-sm ${currentFilter === 'A' ? 'btn-primary' : 'btn-outline'}" onclick="setOccBlockFilter('A')">🏢 Block A (5 Floors, 40 Rooms)</button>
-                    <button class="btn btn-sm ${currentFilter === 'B' ? 'btn-primary' : 'btn-outline'}" onclick="setOccBlockFilter('B')">🏢 Block B (5 Floors, 40 Rooms)</button>
-                </div>
-            </div>`;
-
             hostelIds.forEach(hid => {
                 const hrooms = rooms[hid] || [];
                 if (hrooms.length === 0) {
@@ -7290,64 +1498,37 @@
                     return;
                 }
 
-                // Group rooms by Block
-                const blocksMap = {};
-                hrooms.forEach(r => {
-                    let blockName = 'Block A';
-                    if (r.num && (r.num.toUpperCase().startsWith('B-') || r.num.toUpperCase().startsWith('B') || r.block === 'B')) {
-                        blockName = 'Block B';
-                    } else if (r.num && (r.num.toUpperCase().startsWith('A-') || r.num.toUpperCase().startsWith('A') || r.block === 'A')) {
-                        blockName = 'Block A';
-                    }
-                    if (!blocksMap[blockName]) blocksMap[blockName] = [];
-                    blocksMap[blockName].push(r);
-                });
-
                 const totalBeds = hrooms.reduce((sum, r) => sum + r.capacity, 0);
                 const occBeds = hrooms.reduce((sum, r) => sum + (r.beds ? r.beds.filter(b => b.tenant).length : 0), 0);
                 const pct = totalBeds > 0 ? Math.round(occBeds / totalBeds * 100) : 0;
 
+                let hObj = hostels[hid];
+                if (!hObj) {
+                    const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+                    const regReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
+                    hObj = savedHostels.find(h => h.id == hid) || regReqs.find(r => r.id == hid) || { name: 'VUSTELA HOSTELS' };
+                }
+                const hName = hObj ? hObj.name : `Hostel ${hid}`;
+
                 html += `<div class="hostel-occ-block" style="margin-bottom:28px;">
                     <div class="hob-header">
-                        <div><div class="hob-name">${hostels[hid] ? hostels[hid].name : 'Hostel ' + hid}</div></div>
+                        <div><div class="hob-name">${hName}</div></div>
                         <div class="hob-stats">
                             <div class="hob-stat"><span class="dot dot-green"></span><strong>${occBeds}</strong>&nbsp;Beds Full</div>
                             <div class="hob-stat"><span class="dot dot-red"></span><strong>${totalBeds - occBeds}</strong>&nbsp;Beds Free</div>
                             <div class="hob-stat"><strong>${pct}%</strong>&nbsp;Occupancy</div>
                         </div>
-                    </div>`;
+                    </div><div style="padding: 12px 0;">`;
 
-                const sortedBlockKeys = Object.keys(blocksMap).sort();
-                sortedBlockKeys.forEach(blkKey => {
-                    // Check if block passes currentFilter
-                    if (currentFilter === 'A' && !blkKey.endsWith('A')) return;
-                    if (currentFilter === 'B' && !blkKey.endsWith('B')) return;
-
-                    const blkRooms = blocksMap[blkKey];
-                    const blkTotalBeds = blkRooms.reduce((sum, r) => sum + r.capacity, 0);
-                    const blkOccBeds = blkRooms.reduce((sum, r) => sum + (r.beds ? r.beds.filter(b => b.tenant).length : 0), 0);
-                    const blkPct = blkTotalBeds > 0 ? Math.round(blkOccBeds / blkTotalBeds * 100) : 0;
-
-                    html += `<div class="block-section" style="margin-top:16px; margin-bottom:20px; border:1px solid var(--border); border-radius:12px; padding:16px; background:var(--card-bg, #ffffff); box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--border); padding-bottom:10px; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <span class="badge ${blkKey.includes('B') ? 'badge-blue' : 'badge-green'}" style="font-size:12px; padding:4px 10px; font-weight:800;">🏢 ${blkKey.toUpperCase()}</span>
-                                <span style="font-weight:700; font-size:15px; color:var(--ink);">${blkKey} — 5 Floors (8 Rooms per Floor)</span>
-                            </div>
-                            <div style="font-size:12px; color:var(--ink2); font-weight:600;">
-                                Occupancy: <strong>${blkOccBeds} / ${blkTotalBeds} Beds</strong> (${blkPct}%)
-                            </div>
-                        </div>`;
-
-                    const floors = [...new Set(blkRooms.map(r => r.floor))].sort((a,b) => a - b);
-                    floors.forEach(fl => {
-                        const flrRooms = blkRooms.filter(r => r.floor === fl);
-                        html += `<div class="floor-block" style="margin-bottom:16px;">
-                            <div class="floor-label" style="font-weight:700; color:var(--ink); font-size:13px; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
-                                <span>📍 Floor ${fl}</span>
-                                <span style="font-size:11px; opacity:0.6; font-weight:normal;">(${flrRooms.length} Rooms: ${flrRooms[0]?.num || ''} - ${flrRooms[flrRooms.length-1]?.num || ''})</span>
-                            </div>
-                            <div class="room-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:10px;">`;
+                const floors = [...new Set(hrooms.map(r => r.floor))].sort((a,b) => a - b);
+                floors.forEach(fl => {
+                    const flrRooms = hrooms.filter(r => r.floor === fl);
+                    html += `<div class="floor-block" style="margin-bottom:16px;">
+                        <div class="floor-label" style="font-weight:700; color:var(--ink); font-size:13px; margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+                            <span>📍 Floor ${fl}</span>
+                            <span style="font-size:11px; opacity:0.6; font-weight:normal;">(${flrRooms.length} Rooms: ${flrRooms[0]?.num || ''} - ${flrRooms[flrRooms.length-1]?.num || ''})</span>
+                        </div>
+                        <div class="room-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:10px;">`;
 
                         flrRooms.forEach(r => {
                             const beds = r.beds || [];
@@ -7448,22 +1629,68 @@
                         });
                         html += `</div></div>`;
                     });
-                    html += `</div>`;
-                });
-                html += `</div>`;
+                html += `</div></div>`;
             });
             container.innerHTML = html;
         }
 
+        function getOwnerHostelIds() {
+            const activeSessionStr = localStorage.getItem('vustela_session');
+            if (activeSessionStr) {
+                try {
+                    const sess = JSON.parse(activeSessionStr);
+                    if (sess.hostel_id && sess.hostel_id != 1 && sess.hostel_id != 2) {
+                        return [sess.hostel_id];
+                    }
+                } catch(e) {}
+            }
+            return [1, 2];
+        }
+
         function renderOwnerOccupancy() {
-            buildOccGrid([1, 2], 'owner-occ-grid', 'owner');
+            const targetHostelIds = getOwnerHostelIds();
+            
+            // Auto-initialize rooms for custom hostel if empty
+            targetHostelIds.forEach(hid => {
+                if (!rooms[hid] || rooms[hid].length === 0) {
+                    rooms[hid] = [
+                        {
+                            id: `${hid}-101`,
+                            num: '101',
+                            floor: 1,
+                            type: 'Double (2-Sharing)',
+                            capacity: 2,
+                            price: 8000,
+                            beds: [
+                                { id: `${hid}-101-1`, num: '1', rent: 8000, rentStatus: 'vacant', tenant: null },
+                                { id: `${hid}-101-2`, num: '2', rent: 8000, rentStatus: 'vacant', tenant: null }
+                            ]
+                        },
+                        {
+                            id: `${hid}-102`,
+                            num: '102',
+                            floor: 1,
+                            type: 'Triple (3-Sharing)',
+                            capacity: 3,
+                            price: 7000,
+                            beds: [
+                                { id: `${hid}-102-1`, num: '1', rent: 7000, rentStatus: 'vacant', tenant: null },
+                                { id: `${hid}-102-2`, num: '2', rent: 7000, rentStatus: 'vacant', tenant: null },
+                                { id: `${hid}-102-3`, num: '3', rent: 7000, rentStatus: 'vacant', tenant: null }
+                            ]
+                        }
+                    ];
+                }
+            });
+
+            buildOccGrid(targetHostelIds, 'owner-occ-grid', 'owner');
             
             let totalRooms = 0;
             let occupiedBeds = 0;
             let totalBeds = 0;
             let vacantBeds = 0;
             
-            [1, 2].forEach(hid => {
+            targetHostelIds.forEach(hid => {
                 if (rooms[hid]) {
                     rooms[hid].forEach(r => {
                         totalRooms++;
@@ -7520,8 +1747,16 @@
             let unpaidCountTotal = 0;
             let advanceDepositTotal = 0;
 
-            const rowsHtml = [];
-            const hostelIds = [1, 2];
+            let hostelIds = [1, 2];
+            const activeSessionStr = localStorage.getItem('vustela_session');
+            if (activeSessionStr) {
+                try {
+                    const sess = JSON.parse(activeSessionStr);
+                    if (sess.hostel_id && sess.hostel_id != 1 && sess.hostel_id != 2) {
+                        hostelIds = [sess.hostel_id];
+                    }
+                } catch(e) {}
+            }
 
             hostelIds.forEach(hid => {
                 let expected = 0;
@@ -7533,49 +1768,37 @@
                 let unpaidCount = 0;
                 let advanceDeposit = 0;
 
+                let hObj = hostels[hid];
+                if (!hObj) {
+                    const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+                    const regReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
+                    hObj = savedHostels.find(h => h.id == hid) || regReqs.find(r => r.id == hid) || { name: 'VUSTELA HOSTELS' };
+                }
+                const hName = hObj ? hObj.name : `Hostel ${hid}`;
+
                 if (rooms[hid]) {
                     rooms[hid].forEach(r => {
                         if (r.beds) {
                             r.beds.forEach(b => {
                                 if (b.tenant) {
                                     expected += b.rent || 0;
-                                    const fee = getBusFeeForBed(b);
+                                    const fee = typeof getBusFeeForBed === 'function' ? getBusFeeForBed(b) : 0;
                                     busFee += fee;
                                     const depStat = String(b.deposit_status || '').trim().toLowerCase();
                                     if (depStat === 'paid') {
                                         advanceDeposit += Number(b.advance_deposit || 0);
                                     }
+                                    if (b.rentStatus === 'paid') {
+                                        collected += b.rent || 0;
+                                    } else {
+                                        pending += b.rent || 0;
+                                        unpaidCount++;
+                                    }
+                                    lateFee += b.late_fee_collected || 0;
                                 }
                             });
                         }
                     });
-                }
-
-                if (isCurrent) {
-                    if (rooms[hid]) {
-                        rooms[hid].forEach(r => {
-                            if (r.beds) {
-                                r.beds.forEach(b => {
-                                    if (b.tenant) {
-                                        if (b.rentStatus === 'paid') {
-                                            collected += b.rent || 0;
-                                        } else {
-                                            pending += b.rent || 0;
-                                            unpaidCount++;
-                                        }
-                                        lateFee += b.late_fee_collected || 0;
-                                    }
-                                });
-                            }
-                        });
-                    }
-                } else {
-                    const hostelHist = historicalRentHistory.filter(h => h.hostel_id === hid);
-                    hostelHist.forEach(h => {
-                        collected += h.rent_amount || 0;
-                        lateFee += h.late_fee_amount || 0;
-                    });
-                    pending = Math.max(0, expected - collected);
                 }
 
                 if (expenses) {
@@ -7600,8 +1823,6 @@
                 netTotal += net;
                 unpaidCountTotal += unpaidCount;
                 advanceDepositTotal += advanceDeposit;
-
-                const hName = hostels[hid] ? hostels[hid].name : `Hostel ${hid}`;
 
                 rowsHtml.push(`
                     <tr>
@@ -7709,7 +1930,7 @@
             if (subTitleEl) subTitleEl.textContent = `Showing late fees collected in ${hostelNameStr}`;
 
             let records = [];
-            const targetHostels = hostelFilter === 'all' ? [1, 2] : [parseInt(hostelFilter, 10)];
+            const targetHostels = hostelFilter === 'all' ? getOwnerHostelIds() : [parseInt(hostelFilter, 10)];
 
             if (isCurrent) {
                 targetHostels.forEach(hid => {
@@ -7786,7 +2007,7 @@
             if (subTitleEl) subTitleEl.textContent = `Showing active security deposits in ${hostelNameStr}`;
 
             let records = [];
-            const targetHostels = hostelFilter === 'all' ? [1, 2] : [parseInt(hostelFilter, 10)];
+            const targetHostels = hostelFilter === 'all' ? getOwnerHostelIds() : [parseInt(hostelFilter, 10)];
 
             targetHostels.forEach(hid => {
                 if (rooms[hid]) {
@@ -8461,7 +2682,7 @@
             let rentHtml = '';
             
             // Generate Rent HTML Grouped by Hostel
-            [1, 2].forEach(hid => {
+            getOwnerHostelIds().forEach(hid => {
                 const hostelName = hostels[hid] ? hostels[hid].name : `Hostel ${hid}`;
                 let hostelRentHtml = '';
                 let hostelTotalRent = 0;
@@ -9044,7 +3265,8 @@
 
         function renderOwnerAllTenants() {
             let allBeds = [];
-            [1, 2].forEach(hid => {
+            getOwnerHostelIds().forEach(hid => {
+                if (!rooms[hid]) return;
                 rooms[hid].forEach(r => {
                     r.beds.forEach((b, idx) => { if (b.tenant) allBeds.push({ ...b, num: r.num, hostel: hid }); });
                 });
@@ -9064,7 +3286,8 @@
 
         function viewTenantProfile(tenantName) {
             let allBeds = [];
-            [1, 2].forEach(hid => {
+            getOwnerHostelIds().forEach(hid => {
+                if (!rooms[hid]) return;
                 rooms[hid].forEach(r => {
                     r.beds.forEach((b, idx) => { 
                         if (b.tenant) allBeds.push({ ...b, num: r.num, hostel: hid }); 
@@ -10570,29 +4793,75 @@
         }
 
         function renderManagersTable() {
-            document.getElementById('owner-managers-table').innerHTML = managers.map(m => {
-                const hostelName = hostels[m.hostel_id] ? hostels[m.hostel_id].name : `Hostel ${m.hostel_id}`;
-                const mgrName = hostels[m.hostel_id] ? hostels[m.hostel_id].mgr : m.email.split('@')[0];
-                return `
-                    <tr>
-                        <td><div style="font-weight:600">${mgrName}</div></td>
-                        <td>${hostelName}</td>
-                        <td><div style="color:var(--ink2)">${m.email}</div></td>
-                        <td>
-                            <div style="display:flex; align-items:center; gap:8px;">
-                                <span style="font-family:var(--font-mono); letter-spacing:2px;" data-pwd="${m.password}">••••••••</span>
-                                <button style="background:none; border:none; cursor:pointer; font-size:16px;" onclick="togglePwd(this)">👁️</button>
+            const ownerHids = getOwnerHostelIds();
+
+            // Filter managers to only this owner's hostel
+            const ownerManagers = managers.filter(m => ownerHids.includes(m.hostel_id));
+
+            // Update Manager Report Cards
+            const cardsEl = document.getElementById('owner-mgr-report-cards');
+            if (cardsEl) {
+                if (ownerManagers.length === 0) {
+                    cardsEl.innerHTML = `<div style="padding:32px;text-align:center;color:var(--ink3);font-size:14px;grid-column:1/-1;">No managers added yet. Add a manager below to see their report card.</div>`;
+                } else {
+                    cardsEl.innerHTML = ownerManagers.map(m => {
+                        let hObj = hostels[m.hostel_id];
+                        if (!hObj) {
+                            const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+                            const regReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
+                            hObj = savedHostels.find(h => h.id == m.hostel_id) || regReqs.find(r => r.id == m.hostel_id) || { name: 'VUSTELA HOSTELS' };
+                        }
+                        const hName = hObj ? hObj.name : `Hostel ${m.hostel_id}`;
+                        const mgrName = hObj?.mgr || m.email.split('@')[0];
+                        return `<div class="mgr-card">
+                            <div class="mgr-ava">👔</div>
+                            <div class="mgr-info">
+                                <div class="mgr-name">${mgrName}</div>
+                                <div class="mgr-hostel">${hName}</div>
+                                <div class="mgr-stats">
+                                    <div class="mgr-stat"><strong>0</strong>Rents Marked</div>
+                                    <div class="mgr-stat"><strong>0</strong>Complaints Resolved</div>
+                                </div>
+                                <div style="margin-top:8px;font-size:12px;color:var(--ink3)">Newly added manager</div>
                             </div>
-                        </td>
-                        <td>
-                            <div class="flex gap8">
-                                <button class="btn btn-outline" style="padding:4px 10px; font-size:12px;" onclick="resetManagerPwd('${m.email}', '${mgrName}')">🔄 Reset</button>
-                                <button class="btn btn-red" style="padding:4px 10px; font-size:12px;" onclick="removeManager('${m.email}', '${mgrName}')">Remove</button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+                            <span class="badge badge-green">Active</span>
+                        </div>`;
+                    }).join('');
+                }
+            }
+
+            // Update Manager Access table
+            document.getElementById('owner-managers-table').innerHTML = ownerManagers.length === 0
+                ? `<tr><td colspan="5" style="text-align:center; padding:32px; color:var(--ink3);">No managers yet. Click + Add Manager to create one.</td></tr>`
+                : ownerManagers.map(m => {
+                    let hObj = hostels[m.hostel_id];
+                    if (!hObj) {
+                        const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+                        const regReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
+                        hObj = savedHostels.find(h => h.id == m.hostel_id) || regReqs.find(r => r.id == m.hostel_id) || { name: 'VUSTELA HOSTELS' };
+                    }
+                    const hostelName = hObj ? hObj.name : `Hostel ${m.hostel_id}`;
+                    const mgrName = hObj?.mgr || m.email.split('@')[0];
+                    return `
+                        <tr>
+                            <td><div style="font-weight:600">${mgrName}</div></td>
+                            <td>${hostelName}</td>
+                            <td><div style="color:var(--ink2)">${m.email}</div></td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span style="font-family:var(--font-mono); letter-spacing:2px;" data-pwd="${m.password}">••••••••</span>
+                                    <button style="background:none; border:none; cursor:pointer; font-size:16px;" onclick="togglePwd(this)">👁️</button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex gap8">
+                                    <button class="btn btn-outline" style="padding:4px 10px; font-size:12px;" onclick="resetManagerPwd('${m.email}', '${mgrName}')">🔄 Reset</button>
+                                    <button class="btn btn-red" style="padding:4px 10px; font-size:12px;" onclick="removeManager('${m.email}', '${mgrName}')">Remove</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
         }
 
         async function resetManagerPwd(email, name) {
@@ -12514,6 +6783,8 @@
         }
 
         function renderOwnerNotices() {
+            const ownerHostelIds = getOwnerHostelIds();
+
             // Global notices (hostel_id === 0)
             const globalNotices = notices.filter(n => n.hostel_id === 0);
             let globalHtml = '';
@@ -12535,10 +6806,22 @@
                 document.getElementById('owner-global-notices').innerHTML = '';
             }
 
-            // Hostel Specific Columns
-            [1, 2].forEach(hid => {
+            // Hostel Specific Columns — dynamically built per owner's hostel IDs
+            const grid = document.getElementById('owner-hostel-notices-grid');
+            if (!grid) return;
+
+            let gridHtml = '';
+            ownerHostelIds.forEach(hid => {
+                let hObj = hostels[hid];
+                if (!hObj) {
+                    const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+                    const regReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
+                    hObj = savedHostels.find(h => h.id == hid) || regReqs.find(r => r.id == hid) || { name: 'VUSTELA HOSTELS' };
+                }
+                const hName = hObj ? hObj.name : `Hostel ${hid}`;
+
                 const hostelNotices = notices.filter(n => n.hostel_id === hid);
-                const html = hostelNotices.map(n => {
+                const noticesHtml = hostelNotices.map(n => {
                     const actionsHtml = getNoticeActionsHtml(n, true);
                     return `
                     <div class="notice-card" style="margin-bottom:0; background: #f8f9fa;">
@@ -12549,9 +6832,16 @@
                     </div>
                     `;
                 }).join('') || '<div style="font-size:13px; color:var(--ink3); text-align:center; padding:16px;">No notices posted</div>';
-                const el = document.getElementById(`o-notices-h${hid}`);
-                if (el) el.innerHTML = html;
+
+                gridHtml += `
+                <div style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+                    <h3 style="font-size: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 16px; color: var(--ink1);">
+                        ${hName}</h3>
+                    <div style="display:flex; flex-direction:column; gap:12px;">${noticesHtml}</div>
+                </div>`;
             });
+
+            grid.innerHTML = gridHtml;
         }
 
         async function postOwnerNotice() {
@@ -13270,7 +7560,9 @@
             const tbody = document.getElementById('salaries-table-body');
             if (!tbody) return;
 
-            let filtered = [...workers];
+            // Filter workers to only this owner's hostel
+            const ownerHids = getOwnerHostelIds();
+            let filtered = workers.filter(w => ownerHids.includes(w.hostel_id) || w.hostel_id === 0);
             if (filter === 'h1') filtered = filtered.filter(w => w.hostel_id === 1);
             else if (filter === 'h2') filtered = filtered.filter(w => w.hostel_id === 2);
             else if (filter === 'h3') filtered = filtered.filter(w => w.hostel_id === 3);
@@ -13280,7 +7572,7 @@
             let totalMonthTransactions = 0;
             let totalAllTimePaid = 0;
 
-            workers.forEach(w => {
+            filtered.forEach(w => {
                 const mTotal = getWorkerMonthPayments(w, now);
                 totalMonthPaid += mTotal;
                 if (w.payments) {
@@ -13299,13 +7591,13 @@
             const paidCntEl = document.getElementById('salary-paid-count');
             const allAmtEl = document.getElementById('salary-alltime-amount');
 
-            if (staffEl) staffEl.textContent = workers.length;
+            if (staffEl) staffEl.textContent = filtered.length;
             if (paidAmtEl) paidAmtEl.textContent = `₹${totalMonthPaid.toLocaleString()}`;
             if (paidCntEl) paidCntEl.textContent = `${totalMonthTransactions} Payments This Month`;
             if (allAmtEl) allAmtEl.textContent = `₹${totalAllTimePaid.toLocaleString()}`;
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--ink3);">No staff records found for this filter.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--ink3);">No staff records found. Add a worker to get started.</td></tr>`;
                 return;
             }
 
@@ -14907,9 +9199,15 @@
             if (!container) return;
             
             let html = '';
-            [1, 2].forEach(id => {
-                const h = hostels[id] || { name: `Hostel ${id}` };
-                const d = hostelDetails[id] || { desc: '', locFull: '' };
+            const ownerHids = getOwnerHostelIds();
+            ownerHids.forEach(id => {
+                let h = hostels[id];
+                if (!h) {
+                    const savedHostels = JSON.parse(localStorage.getItem('vustela_registered_hostels')) || [];
+                    const regReqs = JSON.parse(localStorage.getItem('vustela_reg_requests')) || [];
+                    h = savedHostels.find(x => x.id == id) || regReqs.find(x => x.id == id) || { name: 'VUSTELA HOSTELS' };
+                }
+                const d = hostelDetails[id] || { desc: `${h.name} property offers safe, comfortable accommodation with modern amenities.`, locFull: 'Hyderabad' };
                 const photos = hostelPhotos[id] || [];
                 const hrooms = rooms[id] || [];
                 
@@ -15051,6 +9349,8 @@
             }
         }
 
+        let pendingRoomAddition = null;
+
         async function addNewRoom(hostelId) {
             const roomNum = document.getElementById(`add-room-num-${hostelId}`).value.trim();
             const floorVal = parseInt(document.getElementById(`add-room-floor-${hostelId}`).value);
@@ -15063,46 +9363,129 @@
             }
             
             const capacity = typeVal === 'Single' ? 1 : typeVal === 'Double' ? 2 : 3;
-            
-            showToast('Adding...', 'Creating room in database...');
+
+            // 1. Calculate Prorated Cost for the added beds based on current subscription plan
+            const subInfo = getOwnerSubscriptionDetails(hostelId);
+            let effectiveRate = 25; // default ₹25/bed/mo
+            if (subInfo.planName && subInfo.planName.includes('4 Month')) effectiveRate = 22.5;
+            else if (subInfo.planName && subInfo.planName.includes('1 Year')) effectiveRate = 20;
+
+            const daysRemaining = subInfo.daysRemaining > 0 ? subInfo.daysRemaining : 15;
+            const dailyRate = effectiveRate / 30;
+            const costPerBed = Math.round(dailyRate * daysRemaining);
+            const totalExpansionFee = Math.max(25, capacity * costPerBed);
+
+            pendingRoomAddition = {
+                hostelId,
+                roomNum,
+                floorVal,
+                typeVal,
+                rentVal,
+                capacity,
+                subPlan: subInfo.planName || 'Standard Plan',
+                daysRemaining,
+                effectiveRate,
+                totalExpansionFee
+            };
+
+            // Populate and open Prorated Capacity Expansion Modal
+            const rEl = document.getElementById('abm-room-num');
+            const cEl = document.getElementById('abm-beds-count');
+            const pEl = document.getElementById('abm-sub-plan');
+            const dEl = document.getElementById('abm-days-left');
+            const rateEl = document.getElementById('abm-rate-bed');
+            const feeEl = document.getElementById('abm-total-fee');
+
+            if (rEl) rEl.textContent = `Room ${roomNum}`;
+            if (cEl) cEl.textContent = `${capacity} Bed${capacity > 1 ? 's' : ''}`;
+            if (pEl) pEl.textContent = subInfo.planName || 'Standard Plan';
+            if (dEl) dEl.textContent = `${daysRemaining} Days`;
+            if (rateEl) rateEl.textContent = `₹${effectiveRate} / bed / mo`;
+            if (feeEl) feeEl.textContent = `₹${totalExpansionFee.toLocaleString()}`;
+
+            openModal('add-bed-payment-modal');
+        }
+
+        async function confirmAddRoomWithProratedFee() {
+            if (!pendingRoomAddition) return;
+            const { hostelId, roomNum, floorVal, typeVal, rentVal, capacity, totalExpansionFee } = pendingRoomAddition;
+
+            closeModal('add-bed-payment-modal');
+            showToast('Adding Beds...', `Processing expansion fee (₹${totalExpansionFee})...`);
+
             try {
-                // Insert room
-                const { data: newRoom, error: roomError } = await db.from('rooms').insert({
-                    hostel_id: hostelId,
+                // 1. Insert room & beds into DB / local state
+                let newRoomId = Date.now();
+                if (typeof db !== 'undefined' && db.from) {
+                    try {
+                        const { data: newRoom, error: roomError } = await db.from('rooms').insert({
+                            hostel_id: hostelId,
+                            num: roomNum,
+                            floor: floorVal,
+                            type: typeVal,
+                            capacity: capacity
+                        }).select().single();
+                        if (newRoom) newRoomId = newRoom.id;
+
+                        const bedInserts = Array.from({ length: capacity }).map(() => ({
+                            room_id: newRoomId,
+                            rent: rentVal,
+                            rent_status: null,
+                            tenant_name: null,
+                            tenant_email: null,
+                            tenant_phone: null
+                        }));
+                        await db.from('beds').insert(bedInserts);
+                    } catch(e) {
+                        console.warn('[confirmAddRoomWithProratedFee] DB fallback:', e);
+                    }
+                }
+
+                // 2. Fallback to local rooms state if DB not connected
+                if (!rooms[hostelId]) rooms[hostelId] = [];
+                const localBeds = Array.from({ length: capacity }).map((_, idx) => ({
+                    _id: Date.now() + idx,
+                    tenant: null,
+                    rent: rentVal,
+                    rentStatus: null
+                }));
+                rooms[hostelId].push({
+                    _roomId: newRoomId,
                     num: roomNum,
                     floor: floorVal,
                     type: typeVal,
-                    capacity: capacity
-                }).select().single();
-                
-                if (roomError) throw roomError;
-                
-                // Insert capacity number of empty beds
-                const bedInserts = Array.from({ length: capacity }).map(() => ({
-                    room_id: newRoom.id,
-                    rent: rentVal,
-                    rent_status: null,
-                    tenant_name: null,
-                    tenant_email: null,
-                    tenant_phone: null
-                }));
-                
-                const { error: bedError } = await db.from('beds').insert(bedInserts);
-                if (bedError) throw bedError;
-                
-                // Reload local data
-                await loadData([hostelId]);
+                    capacity: capacity,
+                    beds: localBeds
+                });
+
+                // 3. Record expansion transaction in vustela_sub_requests for SuperAdmin
+                const subRequest = {
+                    id: Date.now(),
+                    hostel_name: hostels[hostelId]?.name || 'VUSTELA HOSTELS',
+                    hostel_id: hostelId,
+                    plan: `Capacity Expansion (+${capacity} Beds for Room ${roomNum})`,
+                    price: `₹${totalExpansionFee.toLocaleString()}`,
+                    phone: '+91 98765 43210',
+                    date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+                    status: 'Active'
+                };
+                let existingSubs = JSON.parse(localStorage.getItem('vustela_sub_requests')) || [];
+                existingSubs.unshift(subRequest);
+                localStorage.setItem('vustela_sub_requests', JSON.stringify(existingSubs));
+
+                // 4. Update UI
                 renderEditDashboard();
                 renderOwnerOccupancy();
-                showToast('Room Added! 🏠', `Room ${roomNum} is now available.`);
-                
-                // Clear fields
+                renderOwnerSubscription();
+                showToast('Payment Successful! 🎉', `Added Room ${roomNum} (${capacity} Beds). Fee: ₹${totalExpansionFee}`);
+
+                // Clear input fields
                 document.getElementById(`add-room-num-${hostelId}`).value = '';
                 document.getElementById(`add-room-floor-${hostelId}`).value = '';
                 document.getElementById(`add-room-rent-${hostelId}`).value = '';
-            } catch (err) {
-                console.error('Error adding room:', err);
-                showToast('Error', err.message || 'Failed to add room');
+            } catch(err) {
+                console.error('Error confirming room addition:', err);
+                showToast('Error', err.message || 'Failed to add room.');
             }
         }
 
@@ -15233,287 +9616,11 @@
                 content.style.maxHeight = content.scrollHeight + "px";
             }
         }
-    </script>
-    <!-- BOOK A ROOM MODAL -->
-    <div class="modal-overlay" id="book-room-modal">
-        <div class="modal" style="max-width: 500px;">
-            <div class="modal-header">
-                <div class="modal-title" id="book-modal-title">Select Your Branch</div>
-                <button class="modal-close" onclick="closeModal('book-room-modal')">×</button>
-            </div>
+    
 
-            <!-- STEP 1: HOSTEL SELECTION -->
-            <div id="br-step-1">
-                <p style="color: var(--ink3); margin-bottom: 20px;">Choose a location to see available rooms:</p>
-                <div class="hostel-selector-grid"
-                    style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; max-width: 360px; margin-left: auto; margin-right: auto;">
-                    <div class="hs-item" onclick="selectHostelForBooking(1)"
-                        style="background: var(--white); border: 1px solid var(--border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow);"
-                        onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='var(--accent)';"
-                        onmouseout="this.style.transform='none'; this.style.borderColor='var(--border)';">
-                        <div class="hs-img" style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background-image: url('hostel1.png'); background-size: cover; background-position: center; border: 2px solid var(--border);"></div>
-                        <div class="hs-name" style="font-weight: 700; font-size: 12px; color: var(--ink); line-height: 1.2;">ISHTAA PRIME BOYS</div>
-                        <div style="font-size: 11px; font-weight: 600; color: var(--ink3); margin-top: 4px;">NARSINGI</div>
-                    </div>
-                    <div class="hs-item" onclick="selectHostelForBooking(2)"
-                        style="background: var(--white); border: 1px solid var(--border); padding: 16px; border-radius: 16px; text-align: center; cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow);"
-                        onmouseover="this.style.transform='translateY(-2px)'; this.style.borderColor='var(--accent)';"
-                        onmouseout="this.style.transform='none'; this.style.borderColor='var(--border)';">
-                        <div class="hs-img" style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background-image: url('hostel2.png'); background-size: cover; background-position: center; border: 2px solid var(--border);"></div>
-                        <div class="hs-name" style="font-weight: 700; font-size: 12px; color: var(--ink); line-height: 1.2;">ISHTAA PRIME GIRLS</div>
-                        <div style="font-size: 11px; font-weight: 600; color: var(--ink3); margin-top: 4px;">NARSINGI</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STEP 2: LIVE GRID SELECTION -->
-            <div id="br-step-2" style="display: none;">
-                <div class="flex between" style="margin-bottom: 16px;">
-                    <div id="br-hostel-name"
-                        style="font-weight: 700; color: var(--accent); font-family: var(--font-display);">ISHTAA PRIME BOYS</div>
-                    <button class="btn-sm btn-ghost" onclick="backToStep(1)">← Change Hostel</button>
-                </div>
-
-                <div class="occ-legend"
-                    style="margin-bottom: 20px; display: flex; gap: 16px; font-size: 12px; color: var(--ink3);">
-                    <div class="legend-item"><span class="legend-box legend-red"
-                            style="display:inline-block; width:12px; height:12px; border:1px dashed var(--accent); border-radius:3px; vertical-align: middle;"></span>
-                        Available</div>
-                    <div class="legend-item"><span class="legend-box legend-green"
-                            style="display:inline-block; width:12px; height:12px; background:var(--green); border-radius:3px; vertical-align: middle;"></span>
-                        Occupied</div>
-                </div>
-
-                <div id="br-live-grid" style="max-height: 400px; overflow-y: auto; padding-right: 8px;">
-                    <!-- Rendered by JS -->
-                </div>
-            </div>
-
-            <!-- STEP 3: SUBMIT DETAILS -->
-            <div id="br-step-3" style="display: none;">
-                <div class="selected-bed-banner"
-                    style="background: var(--bg2); padding: 16px; border-radius: 12px; margin-bottom: 24px; border: 1px solid var(--border);">
-                    <div
-                        style="font-size: 11px; color: var(--ink3); text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">
-                        Selected Bed</div>
-                    <div id="br-selection-text"
-                        style="font-weight: 800; font-size: 20px; color: var(--ink); font-family: var(--font-display);">
-                        Room 102 (Double Sharing)</div>
-                </div>
-
-                <div class="input-group"><label>Full Name *</label><input type="text" id="br-name"
-                        placeholder="Your full name"></div>
-                <div class="input-group"><label>Email Address *</label><input type="email" id="br-email"
-                        placeholder="your@email.com"></div>
-                <div class="input-group"><label>Phone Number *</label><input type="tel" id="br-phone"
-                        placeholder="+91 00000 00000"></div>
-                <div class="input-group"><label>Check-in Date *</label><input type="date" id="br-doj"></div>
-                <div class="input-group"><label>ID Proof Type *</label>
-                    <select id="br-idtype" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); font-size:14px;">
-                        <option value="Aadhaar Card">Aadhaar Card</option>
-                        <option value="PAN Card">PAN Card</option>
-                        <option value="Passport">Passport</option>
-                        <option value="Driving License">Driving License</option>
-                    </select>
-                </div>
-                <div class="input-group"><label>Upload ID Proof / Photo (optional)</label><input type="file" id="br-idphoto" accept="image/*,.pdf"></div>
-                <div class="input-group"><label>Message (optional)</label><textarea id="br-message"
-                        placeholder="Any special requests?"></textarea></div>
-
-                <div class="flex gap12" style="margin-top: 24px;">
-                    <button class="btn btn-outline" style="flex: 1;" onclick="backToStep(2)">← Change Bed</button>
-                    <button class="btn btn-primary" style="flex: 2;" onclick="submitRoomRequest()">Confirm
-                        Booking</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- REQUEST PROFILE MODAL -->
-    <div class="modal-overlay" id="request-profile-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">Applicant Profile</div>
-                <button class="modal-close" onclick="closeModal('request-profile-modal')">×</button>
-            </div>
-            <div id="rp-profile-content">
-                <!-- Table of details -->
-            </div>
-        </div>
-    </div>
-
-    <!-- ADD MANAGER MODAL -->
-    <div class="modal-overlay" id="add-manager-modal">
-        <div class="modal" style="max-width: 450px;">
-            <div class="modal-header">
-                <div class="modal-title">Add New Manager</div>
-                <button class="modal-close" onclick="closeModal('add-manager-modal')">×</button>
-            </div>
-            <div class="input-group">
-                <label>Manager Name</label>
-                <input type="text" id="new-mgr-name" placeholder="John Doe">
-            </div>
-            <div class="input-group">
-                <label>Manager Email (Login ID)</label>
-                <input type="email" id="new-mgr-email" placeholder="manager@gmail.com">
-            </div>
-            <div class="input-group">
-                <label>Assign to Hostel</label>
-                <select id="new-mgr-hostel">
-                    <option value="" disabled selected>Select Hostel...</option>
-                    <option value="1">Hostel 1 — ISHTAA PRIME BOYS</option>
-                    <option value="2">Hostel 2 — ISHTAA PRIME GIRLS</option>
-                </select>
-            </div>
-            <button class="btn btn-primary" style="width:100%; margin-top:16px" onclick="addNewManager()">Add Manager</button>
-        </div>
-    </div>
-
-    <!-- EDIT ROOM MODAL -->
-    <div class="modal-overlay" id="edit-room-modal">
-        <div class="modal" style="max-width: 400px;">
-            <div class="modal-header">
-                <div class="modal-title">Edit Room Details</div>
-                <button class="modal-close" onclick="closeModal('edit-room-modal')">×</button>
-            </div>
-            <input type="hidden" id="edit-room-hostel-id">
-            <input type="hidden" id="edit-room-db-id">
-            <div class="input-group">
-                <label>Room Number</label>
-                <input type="text" id="edit-room-num" placeholder="e.g. 101">
-            </div>
-            <div class="input-group">
-                <label>Floor</label>
-                <input type="number" id="edit-room-floor" placeholder="e.g. 1">
-            </div>
-            <div class="input-group">
-                <label>Sharing Type</label>
-                <select id="edit-room-type">
-                    <option value="Single">Single</option>
-                    <option value="Double">Double</option>
-                    <option value="Triple">Triple</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Monthly Rent (₹)</label>
-                <input type="number" id="edit-room-rent" placeholder="e.g. 6000">
-            </div>
-            <button class="btn-full" onclick="saveEditedRoom()">Save Room Details</button>
-        </div>
-    </div>
-
-    <!-- UPI PAYMENT MODAL FOR TENANT -->
-    <div class="modal-overlay" id="tenant-upi-modal" onclick="closeTenantUpiModal(event)">
-        <div class="modal" style="max-width:480px; text-align:center;" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <div class="modal-title" style="width:100%;">Pay Rent via UPI</div>
-                <button class="modal-close" onclick="closeTenantUpiModal()">×</button>
-            </div>
-            <div style="font-size:13px; color:var(--ink3); margin-bottom:16px;" id="t-upi-subtitle">Scan QR or use UPI ID to pay exact rent</div>
-
-            <!-- Pending Banner (if already submitted) -->
-            <div id="t-upi-pending-banner" style="display:none; background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.3); border-radius:8px; padding:12px; margin-bottom:16px; text-align:left;">
-                <div style="font-size:14px; font-weight:700; color:#b45309; margin-bottom:4px;">⏳ Verification Pending</div>
-                <div style="font-size:12px; color:var(--ink);" id="t-upi-pending-text">Submitted UTR: XXXXXXXXXXXX (₹5,500). Please wait for bank reconciliation.</div>
-            </div>
-
-            <div id="t-upi-form-body">
-                <!-- QR & UPI ID BOX -->
-                <div style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:16px;">
-                    <div style="display:inline-block; padding:8px; background:#fff; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:12px;">
-                        <img id="t-upi-qr-img" src="" alt="UPI QR Code" style="width:180px; height:180px; display:block;">
-                    </div>
-                    <div style="font-size:22px; font-weight:800; color:var(--accent); font-family:var(--font-display);" id="t-upi-amount-display">₹--</div>
-                    <div style="font-size:11px; color:var(--ink3); margin-bottom:10px;">Exact Pending Rent (Locked)</div>
-                    
-                    <div class="flex center" style="gap:8px; font-size:13px; font-weight:600; color:var(--ink); background:#fff; padding:8px 12px; border-radius:6px; border:1px solid var(--border); display:inline-flex;">
-                        <span id="t-upi-id-text">6300642776@ybl</span>
-                        <button class="btn-ghost" style="padding:2px 6px; font-size:11px;" onclick="copyUpiId()">📋 Copy</button>
-                    </div>
-                    
-                    <div style="margin-top:12px;">
-                        <a id="t-upi-app-link" href="#" class="btn-ghost" style="display:inline-block; text-decoration:none; font-size:12px; font-weight:700; color:var(--accent);">📱 Tap to Open GPay / PhonePe</a>
-                    </div>
-                </div>
-
-                <!-- UTR & SCREENSHOT INPUT FORM -->
-                <div style="text-align:left;">
-                    <div class="input-group">
-                        <label>12-Digit UTR / Transaction Ref No. <span style="color:var(--danger)">*</span></label>
-                        <input type="text" id="t-upi-utr-input" placeholder="e.g. 420198765432" maxlength="12" oninput="validateUtrInput(this)" style="font-family:monospace; font-size:15px; letter-spacing:1px;">
-                        <div id="t-upi-utr-hint" style="font-size:11px; color:var(--ink3); margin-top:4px;">Enter exactly 12 numeric digits from your UPI payment success screen.</div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Payment Screenshot <span style="color:var(--ink3); font-weight:400;">(Optional)</span></label>
-                        <input type="file" id="t-upi-screenshot-input" accept="image/*" onchange="previewPaymentScreenshot(this)">
-                        <img id="t-upi-screenshot-preview" src="" style="display:none; width:100%; max-height:120px; object-fit:contain; border-radius:6px; margin-top:8px; border:1px solid var(--border);">
-                    </div>
-
-                    <button class="btn-full" id="t-upi-submit-btn" onclick="submitUpiPayment()" style="margin-top:8px;" disabled>Submit for Verification</button>
-                </div>
-            </div>
-
-            <button class="btn-ghost" onclick="closeTenantUpiModal()" style="margin-top:16px;">Close</button>
-        </div>
-    </div>
-
-    <!-- MODAL: APPROVED PAID UPI LIST -->
-    <div class="modal-overlay" id="paid-upi-modal" onclick="closePaidUpiModal(event)">
-        <div class="modal" style="max-width:650px; width:95%; max-height:85vh; display:flex; flex-direction:column;" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <div>
-                    <div class="modal-title">📜 Approved UPI Payment History</div>
-                    <div style="font-size:12px; color:var(--ink3);">Confirmed and reconciled tenant payment receipts</div>
-                </div>
-                <button class="modal-close" onclick="closePaidUpiModal()">×</button>
-            </div>
-            
-            <div style="flex:1; overflow-y:auto; padding-right:4px; margin-top:12px;" id="m-upi-paid-list-container">
-                <div style="text-align:center; padding:32px; color:var(--ink3);">Loading approved payments...</div>
-            </div>
-
-            <button class="btn-ghost" onclick="closePaidUpiModal()" style="margin-top:16px;">Close</button>
-        </div>
-    </div>
-
-    <!-- BATCH BANK RECONCILE MODAL -->
-    <div class="modal-overlay" id="batch-reconcile-modal" onclick="closeBatchReconcileModal(event)">
-        <div class="modal" style="max-width:520px;" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <div class="modal-title">Batch Bank Statement Reconciler</div>
-                <button class="modal-close" onclick="closeBatchReconcileModal()">×</button>
-            </div>
-            <div style="font-size:13px; color:var(--ink3); margin-bottom:16px;">Paste raw SMS alerts or bank statement lines. All 12-digit UTRs will be extracted and matched instantly!</div>
-
-            <div class="input-group">
-                <label>Raw Bank Statement / SMS Text</label>
-                <textarea id="batch-bank-text" rows="6" placeholder="Paste bank statement text or credit SMS messages here..." style="font-family:monospace; font-size:13px;"></textarea>
-            </div>
-
-            <button class="btn-full" onclick="submitBatchReconciliation()" id="batch-reconcile-btn">Auto-Match & Approve Payments →</button>
-            <button class="btn-ghost" onclick="closeBatchReconcileModal()" style="margin-top:12px; width:100%;">Close</button>
-        </div>
-    </div>
-
-    <!-- SCREENSHOT LIGHTBOX MODAL -->
-    <div class="modal-overlay" id="image-lightbox-modal" onclick="closeLightbox(event)">
-        <div class="modal" style="max-width:640px; padding:12px; background:transparent; border:none; box-shadow:none; text-align:center;" onclick="event.stopPropagation()">
-            <img id="lightbox-img" src="" style="max-width:100%; max-height:80vh; border-radius:8px; border:2px solid #fff; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-            <br>
-            <button class="btn-ghost" onclick="closeLightbox()" style="margin-top:12px; background:#fff; color:#000;">✕ Close Image</button>
-        </div>
-    </div>
-
-    <script>
         window.onerror = function (msg, url, lineNo, columnNo, error) {
             console.error('GLOBAL_ERROR:', msg, 'at', lineNo, ':', columnNo);
             showToast('System Error', 'Something went wrong. Please check console.');
             return false;
         };
-    </script>
-
-</body>
-
-</html>
-<!-- Netlify Production Build Trigger 2026-07-22 -->
+    

@@ -8,8 +8,8 @@ const db = createClient(
 );
 
 const hostels = {
-    1: { name: 'ISHTAA PRIME BOYS', loc: 'NARSINGI', mgr: 'sampath' },
-    2: { name: 'ISHTAA PRIME GIRLS', loc: 'NARSINGI', mgr: 'Suresh Babu' }
+    1: { name: 'VUSTELA BOYS', loc: 'NARSINGI', mgr: 'sampath' },
+    2: { name: 'VUSTELA GIRLS', loc: 'NARSINGI', mgr: 'Suresh Babu' }
 };
 
 window.rooms = { 1: [], 2: [] };

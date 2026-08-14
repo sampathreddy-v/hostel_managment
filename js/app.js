@@ -11,10 +11,10 @@ if (window.supabase) {
   supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
-// Initial Default Registered Hostels (ISHTAA PRIME, VUSTELA HOSTELS)
+// Initial Default Registered Hostels (VUSTELA MANAGEMENT ONLY)
 const DEFAULT_HOSTELS = [
-  { id: 1, name: "ISHTAA PRIME", loc: "NARSINGI", code: "VUS-101", slug: "isthaprime", category: "Boys PG", portalUrl: "https://vustelamanagement.com/" },
-  { id: 1785479749186, name: "VUSTELA HOSTELS", loc: "KOKAPET", code: "VUS-102", slug: "vustelahostels", category: "Boys PG", portalUrl: "https://vustelamanagement.com/" }
+  { id: 'vustela_b', name: "VUSTELA BOYS", mainHostelName: "VUSTELA MANAGEMENT", loc: "NARSINGI, HYDERABAD", code: "VUS-101", slug: "isthaaprimeboys", category: "Boys PG" },
+  { id: 'vustela_g', name: "VUSTELA GIRLS", mainHostelName: "VUSTELA MANAGEMENT", loc: "NARSINGI, HYDERABAD", code: "VUS-102", slug: "isthaaprimegirls", category: "Girls PG" }
 ];
 
 // Role Features Data Dictionary
@@ -25,7 +25,7 @@ const ROLE_FEATURES = {
       {
         icon: "fa-building",
         title: "Manage Multi-Hostel Network",
-        desc: "Monitor total revenue, collected rent, pending dues, and net income across all hostels (ISHTAA PRIME, etc.) in real-time."
+        desc: "Monitor total revenue, collected rent, pending dues, and net income across all hostels (VUSTELA MANAGEMENT, SRINIVASA, etc.) in real-time."
       },
       {
         icon: "fa-layer-group",
@@ -98,13 +98,13 @@ const ROLE_FEATURES = {
     left: [
       {
         icon: "fa-house-user",
-        title: "My Stay Summary",
-        desc: "View assigned hostel, room #, bed status, joining date, and deposit status in one place."
+        title: "My Bed & Rent Details",
+        desc: "View assigned room number, bed number, monthly rent rate, security deposit balance, and due dates."
       },
       {
-        icon: "fa-clock",
-        title: "Real-Time Rent Due Banner",
-        desc: "Check monthly rent due date, countdown days remaining, and instant payment alerts."
+        icon: "fa-receipt",
+        title: "Pay Rent & Instant Receipt",
+        desc: "Pay monthly rent via UPI / QR code, upload transaction screenshots, and download official PDF rent receipts."
       },
       {
         icon: "fa-calendar-minus",
@@ -113,11 +113,6 @@ const ROLE_FEATURES = {
       }
     ],
     right: [
-      {
-        icon: "fa-credit-card",
-        title: "Pay Rent Online",
-        desc: "Scan UPI QR Code or pay via Google Pay, PhonePe, or Paytm with instant payment confirmation."
-      },
       {
         icon: "fa-triangle-exclamation",
         title: "Raise Complaints & Tickets",
@@ -146,10 +141,10 @@ let state = {
 
 // Initialize Gateway Portal
 document.addEventListener("DOMContentLoaded", () => {
-  // Ensure default hostels (ISHTAA PRIME BOYS, ISHTAA PRIME GIRLS, VUSTELA HOSTELS) are always present
+  // Ensure default hostels (VUSTELA MANAGEMENT, SRINIVASA, VUSTELA HOSTELS) are always present by name
   DEFAULT_HOSTELS.forEach(def => {
-    if (!state.hostels.some(h => h.id == def.id || h.name.toUpperCase().includes("ISHTAA"))) {
-      state.hostels.unshift(def);
+    if (!state.hostels.some(h => (h.name || '').toUpperCase().trim() === def.name.toUpperCase().trim())) {
+      state.hostels.push(def);
     }
   });
 
@@ -168,12 +163,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Exclude unwanted hostels & rename ISHTAA PRIME BOYS to ISHTAA PRIME per user request
-  const excluded = ["ISHTAA ROYAL PALACE", "ISHTAA PRIME GIRLS", "MADHAPUR"];
-  state.hostels = state.hostels.map(h => {
-    if (h.name === "ISHTAA PRIME BOYS") h.name = "ISHTAA PRIME";
-    return h;
-  }).filter(h => h.name && !excluded.some(ex => h.name.toUpperCase().includes(ex.toUpperCase())));
+  // Keep ONLY VUSTELA MANAGEMENT hostels
+  state.hostels = state.hostels.filter(h => h.name && h.name.toUpperCase().includes("VUSTELA"));
 
   saveState();
   renderHostels();
@@ -266,20 +257,28 @@ async function fetchHostelsFromSupabase() {
 
     if (data && data.length > 0) {
       data.forEach(h => {
-        const existingIdx = state.hostels.findIndex(x => x.id == h.id);
+        const existingIdx = state.hostels.findIndex(x => String(x.id) === String(h.id) || x.name === h.name);
         const formatted = {
           id: h.id,
           name: h.name || `Hostel #${h.id}`,
+          mainHostelName: h.main_hostel_name || h.mainHostelName || h.name,
           loc: h.location || h.loc || "HYDERABAD",
           code: h.code || `VUS-${100 + h.id}`,
-          category: h.category || "Boys PG",
-          portalUrl: h.portal_url || h.portalUrl || "https://vustelamanagement.com/"
+          category: h.category || "Boys PG"
         };
 
         if (existingIdx >= 0) {
           state.hostels[existingIdx] = formatted;
         } else {
           state.hostels.push(formatted);
+        }
+      });
+
+      state.hostels = state.hostels.filter(h => h.name && h.name.toUpperCase().includes("VUSTELA"));
+
+      DEFAULT_HOSTELS.forEach(def => {
+        if (!state.hostels.some(h => String(h.id) === String(def.id) || h.name.toUpperCase().trim() === def.name.toUpperCase().trim())) {
+          state.hostels.push(def);
         }
       });
 
@@ -291,44 +290,58 @@ async function fetchHostelsFromSupabase() {
   }
 }
 
-// Render Clean Hostel Name Cards (Grouping ISHTAA PRIME into 1 card)
+// Render Clean Hostel Name Cards (Grouping VUSTELA MANAGEMENT into 1 card)
+function getBrandName(hostel) {
+  if (hostel.mainHostelName && hostel.mainHostelName.trim()) {
+    let m = hostel.mainHostelName.toUpperCase().trim();
+    if (!m.endsWith("HOSTELS") && !m.endsWith("HOSTEL")) m += " HOSTELS";
+    return m;
+  }
+  let raw = (hostel.name || '').toUpperCase().trim();
+  raw = raw.replace(/\b(BOYS|GIRLS|PG|BRANCH|BRANCHES)\b/gi, '').trim();
+  if (!raw.endsWith("HOSTELS") && !raw.endsWith("HOSTEL")) {
+    raw = raw.replace(/\bHOSTEL(S)?\b/gi, '').trim();
+    if (raw) raw = `${raw} HOSTELS`;
+  }
+  return (raw || 'VUSTELA HOSTELS').replace(/\s+/g, ' ').trim();
+}
+
 function renderHostels() {
   const container = document.getElementById("hostelGrid");
   if (!container) return;
 
   let displayList = [];
-  let hasIshtaa = false;
+  const groupsMap = new Map();
 
-  state.hostels.forEach(h => {
-    if (h.name && h.name.toUpperCase().includes("ISHTAA")) {
-      if (!hasIshtaa) {
-        displayList.push({
-          id: 'ishtaa_prime',
-          name: "ISHTAA PRIME HOSTELS",
-          loc: "NARSINGI, HYDERABAD",
-          code: "VUS-101 / 102",
-          category: "Boys & Girls Branches",
-          isBrandGroup: true
-        });
-        hasIshtaa = true;
-      }
-    } else {
-      if (h.name && !h.name.toUpperCase().includes("MADHAPUR")) {
-        displayList.push(h);
-      }
-    }
-  });
+  if (Array.isArray(state.hostels)) {
+    state.hostels.forEach(h => {
+      const hName = (h.name || '').toUpperCase().trim();
+      if (!hName || hName.includes("MADHAPUR") || hName.includes("ROYAL PALACE")) return;
 
-  if (!hasIshtaa && state.searchQuery === "") {
-    displayList.unshift({
-      id: 'ishtaa_prime',
-      name: "ISHTAA PRIME HOSTELS",
-      loc: "NARSINGI, HYDERABAD",
-      code: "VUS-101 / 102",
-      category: "Boys & Girls Branches",
-      isBrandGroup: true
+      const brandKey = getBrandName(h);
+      if (!groupsMap.has(brandKey)) {
+        groupsMap.set(brandKey, []);
+      }
+      groupsMap.get(brandKey).push(h);
     });
   }
+
+  groupsMap.forEach((branches, brandKey) => {
+    const firstLoc = branches[0].loc || "HYDERABAD";
+    const hasBoys = branches.some(b => (b.category || b.name || '').toUpperCase().includes('BOYS'));
+    const hasGirls = branches.some(b => (b.category || b.name || '').toUpperCase().includes('GIRLS'));
+    const catText = (hasBoys && hasGirls) ? "Boys & Girls Branches" : (hasGirls ? "Girls Branch" : "Boys Branch");
+
+    displayList.push({
+      id: branches[0].id,
+      name: brandKey,
+      loc: firstLoc,
+      code: `${branches.length} Branch${branches.length !== 1 ? 'es' : ''}`,
+      category: catText,
+      isBrandGroup: true,
+      branches: branches
+    });
+  });
 
   // Apply Category Filter
   if (state.activeCategory !== "All") {
@@ -403,27 +416,33 @@ function navigateToAuth(action) {
   if (action === "register") {
     window.open("register.html", "_blank");
   } else {
-    window.open("hostel_app.html?action=login", "_blank");
+    window.open("index.html?action=login", "_blank");
   }
 }
 
 // Redirection & Branch Selection Routing (Directly opens hostel portal app page in NEW TAB)
 function directRedirectToHostel(hostelId) {
   const hostelStr = String(hostelId);
-  if (hostelStr === '1' || hostelStr === '2' || hostelStr === 'ishtaa_prime' || hostelStr.toLowerCase().includes('ishtaa')) {
-    window.open("hostel_app.html#hostel-info", "_blank");
-    return;
+  const hostel = (state.hostels || []).find(h => String(h.id) === hostelStr);
+  let targetBrand = '';
+
+  if (hostel) {
+    targetBrand = hostel.mainHostelName || hostel.name || '';
+  }
+  
+  if (!targetBrand) {
+    if (hostelStr.includes('srinivasa')) targetBrand = 'SRINIVASA';
+    else if (hostelStr.includes('vustela')) targetBrand = 'VUSTELA';
+    else targetBrand = 'VUSTELA MANAGEMENT';
   }
 
-  const hostel = state.hostels ? state.hostels.find(h => String(h.id) === hostelStr) : null;
-  const slug = (hostel && hostel.slug) || (hostel && hostel.name ? hostel.name.toLowerCase().replace(/[^a-z0-9]/g, '') : 'vustela');
-  const redirectUrl = `hostel_app.html?hostel=${slug}&hostel_id=${hostel ? hostel.id : 1}`;
+  const redirectUrl = `index.html?hostel=${encodeURIComponent(targetBrand)}&hostel_id=${hostelId}#hostel-info`;
   window.open(redirectUrl, "_blank");
 }
 
 function selectBranchPortal(hostelId, branchName) {
   const slug = branchName.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const redirectUrl = `hostel_app.html?hostel=${slug}&hostel_id=${hostelId}&hostel_name=${encodeURIComponent(branchName)}#hostel-info`;
+  const redirectUrl = `index.html?hostel=${slug}&hostel_id=${hostelId}&hostel_name=${encodeURIComponent(branchName)}#hostel-info`;
   window.open(redirectUrl, "_blank");
 }
 
@@ -441,18 +460,6 @@ async function handleGatewayLoginSubmit() {
 
   if (!email || !pass) {
     alert("Please enter both email/mobile and password.");
-    return;
-  }
-
-  // SUPERADMIN CREDENTIAL CHECK (sampathreddyvustela4@gmail.com / 1234)
-  if (
-    (email === "sampathreddyvustela4@gmail.com" || email === "sampathreddyvustela4" || email === "vustelasrinivasreddy456@gmail.com" || email === "admin@vustela.com") &&
-    (pass === "1234" || pass === "vustela123" || pass === "admin")
-  ) {
-    sessionStorage.setItem("vustela_admin_authenticated", "true");
-    closeModal("gatewayLoginModal");
-    alert("👑 Welcome Sampath Reddy! Opening Vustela Master Admin Portal...");
-    window.location.href = "superadmin.html";
     return;
   }
 
@@ -483,13 +490,13 @@ async function handleGatewayLoginSubmit() {
     }
   }
 
-  // Store session in localStorage so hostel_app.html loads user session immediately
+  // Store session in localStorage so index.html loads user session immediately
   localStorage.setItem('vustela_session', JSON.stringify({ role: role, email: email, phone: cleanInput, password: pass, hostel_id: hostelId }));
 
   closeModal('gatewayLoginModal');
 
   // Direct user to their portal in a new tab
-  const targetUrl = `hostel_app.html?action=login&role=${role}&hostel_id=${hostelId}`;
+  const targetUrl = `index.html?action=login&role=${role}&hostel_id=${hostelId}`;
   console.log(`Directing authenticated user to portal: ${targetUrl}`);
   window.open(targetUrl, '_blank');
 }
@@ -669,7 +676,7 @@ function resetOwnerPassword() {
   closeModal('forgotPasswordModal');
   alert('🔑 Password successfully reset! Logging in now...');
   localStorage.setItem('vustela_session', JSON.stringify({ role: 'owner', phone: phone, password: newPass }));
-  window.open(`hostel_app.html?action=login&role=owner&phone=${phone}`, '_blank');
+  window.open(`index.html?action=login&role=owner&phone=${phone}`, '_blank');
 }
 
 // Handle Subscription Purchase Request (Sent to Super Admin Control)
